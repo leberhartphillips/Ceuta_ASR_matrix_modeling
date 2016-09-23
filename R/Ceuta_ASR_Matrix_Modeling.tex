@@ -1,0 +1,2101 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+  \newcommand{\euro}{€}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\PassOptionsToPackage{usenames,dvipsnames}{color} % color is loaded by hyperref
+\hypersetup{unicode=true,
+            pdftitle={R-code for Consequences of stage- and sex-specific demography on the adult sex ratio of a polygamous bird population},
+            pdfauthor={Luke J. Eberhart-Phillips, Clemens Küpper, Tom E. X. Miller, Medardo Cruz-López, Kathryn Maher, Natalie dos Remedios, Martin A. Stoffel, Joseph I. Hoffman, Oliver Krüger, Tamás Székely},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{{#1}}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{{#1}}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{{#1}}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{{#1}}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{{#1}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\ImportTok}[1]{{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{{#1}}}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{{#1}}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{{#1}}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{{#1}}}}
+\newcommand{\BuiltInTok}[1]{{#1}}
+\newcommand{\ExtensionTok}[1]{{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{{#1}}}
+\newcommand{\RegionMarkerTok}[1]{{#1}}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{{#1}}}}
+\newcommand{\NormalTok}[1]{{#1}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+  \title{R-code for ``Consequences of stage- and sex-specific demography on the
+adult sex ratio of a polygamous bird population''}
+  \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+  \author{Luke J. Eberhart-Phillips, Clemens Küpper, Tom E. X. Miller, Medardo
+Cruz-López, Kathryn Maher, Natalie dos Remedios, Martin A. Stoffel,
+Joseph I. Hoffman, Oliver Krüger, Tamás Székely}
+  \preauthor{\centering\large\emph}
+  \postauthor{\par}
+  \predate{\centering\large\emph}
+  \postdate{\par}
+  \date{August 8, 2016}
+
+
+
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+\begin{document}
+\maketitle
+
+In this document we provide all the necessary code for reproducing the
+analyses presented in our paper. To access the dataset and Rmarkdown
+file, please download this
+\href{https://github.com/leberhartphillips/Ceuta_ASR_matrix_modeling}{GitHub}
+repository. Simply follow the link and click on \emph{Download ZIP} on
+the right-hand side of the page. An explanation of the files in the
+repository can be found in the Readme file. Please don't hesitate to
+contact Luke at \texttt{luke.eberhart{[}at{]}gmail.com} if you have any
+questions.
+
+The structure of the code we present here follows the analyses presented
+in the \emph{Results} section of the paper.
+
+\textbf{Prerequisites:}
+
+\begin{itemize}
+\tightlist
+\item
+  For running the complete code you need a \texttt{files} subfolder
+  containing the raw data downloaded from \textbf{\texttt{data}} folder
+  provided in the
+  \href{https://github.com/leberhartphillips/Ceuta_ASR_matrix_modeling}{GitHub}
+  repository.
+\item
+  The following packages are needed for analysis and can be easily
+  installed from \href{http://cran.r-project.org/}{CRAN} by uncommenting
+  the \texttt{install.packages} functions:
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# install.packages("RMark")}
+\CommentTok{# install.packages("stringr")}
+\CommentTok{# install.packages("ggplot2")}
+\CommentTok{# install.packages("dplyr")}
+\CommentTok{# install.packages("grid")}
+\CommentTok{# install.packages("gridExtra")}
+\CommentTok{# install.packages("reshape2")}
+\CommentTok{# install.packages("RColorBrewer")}
+\CommentTok{# install.packages("Rmisc")}
+\CommentTok{# install.packages("stats")}
+\CommentTok{# install.packages("lme4")}
+\KeywordTok{library}\NormalTok{(RMark) }
+\KeywordTok{library}\NormalTok{(stringr)}
+\KeywordTok{library}\NormalTok{(ggplot2)}
+\KeywordTok{library}\NormalTok{(dplyr)}
+\KeywordTok{library}\NormalTok{(gridExtra)}
+\KeywordTok{library}\NormalTok{(grid)}
+\KeywordTok{library}\NormalTok{(reshape2)}
+\KeywordTok{library}\NormalTok{(RColorBrewer)}
+\KeywordTok{library}\NormalTok{(Rmisc)}
+\KeywordTok{library}\NormalTok{(stats)}
+\KeywordTok{library}\NormalTok{(lme4)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\rule{0.5\linewidth}{\linethickness}\end{center}
+
+\subsection{Loading and wrangling
+data}\label{loading-and-wrangling-data}
+
+To start, please load the following datasets into your R environment:
+
+\begin{itemize}
+\item
+  \textbf{chick\_survival\_data.txt} contains the mark-recapture field
+  data of chicks. Each row is a single uniquely marked chick identified
+  by their \emph{ring}. The daily encounter history of an individual is
+  expressed in their \emph{ch}, where a ``1'' indicates that an
+  individual was encountered, ``0'' indicates it was not encountered,
+  and ``.'' indicates that no survey took place on that day. \emph{year}
+  indicates the year during which an individual was monitored and
+  \emph{day\_of\_season} indicates the number of days since the start of
+  the breeding season that an individual hatched. \emph{sex} describes
+  the molecular sex-type of an individual with ``M'' for males and ``F''
+  for females. \emph{brood\_ID} is a unique brood identifier for the
+  family from which a chick hatched.
+\item
+  \textbf{fledgling\_adult\_survival\_data.txt} contains the
+  mark-recapture field data of fledglings and adults. Each row is a
+  single uniquely marked individual identified by their \emph{ring}. The
+  annual encounter history of an individual is expressed in their
+  \emph{ch}, where a ``1'' indicates that an individual was encountered
+  and ``0'' indicates it was not encountered. \emph{sex} describes the
+  molecular sex-type of an individual with ``M'' for males and ``F'' for
+  females. \emph{age} describes the stage at which an individual was
+  initially captured, where ``J'' indicates it was first captured as a
+  chick, and ``A'' indicates it was first captured as an adult.
+\item
+  \textbf{breeding\_data.txt} contains the individual reproductive
+  histories of all marked breeding adults in the population. Each row is
+  a nesting attempt uniquely identified by the nest \emph{ID}.
+  \emph{no\_chicks} expresses the number of chicks that hatched from the
+  nest. \emph{clutch\_size} indicates the number of eggs in the nest
+  when it was initially discovered. \emph{year} describes the year in
+  which the nest was active. \emph{male} and \emph{female} indicates the
+  unique identity of the father and mother, respectively, with
+  ``male\_NA'' and ``female\_NA'' describing cases in which the other
+  mate was not identified.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chick <-}\StringTok{ }
+\StringTok{  }\KeywordTok{read.table}\NormalTok{(}\StringTok{"/Users/Luke/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/data/chick_survival_data.txt"}\NormalTok{,}
+             \DataTypeTok{header =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{colClasses =} \KeywordTok{c}\NormalTok{(}\StringTok{"factor"}\NormalTok{, }\StringTok{"character"}\NormalTok{,}\StringTok{"factor"}\NormalTok{,}
+                                           \StringTok{"numeric"}\NormalTok{,}\StringTok{"factor"}\NormalTok{,}\StringTok{"factor"}\NormalTok{, }\StringTok{"numeric"}\NormalTok{))}
+
+\NormalTok{fledgling_adult <-}\StringTok{ }
+\StringTok{  }\KeywordTok{read.table}\NormalTok{(}\StringTok{"/Users/Luke/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/data/fledgling_adult_survival_data.txt"}\NormalTok{,}
+             \DataTypeTok{header =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{colClasses =} \KeywordTok{c}\NormalTok{(}\StringTok{"factor"}\NormalTok{,}\StringTok{"character"}\NormalTok{,}\StringTok{"factor"}\NormalTok{,}\StringTok{"factor"}\NormalTok{))}
+
+\NormalTok{breeding_data <-}\StringTok{ }
+\StringTok{  }\KeywordTok{read.table}\NormalTok{(}\StringTok{"/Users/Luke/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/data/breeding_data.txt"}\NormalTok{, }
+             \DataTypeTok{header =} \OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Sex-specific fecundity}\label{sex-specific-fecundity}
+
+The objective here was to determine the average per capita annual
+fecundity for males and females. These sex-specific vital rates were
+incorporated into the two-sex matrix model. The second objective was to
+evalutate if the distributions of male and female fecundity were
+different, which would provide evidence of the polygamous nature of the
+snowy plover mating system.
+
+\textbf{Step one: wrangle the data}
+
+Extract the female column from the breeding data, add a sex column,
+extract the male colum, add a sex column, then stack these two
+dataframes.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Sex <-}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\StringTok{"Female"}\NormalTok{, }\KeywordTok{nrow}\NormalTok{(breeding_data))}
+\NormalTok{Ring <-}\StringTok{ }\NormalTok{breeding_data$female}
+\NormalTok{females <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(Ring, Sex)}
+\NormalTok{Sex <-}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\StringTok{"Male"}\NormalTok{, }\KeywordTok{nrow}\NormalTok{(breeding_data))}
+\NormalTok{Ring <-}\StringTok{ }\NormalTok{breeding_data$male}
+\NormalTok{males <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(Ring, Sex)}
+\NormalTok{Individuals <-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(males, females)}
+\end{Highlighting}
+\end{Shaded}
+
+replicate each row by 2 then cbind the stacked dataframe from the
+previous step
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{reproduction_df <-}\StringTok{ }\KeywordTok{cbind}\NormalTok{(breeding_data[}\KeywordTok{rep}\NormalTok{(}\KeywordTok{row.names}\NormalTok{(breeding_data), }\DecValTok{2}\NormalTok{), }
+                                       \KeywordTok{c}\NormalTok{(}\StringTok{"no_chicks"}\NormalTok{, }\StringTok{"clutch_size"}\NormalTok{, }\StringTok{"ID"}\NormalTok{, }\StringTok{"year"}\NormalTok{)],}
+                      \NormalTok{Individuals)}
+\end{Highlighting}
+\end{Shaded}
+
+change the order of the sex levels, so that females are first (for the
+plot)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{reproduction_df$Sex <-}\StringTok{ }\KeywordTok{factor}\NormalTok{(reproduction_df$Sex, }\DataTypeTok{levels =} \KeywordTok{c}\NormalTok{(}\StringTok{"Female"}\NormalTok{, }\StringTok{"Male"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+subset the data to remove entries that have a NA in the Ring column
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{reproduction_df <-}\StringTok{ }\NormalTok{reproduction_df[!}\KeywordTok{is.na}\NormalTok{(reproduction_df$Ring),]}
+\end{Highlighting}
+\end{Shaded}
+
+subset the data to remove entries that have a NA in the no-chicks column
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{reproduction_df <-}\StringTok{ }\NormalTok{reproduction_df[!}\KeywordTok{is.na}\NormalTok{(reproduction_df$no_chicks),]}
+\end{Highlighting}
+\end{Shaded}
+
+group data according to Year, Sex, then Ring
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{reproduction_df <-}\StringTok{ }\KeywordTok{group_by}\NormalTok{(reproduction_df, year, Sex, Ring)}
+\end{Highlighting}
+\end{Shaded}
+
+sum the total chicks produced per bird each year
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{reproduction_df_sum <-}\StringTok{ }
+\StringTok{  }\KeywordTok{ungroup}\NormalTok{(dplyr::}\KeywordTok{summarise}\NormalTok{(reproduction_df, }
+                           \DataTypeTok{total_chicks_p_year =} \KeywordTok{sum}\NormalTok{(}\KeywordTok{as.numeric}\NormalTok{(no_chicks))))}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Step two: calculate fecundity}
+
+calculate avg total chicks produced per bird in each year
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fecundity_annual_summary <-}\StringTok{ }
+\StringTok{  }\NormalTok{Rmisc::}\KeywordTok{summarySE}\NormalTok{(reproduction_df_sum, }\DataTypeTok{measurevar =} \StringTok{"total_chicks_p_year"}\NormalTok{, }
+                   \DataTypeTok{groupvars =} \KeywordTok{c}\NormalTok{(}\StringTok{"Sex"}\NormalTok{, }\StringTok{"year"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+group data according to Sex then Ring
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{reproduction_df_sum <-}\StringTok{ }\KeywordTok{group_by}\NormalTok{(reproduction_df_sum, Sex, Ring)}
+\end{Highlighting}
+\end{Shaded}
+
+calculate avg total chicks produced per bird each year
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{reproduction_df_sum_avg <-}\StringTok{ }
+\StringTok{  }\KeywordTok{ungroup}\NormalTok{(dplyr::}\KeywordTok{summarise}\NormalTok{(reproduction_df_sum, }
+                           \DataTypeTok{avg_chicks_p_year =} \KeywordTok{mean}\NormalTok{(}\KeywordTok{as.numeric}\NormalTok{(total_chicks_p_year))))}
+\end{Highlighting}
+\end{Shaded}
+
+summarize the avg annual no\_chicks by sex
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fecundity_summary <-}\StringTok{ }
+\StringTok{  }\NormalTok{Rmisc::}\KeywordTok{summarySE}\NormalTok{(reproduction_df_sum_avg, }
+                   \DataTypeTok{measurevar =} \StringTok{"avg_chicks_p_year"}\NormalTok{, }\DataTypeTok{groupvars =} \KeywordTok{c}\NormalTok{(}\StringTok{"Sex"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+Determine how many individuals were included in the analysis
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sample_sizes_sex <-}\StringTok{ }
+\StringTok{  }\KeywordTok{aggregate}\NormalTok{(Ring ~}\StringTok{ }\NormalTok{Sex, }\DataTypeTok{data =} \NormalTok{reproduction_df_sum_avg, }\DataTypeTok{FUN =} \NormalTok{function(x)\{}\KeywordTok{NROW}\NormalTok{(x)\})}
+\end{Highlighting}
+\end{Shaded}
+
+specify the color pallete to use for the plot
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cbPalette <-}\StringTok{ }\KeywordTok{brewer.pal}\NormalTok{(}\DecValTok{8}\NormalTok{, }\StringTok{"Dark2"}\NormalTok{)[}\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{)]}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Step three: plot the sex-specific distributions}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{() +}
+\StringTok{  }\KeywordTok{geom_boxplot}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =} \NormalTok{avg_chicks_p_year, }\DataTypeTok{x =} \NormalTok{Sex, }\DataTypeTok{fill =} \NormalTok{Sex), }
+               \DataTypeTok{data =} \NormalTok{reproduction_df_sum_avg, }\DataTypeTok{size =} \NormalTok{.}\DecValTok{3}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.6}\NormalTok{) +}
+\StringTok{  }\KeywordTok{geom_text}\NormalTok{(}\DataTypeTok{data =} \NormalTok{sample_sizes_sex, }\DataTypeTok{size =} \DecValTok{3}\NormalTok{, }
+            \KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =} \KeywordTok{c}\NormalTok{(}\FloatTok{6.5}\NormalTok{, }\FloatTok{6.5}\NormalTok{), }\DataTypeTok{x =} \KeywordTok{c}\NormalTok{(}\FloatTok{1.12}\NormalTok{, }\FloatTok{2.12}\NormalTok{), }\DataTypeTok{label =} \NormalTok{Ring)) +}
+\StringTok{  }\KeywordTok{annotate}\NormalTok{(}\StringTok{"text"}\NormalTok{, }\DataTypeTok{x =} \KeywordTok{c}\NormalTok{(}\FloatTok{0.92}\NormalTok{, }\FloatTok{1.92}\NormalTok{), }\DataTypeTok{y =} \KeywordTok{c}\NormalTok{(}\FloatTok{6.5}\NormalTok{, }\FloatTok{6.5}\NormalTok{), }\DataTypeTok{label =} \StringTok{"n = "}\NormalTok{, }
+           \DataTypeTok{size =} \DecValTok{3}\NormalTok{) +}
+\StringTok{  }\KeywordTok{theme_bw}\NormalTok{() +}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{text=}\KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size=}\DecValTok{16}\NormalTok{),}
+        \DataTypeTok{legend.position =} \StringTok{"none"}\NormalTok{,}
+        \DataTypeTok{axis.title.x =} \KeywordTok{element_blank}\NormalTok{(),}
+        \DataTypeTok{axis.text.x  =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size =} \DecValTok{10}\NormalTok{), }
+        \DataTypeTok{axis.title.y =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size =} \DecValTok{12}\NormalTok{, }
+                                    \DataTypeTok{margin =} \KeywordTok{margin}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{)),}
+        \DataTypeTok{axis.text.y =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size =} \DecValTok{10}\NormalTok{), }
+        \DataTypeTok{panel.grid.major =} \KeywordTok{element_blank}\NormalTok{(),}
+        \DataTypeTok{panel.grid.minor =} \KeywordTok{element_blank}\NormalTok{(),}
+        \DataTypeTok{axis.ticks.y =} \KeywordTok{element_line}\NormalTok{(}\DataTypeTok{size =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{colour =} \StringTok{"grey40"}\NormalTok{),}
+        \DataTypeTok{axis.ticks.length =} \KeywordTok{unit}\NormalTok{(}\FloatTok{0.2}\NormalTok{, }\StringTok{"cm"}\NormalTok{),}
+        \DataTypeTok{axis.ticks.x =} \KeywordTok{element_blank}\NormalTok{(),}
+        \DataTypeTok{panel.border =} \KeywordTok{element_rect}\NormalTok{(}\DataTypeTok{linetype =} \StringTok{"solid"}\NormalTok{, }\DataTypeTok{colour =} \StringTok{"grey"}\NormalTok{)) +}
+\StringTok{  }\KeywordTok{scale_fill_manual}\NormalTok{(}\DataTypeTok{values =} \NormalTok{cbPalette) +}
+\StringTok{  }\KeywordTok{ylab}\NormalTok{(}\StringTok{"Per capita annual hatchlings parented"}\NormalTok{) +}
+\StringTok{  }\KeywordTok{scale_y_continuous}\NormalTok{(}\DataTypeTok{limits =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FloatTok{6.5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Ceuta_ASR_Matrix_Modeling_files/figure-latex/unnamed-chunk-17-1} \end{center}
+
+\textbf{Step four: statistical testing of sex-specific variance in
+fecundity}
+
+Run F-test to assess sex-specific variation in per capita fecundity
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{reproduction_df_sum_avg <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(reproduction_df_sum_avg)}
+\KeywordTok{var.test}\NormalTok{(reproduction_df_sum_avg[}\KeywordTok{which}\NormalTok{(reproduction_df_sum_avg$Sex ==}\StringTok{ "Female"}\NormalTok{),}
+                                 \KeywordTok{c}\NormalTok{(}\StringTok{"avg_chicks_p_year"}\NormalTok{)],}
+         \NormalTok{reproduction_df_sum_avg[}\KeywordTok{which}\NormalTok{(reproduction_df_sum_avg$Sex ==}\StringTok{ "Male"}\NormalTok{),}
+                                 \KeywordTok{c}\NormalTok{(}\StringTok{"avg_chicks_p_year"}\NormalTok{)],}
+         \DataTypeTok{alternative =} \StringTok{"greater"}\NormalTok{)}
+\CommentTok{#> }
+\CommentTok{#>  F test to compare two variances}
+\CommentTok{#> }
+\CommentTok{#> data:  reproduction_df_sum_avg[which(reproduction_df_sum_avg$Sex ==  and reproduction_df_sum_avg[which(reproduction_df_sum_avg$Sex ==     "Female"), c("avg_chicks_p_year")] and     "Male"), c("avg_chicks_p_year")]}
+\CommentTok{#> F = 1.4461, num df = 239, denom df = 239, p-value = 0.002255}
+\CommentTok{#> alternative hypothesis: true ratio of variances is greater than 1}
+\CommentTok{#> 95 percent confidence interval:}
+\CommentTok{#>  1.168391      Inf}
+\CommentTok{#> sample estimates:}
+\CommentTok{#> ratio of variances }
+\CommentTok{#>           1.446064}
+\end{Highlighting}
+\end{Shaded}
+
+Assign the sex-specific values to constants that will be included in the
+matrix
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{RF <-}\StringTok{ }\NormalTok{fecundity_summary[}\DecValTok{1}\NormalTok{,}\DecValTok{3}\NormalTok{]}
+\NormalTok{RM <-}\StringTok{ }\NormalTok{fecundity_summary[}\DecValTok{2}\NormalTok{,}\DecValTok{3}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Hatching sex ratio}\label{hatching-sex-ratio}
+
+Before running the matrix model, the hatching sex ratio needs to be
+calculated.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# subset the captures so that only chicks captured on the day of hatch are included}
+\CommentTok{# (the "ch" refers to the capture history of an individual on each day of its life as}
+\CommentTok{# a chick.  Thus, if the first charactoer of the ch string is a 1, it was captured}
+\CommentTok{# on the day of hatch and is included in the hatch sex ratio dataset)}
+\NormalTok{caught_at_hatch <-}\StringTok{ }\NormalTok{chick[}\KeywordTok{which}\NormalTok{(}\KeywordTok{substring}\NormalTok{(chick$ch, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{) ==}\StringTok{ "1"}\NormalTok{),]}
+
+\CommentTok{# sum the number of chicks that are included for each hatch ID}
+\NormalTok{brood_ID_count <-}\StringTok{ }
+\NormalTok{caught_at_hatch %>%}\StringTok{ }
+\StringTok{  }\NormalTok{dplyr::}\KeywordTok{count}\NormalTok{(brood_ID)}
+
+\CommentTok{# join this data to the subset capture data}
+\NormalTok{caught_at_hatch <-}\StringTok{ }\NormalTok{dplyr::}\KeywordTok{left_join}\NormalTok{(caught_at_hatch, brood_ID_count, }\DataTypeTok{by =} \StringTok{"brood_ID"}\NormalTok{)}
+
+\CommentTok{# subset these data so that clutch size equals the number of chicks sampled from each nest}
+\NormalTok{HSR_df <-}\StringTok{ }\NormalTok{caught_at_hatch[}\KeywordTok{which}\NormalTok{(caught_at_hatch$clutch_size ==}\StringTok{ }\NormalTok{caught_at_hatch$n),]}
+
+\CommentTok{# make new columns "Male" and "Female" that have 1 or 0 to describe the sex of the chick}
+\NormalTok{HSR_df$male <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(HSR_df$sex ==}\StringTok{ "M"}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)}
+\NormalTok{HSR_df$female <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(HSR_df$sex ==}\StringTok{ "F"}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)}
+
+\CommentTok{# define hatch ID as a factor}
+\NormalTok{HSR_df$brood_ID <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(HSR_df$brood_ID)}
+
+\CommentTok{# run mixed effects linear regression}
+\CommentTok{# Brood ID is used as a random effect to control for the non-independence of siblings}
+\NormalTok{HSR_model <-}\StringTok{ }\NormalTok{lme4::}\KeywordTok{glmer}\NormalTok{(}\KeywordTok{cbind}\NormalTok{(male, female) ~}\StringTok{ }\NormalTok{(}\DecValTok{1}\NormalTok{|}\StringTok{ }\NormalTok{brood_ID),}
+                     \DataTypeTok{data =} \NormalTok{HSR_df, }\DataTypeTok{family =} \NormalTok{binomial)}
+
+\CommentTok{# check out the model results. P = 0.588, therefore hatching sex ratio doesn't}
+\CommentTok{# deviate from parity}
+\KeywordTok{summary}\NormalTok{(HSR_model)}
+\CommentTok{#> Generalized linear mixed model fit by maximum likelihood (Laplace}
+\CommentTok{#>   Approximation) [glmerMod]}
+\CommentTok{#>  Family: binomial  ( logit )}
+\CommentTok{#> Formula: cbind(male, female) ~ (1 | brood_ID)}
+\CommentTok{#>    Data: HSR_df}
+\CommentTok{#> }
+\CommentTok{#>      AIC      BIC   logLik deviance df.resid }
+\CommentTok{#>    475.0    482.7   -235.5    471.0      338 }
+\CommentTok{#> }
+\CommentTok{#> Scaled residuals: }
+\CommentTok{#>    Min     1Q Median     3Q    Max }
+\CommentTok{#> -0.971 -0.971 -0.971  1.030  1.030 }
+\CommentTok{#> }
+\CommentTok{#> Random effects:}
+\CommentTok{#>  Groups   Name        Variance Std.Dev.}
+\CommentTok{#>  brood_ID (Intercept) 0        0       }
+\CommentTok{#> Number of obs: 340, groups:  brood_ID, 116}
+\CommentTok{#> }
+\CommentTok{#> Fixed effects:}
+\CommentTok{#>             Estimate Std. Error z value Pr(>|z|)}
+\CommentTok{#> (Intercept) -0.05884    0.10851  -0.542    0.588}
+
+\CommentTok{# calculate what the average hatching sex ratio is}
+\CommentTok{# summarize the data so that each row is a nest instead of an individual}
+\NormalTok{HSR_df_summary <-}\StringTok{ }
+\StringTok{  }\NormalTok{HSR_df %>%}\StringTok{ }
+\StringTok{  }\NormalTok{dplyr::}\KeywordTok{group_by}\NormalTok{(brood_ID) %>%}
+\StringTok{  }\NormalTok{dplyr::}\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{no_males =} \KeywordTok{sum}\NormalTok{(male),}
+                   \DataTypeTok{hatch_date_season =} \KeywordTok{min}\NormalTok{(day_of_season),}
+                   \DataTypeTok{clutch_size =} \KeywordTok{mean}\NormalTok{(n),}
+                   \DataTypeTok{year =} \KeywordTok{first}\NormalTok{(year))}
+
+\CommentTok{# calculate the proportion of the brood that was male}
+\NormalTok{HSR_df_summary$prop_male <-}\StringTok{ }\NormalTok{HSR_df_summary$no_males/HSR_df_summary$clutch_size}
+
+\CommentTok{# calculate the average hatching sex ratio across all nests}
+\NormalTok{HSR <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(HSR_df_summary$prop_male)}
+
+\CommentTok{# calculate the 95% confidence interval of the hatching sex ratio}
+\NormalTok{HSR_95CI <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\KeywordTok{mean}\NormalTok{(HSR_df_summary$prop_male)-}
+\StringTok{                }\NormalTok{((}\KeywordTok{sd}\NormalTok{(HSR_df_summary$prop_male)/}
+\StringTok{                    }\KeywordTok{sqrt}\NormalTok{(}\KeywordTok{length}\NormalTok{(HSR_df_summary$prop_male)))*}\FloatTok{1.96}\NormalTok{),}
+              \KeywordTok{mean}\NormalTok{(HSR_df_summary$prop_male)+}
+\StringTok{                }\NormalTok{((}\KeywordTok{sd}\NormalTok{(HSR_df_summary$prop_male)/}
+\StringTok{                    }\KeywordTok{sqrt}\NormalTok{(}\KeywordTok{length}\NormalTok{(HSR_df_summary$prop_male)))*}\FloatTok{1.96}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Bootstrapping proceedure}\label{bootstrapping-proceedure}
+
+Specify where RMark should look on your computer for Program MARK. This
+may vary based on your operating system (e.g., Windows, Linux, Mac OS X,
+etc.). This \href{http://www.phidot.org/software/mark/rmark/}{website}
+provides a nice workflow for installing Program MARK and linking it to
+your R interface based on which operating system you have.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{MarkPath <-}\StringTok{ "/usr/local/bin/mark"}
+\NormalTok{MarkViewer <-}\StringTok{ "nano"}
+\end{Highlighting}
+\end{Shaded}
+
+The following two functions are needed to setup the projection matrix
+and estimate ASR. Load these before implementing the bootstrap
+simulation.
+
+\textbf{plover\_matrix()} builds the two-sex Lefkovitch matrix using the
+vital rates specified in the \emph{demographic\_rates} object.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{plover_matrix <-}\StringTok{ }
+\StringTok{  }\NormalTok{function(demographic_rates, }\DataTypeTok{mating_function =} \OtherTok{TRUE}\NormalTok{)}
+  \NormalTok{\{}
+    \NormalTok{if(mating_function)}
+    \NormalTok{\{}
+      \CommentTok{# Define plover life-stages of the Ceuta snowy plover matrix model}
+      \NormalTok{stages <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"F_1st_yr"}\NormalTok{,  }\StringTok{"F_Adt"}\NormalTok{,  }\StringTok{"M_1st_yr"}\NormalTok{,  }\StringTok{"M_Adt"}\NormalTok{)}
+      \CommentTok{# Build the 4x4 matrix}
+      \NormalTok{result <-}\StringTok{ }
+\StringTok{        }\KeywordTok{matrix}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{0}\NormalTok{, }\OtherTok{NA}\NormalTok{, }
+                 \NormalTok{(demographic_rates$F_Chk_survl*demographic_rates$F_Fdg_survl),}
+                 \NormalTok{demographic_rates$F_Adt_survl, }
+                 \DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{,}
+                 \DecValTok{0}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{0}\NormalTok{, }\OtherTok{NA}\NormalTok{,}
+                 \DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, }
+                 \NormalTok{(demographic_rates$M_Chk_survl*demographic_rates$M_Fdg_survl),}
+                 \NormalTok{demographic_rates$M_Adt_survl),}
+               \DataTypeTok{nrow =} \DecValTok{4}\NormalTok{, }\DataTypeTok{byrow =} \OtherTok{TRUE}\NormalTok{,}
+               \DataTypeTok{dimnames =} \KeywordTok{list}\NormalTok{(stages, stages))}
+      \NormalTok{result}
+    \NormalTok{\}}
+    \NormalTok{else}
+    \NormalTok{\{}
+      \CommentTok{# Define plover life-stages of the Ceuta snowy plover matrix model}
+      \NormalTok{stages <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"F_1st_yr"}\NormalTok{,  }\StringTok{"F_Adt"}\NormalTok{,  }\StringTok{"M_1st_yr"}\NormalTok{,  }\StringTok{"M_Adt"}\NormalTok{)}
+      \CommentTok{# Build the 4x4 matrix}
+      \NormalTok{result <-}\StringTok{ }
+\StringTok{        }\KeywordTok{matrix}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, demographic_rates$RF *}\StringTok{ }\NormalTok{(}\DecValTok{1} \NormalTok{-}\StringTok{ }\NormalTok{HSR), }\DecValTok{0}\NormalTok{, demographic_rates$RM *}\StringTok{ }\NormalTok{(}\DecValTok{1} \NormalTok{-}\StringTok{ }\NormalTok{HSR), }
+                 \NormalTok{(demographic_rates$F_Chk_survl*demographic_rates$F_Fdg_survl),}
+                 \NormalTok{demographic_rates$F_Adt_survl, }
+                 \DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{,}
+                 \DecValTok{0}\NormalTok{, demographic_rates$RF *}\StringTok{ }\NormalTok{HSR, }\DecValTok{0}\NormalTok{, demographic_rates$RM *}\StringTok{ }\NormalTok{HSR,}
+                 \DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, }
+                 \NormalTok{(demographic_rates$M_Chk_survl*demographic_rates$M_Fdg_survl),}
+                 \NormalTok{demographic_rates$M_Adt_survl),}
+               \DataTypeTok{nrow =} \DecValTok{4}\NormalTok{, }\DataTypeTok{byrow =} \OtherTok{TRUE}\NormalTok{,}
+               \DataTypeTok{dimnames =} \KeywordTok{list}\NormalTok{(stages, stages))}
+      \NormalTok{result}
+    \NormalTok{\}}
+  \NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{freq\_dep\_SSD\_ASR()} calculates the ASR of the population
+based on the two-sex two-stage projection matrix built by the
+\emph{plover\_matrix()} function. It also incorporates the
+frequency-dependent harmonic mean mating function. Arguments in the
+function include: \emph{A} is an two sex x by x projection matrix
+\emph{n} is an x lengthed vector representing starting stage
+distribution (the default is a vector with 10 individuals in each stage)
+\emph{h} is the harem size for the species. h \textgreater{} 1 is
+polgynous, h \textless{} 1 is polyandrous, h = 1 is monogamous (default)
+\emph{k} is the clutch size for the species (default is 3) \emph{HSR} is
+the hatching sex ratio (default is 0.5) \emph{iterations} is the number
+of iterations to simulate the matrix until SSD is achieved (default is
+30)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{freq_dep_SSD_ASR <-}\StringTok{ }
+\StringTok{  }\NormalTok{function (A, }\DataTypeTok{n =} \KeywordTok{rep}\NormalTok{(}\DecValTok{10}\NormalTok{, }\KeywordTok{nrow}\NormalTok{(A)), }\DataTypeTok{h =} \DecValTok{1}\NormalTok{, }\DataTypeTok{k =} \DecValTok{3}\NormalTok{, }
+            \DataTypeTok{iterations =} \DecValTok{30}\NormalTok{, }\DataTypeTok{HSR =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{mating_function =} \OtherTok{TRUE}\NormalTok{) }
+  \NormalTok{\{}
+    \CommentTok{# Number of stages in matrix}
+    \NormalTok{x <-}\StringTok{ }\KeywordTok{length}\NormalTok{(n) }
+    \NormalTok{if(mating_function)}
+    \NormalTok{\{}
+      \CommentTok{# Number of time steps to simulate}
+      \NormalTok{t <-}\StringTok{ }\NormalTok{iterations }
+      \CommentTok{# an empty t by x matrix}
+      \NormalTok{stage <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\KeywordTok{numeric}\NormalTok{(x *}\StringTok{ }\NormalTok{t), }\DataTypeTok{nrow =} \NormalTok{x) }
+      \CommentTok{# for loop that goes through each of t time steps}
+      \NormalTok{for (i in }\DecValTok{1}\NormalTok{:t) \{ }
+        \CommentTok{# stage distribution at time t}
+        \NormalTok{stage[,i] <-}\StringTok{ }\NormalTok{n }
+        \CommentTok{# number of male adults at time t}
+        \NormalTok{M2 <-}\StringTok{ }\NormalTok{stage[}\DecValTok{4}\NormalTok{, i] }
+        \CommentTok{# number of female adults at time t}
+        \NormalTok{F2 <-}\StringTok{ }\NormalTok{stage[}\DecValTok{2}\NormalTok{, i] }
+        \CommentTok{# Female freq-dep fecundity of Female chicks}
+        \NormalTok{A[}\DecValTok{1}\NormalTok{,x/}\DecValTok{2}\NormalTok{]        <-}\StringTok{ }\NormalTok{(k*M2)/(M2+(F2/h))*HSR }
+        \CommentTok{# Female freq-dep fecundity of Male chicks}
+        \NormalTok{A[(x/}\DecValTok{4}\NormalTok{)*}\DecValTok{3}\NormalTok{,x/}\DecValTok{2}\NormalTok{]  <-}\StringTok{ }\NormalTok{(k*M2)/(M2+(F2/h))*HSR}
+        \CommentTok{# Male freq-dep fecundity of Female chicks}
+        \NormalTok{A[}\DecValTok{1}\NormalTok{,x]          <-}\StringTok{ }\NormalTok{(k*F2)/(M2+(F2/h))*HSR }
+        \CommentTok{# Male freq-dep fecundity of Male chicks}
+        \NormalTok{A[(x/}\DecValTok{4}\NormalTok{)*}\DecValTok{3}\NormalTok{,x]    <-}\StringTok{ }\NormalTok{(k*F2)/(M2+(F2/h))*HSR }
+        \CommentTok{# define the new n (i.e., new stage distribution at time t)}
+        \NormalTok{n <-}\StringTok{ }\NormalTok{A %*%}\StringTok{ }\NormalTok{n }
+        \CommentTok{# define rownames of stage matrix}
+        \KeywordTok{rownames}\NormalTok{(stage) <-}\StringTok{ }\KeywordTok{rownames}\NormalTok{(A) }
+        \CommentTok{# define colnames of stage matrix}
+        \KeywordTok{colnames}\NormalTok{(stage) <-}\StringTok{ }\DecValTok{0}\NormalTok{:(t -}\StringTok{ }\DecValTok{1}\NormalTok{) }
+        \CommentTok{# define stable stage as the last stage}
+        \NormalTok{w <-}\StringTok{ }\NormalTok{stage[, t] }
+      \NormalTok{\}}
+      \CommentTok{# calculate the proportional stable stage distribution}
+      \NormalTok{stable.stage <-}\StringTok{ }\NormalTok{w/}\KeywordTok{sum}\NormalTok{(w)}
+      \CommentTok{# calc ASR as the proportion of the adult stable stage class that is male}
+      \NormalTok{ASR <-}\StringTok{ }\NormalTok{stable.stage[x]/(stable.stage[x/}\DecValTok{2}\NormalTok{] +}\StringTok{ }\NormalTok{stable.stage[x])}
+      
+      \CommentTok{# make a list of results}
+      \NormalTok{pop.proj <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{ASR =} \NormalTok{ASR,}
+                       \DataTypeTok{stable.stage =} \NormalTok{stable.stage, }
+                       \DataTypeTok{stage.vectors =} \NormalTok{stage,}
+                       \DataTypeTok{SSD_M2 =} \NormalTok{stable.stage[}\DecValTok{4}\NormalTok{],}
+                       \DataTypeTok{SSD_F2 =} \NormalTok{stable.stage[}\DecValTok{2}\NormalTok{])}
+    \NormalTok{\}}
+    \NormalTok{else}
+    \NormalTok{\{}
+      \NormalTok{ev <-}\StringTok{ }\KeywordTok{eigen}\NormalTok{(A)}
+      \NormalTok{lmax <-}\StringTok{ }\KeywordTok{which.max}\NormalTok{(}\KeywordTok{Re}\NormalTok{(ev$values))}
+      \NormalTok{W <-}\StringTok{ }\NormalTok{ev$vectors}
+      \NormalTok{w <-}\StringTok{ }\KeywordTok{abs}\NormalTok{(}\KeywordTok{Re}\NormalTok{(W[, lmax]))}
+      \KeywordTok{names}\NormalTok{(w) <-}\StringTok{ }\KeywordTok{colnames}\NormalTok{(A)}
+    \CommentTok{# calculate the proportional stable stage distribution}
+    \NormalTok{stable.stage <-}\StringTok{ }\NormalTok{w/}\KeywordTok{sum}\NormalTok{(w)}
+    \CommentTok{# calc ASR as the proportion of the adult stable stage class that is male}
+    \NormalTok{ASR <-}\StringTok{ }\NormalTok{stable.stage[x]/(stable.stage[x/}\DecValTok{2}\NormalTok{] +}\StringTok{ }\NormalTok{stable.stage[x])}
+    
+    \CommentTok{# make a list of results}
+    \NormalTok{pop.proj <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{ASR =} \NormalTok{ASR,}
+                     \DataTypeTok{stable.stage =} \NormalTok{stable.stage, }
+                     \DataTypeTok{SSD_M2 =} \NormalTok{stable.stage[}\DecValTok{4}\NormalTok{],}
+                     \DataTypeTok{SSD_F2 =} \NormalTok{stable.stage[}\DecValTok{2}\NormalTok{])}
+    \NormalTok{\}}
+    \CommentTok{# print the list as output to the function}
+    \NormalTok{pop.proj }
+  \NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+This section runs our bootstrap of the mark-recapture datasets. Each
+iteration will do the following computational steps:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi})}
+\tightlist
+\item
+  Load the following function \textbf{bootstrap\_data()} to randomly
+  sample with replacement from the \emph{chick} and
+  \emph{fledgling\_adult} datasets, while making sure that if an
+  individual existing in both datasets was sampled from the \emph{chick}
+  data it was also sampled in the \emph{fledgling\_adult} data. Each
+  bootstrapped sample has the same length as the original data.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{bootstrap_data <-}\StringTok{ }\NormalTok{function(fledgling_adult, chick) \{}
+  \NormalTok{chick_boot <-}\StringTok{ }\NormalTok{chick[}\KeywordTok{sample}\NormalTok{(}\DecValTok{1}\NormalTok{:}\KeywordTok{nrow}\NormalTok{(chick), }
+                             \DataTypeTok{size =} \KeywordTok{nrow}\NormalTok{(chick), }
+                             \DataTypeTok{replace =} \OtherTok{TRUE}\NormalTok{), ]}
+  \NormalTok{present <-}\StringTok{ }\NormalTok{fledgling_adult$ring %in%}\StringTok{ }\NormalTok{chick_boot$ring}
+  \NormalTok{fledgling_adult_boot1 <-}\StringTok{ }\NormalTok{fledgling_adult[present, ]}
+  \NormalTok{spare_fledgling_adult <-}\StringTok{ }\NormalTok{fledgling_adult[!present, ]}
+  \NormalTok{fledgling_adult_boot2 <-}\StringTok{ }
+\StringTok{    }\NormalTok{spare_fledgling_adult[}\KeywordTok{sample}\NormalTok{(}\DecValTok{1}\NormalTok{:}\KeywordTok{nrow}\NormalTok{(spare_fledgling_adult), }
+                                 \DataTypeTok{size =} \KeywordTok{nrow}\NormalTok{(fledgling_adult) -}\StringTok{ }
+\StringTok{                                   }\KeywordTok{nrow}\NormalTok{(fledgling_adult_boot1), }
+                                 \DataTypeTok{replace =} \OtherTok{TRUE}\NormalTok{), ]}
+  \NormalTok{fledgling_adult_boot <-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(fledgling_adult_boot1, fledgling_adult_boot2)}
+  \NormalTok{out <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{chick_boot =} \NormalTok{chick_boot, }\DataTypeTok{fledgling_adult_boot =} \NormalTok{fledgling_adult_boot)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi})}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  The next function, \textbf{bootstrap\_survival\_ASR()}, runs the
+  survival analyses and estimates the ASR of the bootstrapped sample
+  created from \textbf{bootstrap\_data()}. In the function,
+  \emph{plover\_boot\_list} is the output list from
+  \textbf{bootstrap\_data()} and \emph{num\_boot} is the bootstrap
+  number in the loop (leave unspecified).
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{bootstrap_survival_ASR <-}\StringTok{ }\NormalTok{function(plover_boot_list, num_boot) \{}
+  
+  \CommentTok{# First steps require some wrangling}
+  
+  \CommentTok{# specify the bootstrapped data samples}
+  \NormalTok{chick <-}\StringTok{ }\NormalTok{plover_boot_list[[}\StringTok{"chick_boot"}\NormalTok{]]}
+  \NormalTok{fledgling_adult <-}\StringTok{ }\NormalTok{plover_boot_list[[}\StringTok{"fledgling_adult_boot"}\NormalTok{]]}
+  
+  \CommentTok{# remove ring column}
+  \NormalTok{fledgling_adult <-}\StringTok{ }\NormalTok{fledgling_adult[,-}\DecValTok{1}\NormalTok{]}
+  \NormalTok{chick <-}\StringTok{ }\NormalTok{chick[,-}\DecValTok{1}\NormalTok{]}
+  
+            \CommentTok{# Remove capture histories that have no resights (i.e., all zeros in the ch)}
+            \CommentTok{# chick <- chick[!which(str_detect(chick[,"ch"],"1") == TRUE),]}
+  
+  \CommentTok{# Create processed RMARK data format as Cormack-Jolly_Seber with 2 groups }
+  \CommentTok{# (sex and age initally ringed), starting at year 2006, two age groups}
+  \CommentTok{# (first-years and adults) in which the first-year stage only lasts for }
+  \CommentTok{# one year.}
+  \NormalTok{fledgling_adult.proc <-}\StringTok{ }\NormalTok{RMark::}\KeywordTok{process.data}\NormalTok{(fledgling_adult, }\DataTypeTok{model =} \StringTok{"CJS"}\NormalTok{,}
+                                              \DataTypeTok{groups =} \KeywordTok{c}\NormalTok{(}\StringTok{"sex"}\NormalTok{, }\StringTok{"age"}\NormalTok{),}
+                                              \DataTypeTok{begin.time =} \DecValTok{2006}\NormalTok{, }\DataTypeTok{age.var =} \DecValTok{2}\NormalTok{, }
+                                              \DataTypeTok{initial.age =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{))}
+  
+  \CommentTok{# Create processed RMARK data format as Cormack-Jolly_Seber with 3 groups }
+  \CommentTok{# (sex, year, and brood ID).}
+  \NormalTok{chick.proc <-}\StringTok{  }\NormalTok{RMark::}\KeywordTok{process.data}\NormalTok{(chick, }\DataTypeTok{model =} \StringTok{"CJS"}\NormalTok{,}
+                                     \DataTypeTok{groups =} \KeywordTok{c}\NormalTok{(}\StringTok{"sex"}\NormalTok{, }\StringTok{"year"}\NormalTok{, }\StringTok{"brood_ID"}\NormalTok{))}
+  
+  \CommentTok{# Create the design matrix from the processed mark-recapture datasets}
+  \NormalTok{fledgling_adult.ddl <-}\StringTok{ }\NormalTok{RMark::}\KeywordTok{make.design.data}\NormalTok{(fledgling_adult.proc)}
+  \NormalTok{chick.ddl <-}\StringTok{ }\NormalTok{RMark::}\KeywordTok{make.design.data}\NormalTok{(chick.proc)}
+  
+  \CommentTok{# adds first-year / adult age field to design data in column "Age"}
+  \NormalTok{fledgling_adult.ddl <-}\StringTok{ }\NormalTok{RMark::}\KeywordTok{add.design.data}\NormalTok{(}\DataTypeTok{data =} \NormalTok{fledgling_adult.proc,}
+                                                \DataTypeTok{ddl =} \NormalTok{fledgling_adult.ddl, }
+                                                \DataTypeTok{parameter =} \StringTok{"Phi"}\NormalTok{, }
+                                                \DataTypeTok{type =} \StringTok{"age"}\NormalTok{,}
+                                                \DataTypeTok{bins =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{7}\NormalTok{), }\DataTypeTok{right =} \OtherTok{FALSE}\NormalTok{,}
+                                                \DataTypeTok{name =} \StringTok{"age"}\NormalTok{, }\DataTypeTok{replace =} \OtherTok{TRUE}\NormalTok{)}
+  
+  \CommentTok{# create a dummy field in the design matrix called marked.as.adult }
+  \CommentTok{# which is "0" for the group initally ringed as chicks and "1" for the group}
+  \CommentTok{# marked as adults.}
+  \NormalTok{fledgling_adult.ddl$Phi$marked.as.adult =}\StringTok{ }\DecValTok{0}
+  \NormalTok{fledgling_adult.ddl$Phi$marked.as.adult[fledgling_adult.ddl$Phi$initial.age.class ==}\StringTok{ "A"}\NormalTok{] =}\StringTok{ }\DecValTok{1} 
+  \NormalTok{fledgling_adult.ddl$p$marked.as.adult =}\StringTok{ }\DecValTok{0}
+  \NormalTok{fledgling_adult.ddl$p$marked.as.adult[fledgling_adult.ddl$p$initial.age.class ==}\StringTok{ "A"}\NormalTok{] =}\StringTok{ }\DecValTok{1}
+  
+  \CommentTok{# # check parameter matrices to see if groups were binned correctly}
+  \CommentTok{# PIMS(mark(fledgling_adult.proc,fledgling_adult.ddl,}
+  \CommentTok{# model.parameters=list(Phi=list(formula=~age+sex)),output=F),"Phi")}
+  \CommentTok{# }
+  \CommentTok{# Create quadratic time variable so that it can be}
+  \CommentTok{# tested for temporal variation in fledgling and adult survival...}
+  \NormalTok{time <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{:(fledgling_adult.proc$nocc[}\DecValTok{1}\NormalTok{] -}\StringTok{ }\DecValTok{1}\NormalTok{))}
+  \NormalTok{quadratic <-}\StringTok{ }\NormalTok{time^}\DecValTok{2}
+  \NormalTok{quad_time <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(time, quadratic)}
+  \NormalTok{quad_time$time <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{2006}\NormalTok{:}\DecValTok{2012}\NormalTok{)}
+  \NormalTok{fledgling_adult.ddl$p <-}\StringTok{ }
+\StringTok{    }\KeywordTok{merge_design.covariates}\NormalTok{(fledgling_adult.ddl$Phi,}
+                            \NormalTok{quad_time, }\DataTypeTok{bygroup =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{bytime =} \OtherTok{TRUE}\NormalTok{)}
+  \NormalTok{fledgling_adult.ddl$Phi <-}\StringTok{ }
+\StringTok{    }\KeywordTok{merge_design.covariates}\NormalTok{(fledgling_adult.ddl$Phi,}
+                            \NormalTok{quad_time, }\DataTypeTok{bygroup =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{bytime =} \OtherTok{TRUE}\NormalTok{)}
+  
+  \CommentTok{# ...and chicks}
+  \NormalTok{time <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{:(chick.proc$nocc[}\DecValTok{1}\NormalTok{] -}\StringTok{ }\DecValTok{1}\NormalTok{))}
+  \NormalTok{quadratic <-}\StringTok{ }\NormalTok{time^}\DecValTok{2}
+  \NormalTok{quad_time <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(time, quadratic)}
+  \NormalTok{chick.ddl$p <-}\StringTok{ }
+\StringTok{    }\KeywordTok{merge_design.covariates}\NormalTok{(chick.ddl$Phi,}
+                            \NormalTok{quad_time, }\DataTypeTok{bygroup =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{bytime =} \OtherTok{TRUE}\NormalTok{)}
+  \NormalTok{chick.ddl$Phi <-}\StringTok{ }
+\StringTok{    }\KeywordTok{merge_design.covariates}\NormalTok{(chick.ddl$Phi,}
+                            \NormalTok{quad_time, }\DataTypeTok{bygroup =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{bytime =} \OtherTok{TRUE}\NormalTok{)}
+  
+  \CommentTok{# Second step is to create the candidate survival models for }
+  \CommentTok{# fledglings and adults as a function}
+  \NormalTok{fledgling_adult_survival =}\StringTok{ }\NormalTok{function() }
+  \NormalTok{\{}
+    \KeywordTok{setwd}\NormalTok{(}\StringTok{"/external/spazedawgs/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/output/temp/"}\NormalTok{) }\CommentTok{# set wd so that results go to the correct folder}
+    \CommentTok{# sex- and stage-specific survival:}
+    \NormalTok{Phi.agexsex =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =} \NormalTok{~}\StringTok{ }\NormalTok{age *}\StringTok{ }\NormalTok{sex) }
+    
+    \CommentTok{# Models exploring variation in encounter probability}
+    \CommentTok{# sex-dependent:}
+    \NormalTok{p.sex =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =}  \NormalTok{~}\StringTok{ }\NormalTok{sex) }
+    \CommentTok{# age-dependent:}
+    \NormalTok{p.age =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =}  \NormalTok{~}\StringTok{ }\NormalTok{age) }
+    \CommentTok{# constant:}
+    \NormalTok{p.dot =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =}  \NormalTok{~}\StringTok{ }\DecValTok{1}\NormalTok{) }
+    \CommentTok{# linear variation across time:}
+    \NormalTok{p.time =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =}  \NormalTok{~}\StringTok{ }\NormalTok{time) }
+    \CommentTok{# factorial variation across time:}
+    \NormalTok{p.Time =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =}  \NormalTok{~}\StringTok{ }\NormalTok{Time) }
+    \CommentTok{# quadratic variation across time:}
+    \NormalTok{p.quadratic =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =}  \NormalTok{~}\StringTok{ }\NormalTok{quadratic) }
+    \CommentTok{# interaction between sex and linear time:}
+    \NormalTok{p.sexxtime =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =}  \NormalTok{~}\StringTok{ }\NormalTok{sex *}\StringTok{ }\NormalTok{time) }
+    \CommentTok{# interaction between age and time:}
+    \NormalTok{p.agextime =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =}  \NormalTok{~}\StringTok{ }\NormalTok{age *}\StringTok{ }\NormalTok{time)}
+    \CommentTok{# interaction between sex and factorial time:}
+    \NormalTok{p.sexxTime =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =}  \NormalTok{~}\StringTok{ }\NormalTok{sex *}\StringTok{ }\NormalTok{Time)}
+    \CommentTok{# interaction between age and factorial time:}
+    \NormalTok{p.agexTime =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =}  \NormalTok{~}\StringTok{ }\NormalTok{age *}\StringTok{ }\NormalTok{Time)}
+    \CommentTok{# interaction between age and sex:}
+    \NormalTok{p.agexsex =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =}  \NormalTok{~}\StringTok{ }\NormalTok{age *}\StringTok{ }\NormalTok{sex)}
+    \CommentTok{# interaction between quadratic time and sex:}
+    \NormalTok{p.quadraticxsex =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =}  \NormalTok{~}\StringTok{ }\NormalTok{quadratic *}\StringTok{ }\NormalTok{sex)}
+    \CommentTok{# interaction between quadratic time and age:}
+    \NormalTok{p.quadraticxage =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =}  \NormalTok{~}\StringTok{ }\NormalTok{quadratic *}\StringTok{ }\NormalTok{age)}
+    \CommentTok{# # interaction between quadratic time and sex:}
+    \CommentTok{# p.quadraticxagexsex = list(formula =  ~ quadratic * age * sex)}
+    \CommentTok{# p.Timexagexsex = list(formula =  ~ Time * age * sex)}
+    \CommentTok{# p.timexagexsex = list(formula =  ~ time * age * sex)}
+    \CommentTok{# additive effects of sex and linear time:}
+    \NormalTok{p.sex_time =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =}  \NormalTok{~}\StringTok{ }\NormalTok{sex +}\StringTok{ }\NormalTok{time)}
+    \CommentTok{# additive effects of age and linear time:}
+    \NormalTok{p.age_time =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =}  \NormalTok{~}\StringTok{ }\NormalTok{age +}\StringTok{ }\NormalTok{time)}
+    \CommentTok{# additive effects of sex and factorial time:}
+    \NormalTok{p.sex_Time =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =}  \NormalTok{~}\StringTok{ }\NormalTok{sex +}\StringTok{ }\NormalTok{Time)}
+    \CommentTok{# additive effects of age and factorial time:}
+    \NormalTok{p.age_Time =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =}  \NormalTok{~}\StringTok{ }\NormalTok{age +}\StringTok{ }\NormalTok{Time)}
+    \CommentTok{# additive effects of age and sex:}
+    \NormalTok{p.age_sex =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =}  \NormalTok{~}\StringTok{ }\NormalTok{age +}\StringTok{ }\NormalTok{sex)}
+    \CommentTok{# additive effects of sex and quadratic time:}
+    \NormalTok{p.quadratic_sex =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =}  \NormalTok{~}\StringTok{ }\NormalTok{quadratic +}\StringTok{ }\NormalTok{sex)}
+    \CommentTok{# additive effects of age and quadratic time:}
+    \NormalTok{p.quadratic_age =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =}  \NormalTok{~}\StringTok{ }\NormalTok{quadratic +}\StringTok{ }\NormalTok{age)}
+    \CommentTok{# additive effects of sex, age, and quadratic time:}
+    \NormalTok{p.quadratic_age_sex =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =}  \NormalTok{~}\StringTok{ }\NormalTok{quadratic +}\StringTok{ }\NormalTok{age +}\StringTok{ }\NormalTok{sex)}
+    \CommentTok{# additive effects of sex, age, factorial time:}
+    \NormalTok{p.Time_age_sex =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =}  \NormalTok{~}\StringTok{ }\NormalTok{Time +}\StringTok{ }\NormalTok{age +}\StringTok{ }\NormalTok{sex)}
+    \CommentTok{# additive effects of sex, age, linear time:}
+    \NormalTok{p.time_age_sex =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =}  \NormalTok{~}\StringTok{ }\NormalTok{time +}\StringTok{ }\NormalTok{age +}\StringTok{ }\NormalTok{sex)}
+    
+    \CommentTok{# create a list of candidate models for all the a models above that begin with }
+    \CommentTok{# either "Phi." or "p."}
+    \NormalTok{cml =}\StringTok{ }\NormalTok{RMark::}\KeywordTok{create.model.list}\NormalTok{(}\StringTok{"CJS"}\NormalTok{)}
+    
+    \CommentTok{# specify the data, design matrix, the number of threads to use }
+    \CommentTok{# (if using a server) and run the models in Program MARK}
+    \NormalTok{model.list =}\StringTok{ }\NormalTok{RMark::}\KeywordTok{mark.wrapper}\NormalTok{(cml, }\DataTypeTok{data =} \NormalTok{fledgling_adult.proc, }
+                                     \DataTypeTok{ddl =} \NormalTok{fledgling_adult.ddl,}
+                                     \DataTypeTok{threads =} \DecValTok{20}\NormalTok{, }\DataTypeTok{brief =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{delete =} \OtherTok{TRUE}\NormalTok{)}
+    
+    \CommentTok{# output the model list and sotre the results}
+    \KeywordTok{return}\NormalTok{(model.list)}
+  \NormalTok{\}}
+  
+  \CommentTok{# Run the models on the bootstrapped data}
+  \NormalTok{fledgling_adult_survival_run <-}\StringTok{ }
+\StringTok{    }\KeywordTok{fledgling_adult_survival}\NormalTok{()}
+  
+  \CommentTok{# Extract the AIC model table from the model output}
+  \NormalTok{AIC_table_fledgling_adult <-}\StringTok{ }
+\StringTok{    }\NormalTok{fledgling_adult_survival_run$model.table}
+  
+  \CommentTok{# Find the model number for the first ranked model of the AIC table}
+  \NormalTok{model_fledgling_adult_num <-}\StringTok{ }
+\StringTok{    }\KeywordTok{as.numeric}\NormalTok{(}\KeywordTok{rownames}\NormalTok{(fledgling_adult_survival_run$model.table[}\DecValTok{1}\NormalTok{,]))}
+  
+  \CommentTok{# extract and format survival rates from fledgling and adult model output}
+  \NormalTok{fledgling_adult_reals <-}\StringTok{ }
+\StringTok{    }\NormalTok{fledgling_adult_survival_run[[model_fledgling_adult_num]]$results$real}
+  
+  \CommentTok{# format the output to tidy up the sex- and age-specific effects}
+  \NormalTok{Groups <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\KeywordTok{str_split_fixed}\NormalTok{(}\KeywordTok{rownames}\NormalTok{(fledgling_adult_reals), }\StringTok{" "}\NormalTok{, }\DataTypeTok{n =} \DecValTok{5}\NormalTok{))}
+  \NormalTok{fledgling_adult_reals <-}\StringTok{ }\KeywordTok{cbind}\NormalTok{(Groups, fledgling_adult_reals)}
+  \NormalTok{fledgling_adult_reals <-}\StringTok{ }
+\StringTok{    }\NormalTok{fledgling_adult_reals[}\KeywordTok{which}\NormalTok{(fledgling_adult_reals$X1 ==}\StringTok{ "Phi"}\NormalTok{),]}
+  \NormalTok{fledgling_adult_reals$age <-}\StringTok{ }
+\StringTok{    }\KeywordTok{unlist}\NormalTok{(}\KeywordTok{str_extract_all}\NormalTok{(fledgling_adult_reals$X2,}\StringTok{"[AJ]"}\NormalTok{))}
+  \NormalTok{fledgling_adult_reals$age <-}\StringTok{ }
+\StringTok{    }\KeywordTok{as.factor}\NormalTok{(}\KeywordTok{ifelse}\NormalTok{(fledgling_adult_reals$age ==}\StringTok{ "A"}\NormalTok{,}\StringTok{"Adult"}\NormalTok{,}\StringTok{"Fledgling"}\NormalTok{))}
+  \NormalTok{fledgling_adult_reals$sex <-}\StringTok{ }
+\StringTok{    }\KeywordTok{unlist}\NormalTok{(}\KeywordTok{str_extract_all}\NormalTok{(fledgling_adult_reals$X2,}\StringTok{"[FM]"}\NormalTok{))}
+  \NormalTok{fledgling_adult_reals$sex <-}\StringTok{ }
+\StringTok{    }\KeywordTok{as.factor}\NormalTok{(}\KeywordTok{ifelse}\NormalTok{(fledgling_adult_reals$sex ==}\StringTok{ "F"}\NormalTok{,}\StringTok{"Female"}\NormalTok{,}\StringTok{"Male"}\NormalTok{))}
+  \NormalTok{fledgling_adult_reals$sex_age <-}\StringTok{ }
+\StringTok{    }\KeywordTok{paste}\NormalTok{(fledgling_adult_reals$sex,fledgling_adult_reals$age,}\DataTypeTok{sep =} \StringTok{"_"}\NormalTok{)}
+  \NormalTok{fledgling_adult_survival_real <-}\StringTok{ }
+\StringTok{    }\NormalTok{fledgling_adult_reals[,}\KeywordTok{c}\NormalTok{(}\StringTok{"sex_age"}\NormalTok{, }\StringTok{"estimate"}\NormalTok{)]}
+  \KeywordTok{row.names}\NormalTok{(fledgling_adult_survival_real) <-}\StringTok{ }\OtherTok{NULL}
+
+  \CommentTok{# Do the same for chicks by creating the candidate survival models for }
+  \CommentTok{# chicks as a function}
+  \NormalTok{chick_survival =}\StringTok{ }\NormalTok{function() }
+  \NormalTok{\{}
+    \KeywordTok{setwd}\NormalTok{(}\StringTok{"/external/spazedawgs/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/output/temp/"}\NormalTok{) }\CommentTok{# set wd so that results go to the correct folder    }
+    \CommentTok{# # sex- and linear age-specific survival:}
+    \CommentTok{# Phi.Time.x.sex = list(formula = ~ Sex * Time)}
+    \CommentTok{# sex- and quadratic age-specific survival:}
+    \NormalTok{Phi.quadratic.x.sex =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =} \NormalTok{~}\StringTok{ }\NormalTok{sex *}\StringTok{ }\NormalTok{quadratic)}
+    \CommentTok{# # sex-specific survival:}
+    \CommentTok{# Phi.Sex = list(formula = ~ Sex)}
+    
+    \CommentTok{# Models exploring variation in encounter probability}
+    \CommentTok{# constant:}
+    \NormalTok{p.dot =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =} \NormalTok{~}\StringTok{ }\DecValTok{1}\NormalTok{)}
+    \CommentTok{# # linear across time}
+    \CommentTok{# p.Time = list(formula = ~ Time)}
+    \CommentTok{# quadratic across time}
+    \NormalTok{p.quadratic =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =} \NormalTok{~}\StringTok{ }\NormalTok{quadratic)}
+    \CommentTok{# annual variation}
+    \NormalTok{p.year =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =} \NormalTok{~}\StringTok{ }\NormalTok{year)}
+    \CommentTok{# sex-specific}
+    \NormalTok{p.sex =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =} \NormalTok{~}\StringTok{ }\NormalTok{sex)}
+    \CommentTok{# # interaction between year and linear age}
+    \CommentTok{# p.year.x.Time = list(formula = ~ Year * Time)}
+    \CommentTok{# interaction between year and quadratic age}
+    \NormalTok{p.year.x.quadratic =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =} \NormalTok{~}\StringTok{ }\NormalTok{year *}\StringTok{ }\NormalTok{quadratic)}
+    \CommentTok{# # interaction between sex and linear age}
+    \CommentTok{# p.year.x.Time = list(formula = ~ Sex * Time)}
+    \CommentTok{# interaction between year and quadratic age}
+    \NormalTok{p.sex.x.quadratic =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =} \NormalTok{~}\StringTok{ }\NormalTok{sex *}\StringTok{ }\NormalTok{quadratic)}
+    \CommentTok{# # additive effects of sex and linear age}
+    \CommentTok{# p.sex.Time = list(formula = ~ Sex + Time)}
+    \CommentTok{# additive effects of sex and linear age}
+    \NormalTok{p.sex.quadratic =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =} \NormalTok{~}\StringTok{ }\NormalTok{sex +}\StringTok{ }\NormalTok{quadratic)}
+    \CommentTok{# # additive effects of year and linear age    }
+    \CommentTok{# p.year.Time = list(formula = ~ Year + Time)}
+    \CommentTok{# additive effects of year and quadratic age    }
+    \NormalTok{p.year.quadratic =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =} \NormalTok{~}\StringTok{ }\NormalTok{year +}\StringTok{ }\NormalTok{quadratic)}
+    \CommentTok{# # additive effects of year, sex, and linear age}
+    \CommentTok{# p.year.Time.Sex = list(formula = ~ Year + Time + Sex)}
+    \CommentTok{# additive effects of year, sex, and quadratic age}
+    \NormalTok{p.year.quadratic.Sex =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{formula =} \NormalTok{~}\StringTok{ }\NormalTok{year +}\StringTok{ }\NormalTok{quadratic +}\StringTok{ }\NormalTok{sex)}
+    
+    \CommentTok{# create a list of candidate models for all the a models above that begin with }
+    \CommentTok{# either "Phi." or "p."}
+    \NormalTok{cml =}\StringTok{ }\NormalTok{RMark::}\KeywordTok{create.model.list}\NormalTok{(}\StringTok{"CJS"}\NormalTok{)}
+    
+    \CommentTok{# specify the data, design matrix, the number of threads to use }
+    \CommentTok{# (if using a server) and run the models in Program MARK}
+    \NormalTok{model.list =}\StringTok{ }\NormalTok{RMark::}\KeywordTok{mark.wrapper}\NormalTok{(cml, }\DataTypeTok{data =} \NormalTok{chick.proc, }\DataTypeTok{ddl =} \NormalTok{chick.ddl,}
+                                     \DataTypeTok{threads  =}  \DecValTok{20}\NormalTok{, }\DataTypeTok{brief =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{delete =} \OtherTok{TRUE}\NormalTok{)}
+    
+    \CommentTok{# output the model list and sotre the results}
+    \KeywordTok{return}\NormalTok{(model.list)}
+  \NormalTok{\}}
+  
+  \CommentTok{# Run the models on the bootstrapped data}
+  \NormalTok{chick_survival_run <-}\StringTok{ }\KeywordTok{chick_survival}\NormalTok{()}
+  
+  \CommentTok{# Extract the AIC model table from the model output}
+  \NormalTok{AIC_table_chick <-}\StringTok{ }\NormalTok{chick_survival_run$model.table}
+  
+  \CommentTok{# Find the model number for the first ranked model of the AIC table}
+  \NormalTok{model_chick_num <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(}\KeywordTok{rownames}\NormalTok{(chick_survival_run$model.table[}\DecValTok{1}\NormalTok{,]))}
+  
+  \CommentTok{# extract real parameter estimates from top models}
+  \NormalTok{chick_reals <-}\StringTok{ }\NormalTok{chick_survival_run[[model_chick_num]]$results$real}
+  
+  \CommentTok{# format the output to tidy up the sex- and age-specific effects}
+  \NormalTok{Groups <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\KeywordTok{str_split_fixed}\NormalTok{(}\KeywordTok{rownames}\NormalTok{(chick_reals), }\StringTok{" "}\NormalTok{, }\DataTypeTok{n =} \DecValTok{5}\NormalTok{))}
+  \NormalTok{chick_reals <-}\StringTok{ }\KeywordTok{cbind}\NormalTok{(Groups, chick_reals)}
+  \NormalTok{chick_reals <-}\StringTok{ }\NormalTok{chick_reals[}\KeywordTok{which}\NormalTok{(chick_reals$X1 ==}\StringTok{ "Phi"}\NormalTok{),]}
+  \NormalTok{chick_reals$sex <-}\StringTok{ }\KeywordTok{unlist}\NormalTok{(}\KeywordTok{str_extract_all}\NormalTok{(chick_reals$X2,}\StringTok{"[FM]"}\NormalTok{))}
+  \NormalTok{chick_reals$sex <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(}\KeywordTok{ifelse}\NormalTok{(chick_reals$sex ==}\StringTok{ "F"}\NormalTok{,}\StringTok{"Female"}\NormalTok{,}\StringTok{"Male"}\NormalTok{))}
+  
+  \CommentTok{# transform the daily chick survival (DCS) to apparent hatching success.}
+  \CommentTok{# this can either be done by DCS^25 if there is no age effect:}
+  \NormalTok{if(}\KeywordTok{nrow}\NormalTok{(chick_reals) ==}\StringTok{ }\DecValTok{2}\NormalTok{)}
+  \NormalTok{\{}
+    \NormalTok{plover_Survival_to_Fledge_F <-}\StringTok{ }
+\StringTok{      }\NormalTok{chick_reals[}\KeywordTok{which}\NormalTok{(chick_reals$sex ==}\StringTok{ "Female"}\NormalTok{),}
+                    \KeywordTok{c}\NormalTok{(}\StringTok{"estimate"}\NormalTok{)]^}\DecValTok{25}
+    \NormalTok{plover_Survival_to_Fledge_M <-}\StringTok{ }
+\StringTok{      }\NormalTok{chick_reals[}\KeywordTok{which}\NormalTok{(chick_reals$sex ==}\StringTok{ "Male"}\NormalTok{),}
+                    \KeywordTok{c}\NormalTok{(}\StringTok{"estimate"}\NormalTok{)]^}\DecValTok{25}
+  \NormalTok{\}}
+  \CommentTok{# or by calculating the product of all DCS estimates:}
+  \NormalTok{if(}\KeywordTok{nrow}\NormalTok{(chick_reals) !=}\StringTok{ }\DecValTok{2}\NormalTok{)\{}
+    \NormalTok{plover_Survival_to_Fledge_F <-}\StringTok{ }
+\StringTok{      }\KeywordTok{prod}\NormalTok{(chick_reals[}\KeywordTok{which}\NormalTok{(chick_reals$sex ==}\StringTok{ "Female"}\NormalTok{),}
+                         \KeywordTok{c}\NormalTok{(}\StringTok{"estimate"}\NormalTok{)][}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{:}\DecValTok{26}\NormalTok{)])}
+    \NormalTok{plover_Survival_to_Fledge_M <-}\StringTok{ }
+\StringTok{      }\KeywordTok{prod}\NormalTok{(chick_reals[}\KeywordTok{which}\NormalTok{(chick_reals$sex ==}\StringTok{ "Male"}\NormalTok{),}
+                         \KeywordTok{c}\NormalTok{(}\StringTok{"estimate"}\NormalTok{)][}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{:}\DecValTok{26}\NormalTok{)])}
+  \NormalTok{\}}
+  
+  \CommentTok{# tidy up the output and put it in a dataframe.}
+  \NormalTok{estimate <-}\StringTok{ }\KeywordTok{c}\NormalTok{(plover_Survival_to_Fledge_F, plover_Survival_to_Fledge_M)}
+  \NormalTok{sex <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Female"}\NormalTok{, }\StringTok{"Male"}\NormalTok{)}
+  \NormalTok{age <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Chick"}\NormalTok{, }\StringTok{"Chick"}\NormalTok{)}
+  \NormalTok{sex_age <-}\StringTok{ }\KeywordTok{paste}\NormalTok{(sex, age, }\DataTypeTok{sep =} \StringTok{"_"}\NormalTok{)}
+  \NormalTok{chick_survival_real <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(sex_age, estimate)}
+  
+  \CommentTok{# Bind the fledgling and adult dataframe with the chicks}
+  \NormalTok{survival_rates <-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(fledgling_adult_survival_real, chick_survival_real)}
+
+  \CommentTok{# Create a list of demographic rates from the survival analyses above}
+  \NormalTok{demographic_rates <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{F_Chk_survl =} \NormalTok{survival_rates[}\DecValTok{5}\NormalTok{,}\DecValTok{2}\NormalTok{],}
+                            \DataTypeTok{F_Fdg_survl =} \NormalTok{survival_rates[}\DecValTok{3}\NormalTok{,}\DecValTok{2}\NormalTok{],}
+                            \DataTypeTok{F_Adt_survl =} \NormalTok{survival_rates[}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{],}
+                            \DataTypeTok{M_Chk_survl =} \NormalTok{survival_rates[}\DecValTok{6}\NormalTok{,}\DecValTok{2}\NormalTok{],}
+                            \DataTypeTok{M_Fdg_survl =} \NormalTok{survival_rates[}\DecValTok{4}\NormalTok{,}\DecValTok{2}\NormalTok{],}
+                            \DataTypeTok{M_Adt_survl =} \NormalTok{survival_rates[}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{],}
+                            \CommentTok{# # Define h (harem size, h < 1 is polyandry) and k (clutch size)}
+                            \CommentTok{# h = 1,}
+                            \CommentTok{# k = 3,}
+                            \CommentTok{# Define hatching sex ratio}
+                            \DataTypeTok{HSR =} \NormalTok{HSR,}
+                            \CommentTok{# Define the fecundity of males (RM) and females (RF)}
+                            \DataTypeTok{RF =} \NormalTok{RF,}
+                            \DataTypeTok{RM =} \NormalTok{RM)}
+          
+  \CommentTok{# Build matrix based on rates specified in the list above}
+  \NormalTok{demographic_matrix <-}\StringTok{ }\KeywordTok{plover_matrix}\NormalTok{(demographic_rates, }\DataTypeTok{mating_function =} \OtherTok{FALSE}\NormalTok{)}
+  
+  \CommentTok{# Determine the ASR at the stable stage distribution}
+  \CommentTok{#ASR_SSD <- freq_dep_SSD_ASR(A = demographic_matrix, h = 1, k = 3, HSR = HSR)}
+  \NormalTok{ASR_SSD <-}\StringTok{ }\KeywordTok{freq_dep_SSD_ASR}\NormalTok{(}\DataTypeTok{A =} \NormalTok{demographic_matrix, }\DataTypeTok{mating_function =} \OtherTok{FALSE}\NormalTok{)}
+
+  \CommentTok{# Extract ASR}
+  \NormalTok{ASR_estimate <-}\StringTok{ }\NormalTok{ASR_SSD$ASR}
+  
+  \CommentTok{# make a list of all the results from this iteration}
+  \NormalTok{bootstrap_results_list <-}\StringTok{ }
+\StringTok{    }\KeywordTok{list}\NormalTok{(AIC_table_chick, }
+         \NormalTok{AIC_table_fledgling_adult, }
+         \NormalTok{survival_rates,}
+         \NormalTok{ASR_estimate)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi})}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  Create a function to run the \textbf{bootstrap\_data()} and
+  \textbf{bootstrap\_survival\_ASR()} functions in sequence.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{run_bootstrap_survival_ASR <-}\StringTok{ }\NormalTok{function(num_boot, fledgling_adult, chick)}
+  \NormalTok{\{}
+  \NormalTok{bootstrap_data_list <-}\StringTok{ }\KeywordTok{bootstrap_data}\NormalTok{(fledgling_adult, chick)}
+  \NormalTok{result <-}\StringTok{ }\KeywordTok{bootstrap_survival_ASR}\NormalTok{(bootstrap_data_list, num_boot)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi})}
+\setcounter{enumi}{3}
+\tightlist
+\item
+  Specify the number of iterations to run in the bootstrap (1000 was
+  used in our analysis).
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{niter <-}\StringTok{ }\DecValTok{1000}
+\CommentTok{# to run the bootstrap survival analysis, uncomment to following line (could take multiple days to run)}
+\CommentTok{#survival_ASR_bootstrap_result <- sapply(1:niter, run_bootstrap_survival_ASR, fledgling_adult, chick)}
+
+\CommentTok{# here is the output of the bootstrap}
+\NormalTok{survival_rates_boot <-}\StringTok{ }
+\StringTok{  }\KeywordTok{read.table}\NormalTok{(}\StringTok{"/Users/Luke/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/data/bootstrap_surv_results.txt"}\NormalTok{,}
+             \DataTypeTok{header =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{colClasses =} \KeywordTok{c}\NormalTok{(}\StringTok{"factor"}\NormalTok{, }\StringTok{"numeric"}\NormalTok{,}\StringTok{"factor"}\NormalTok{))}
+
+\NormalTok{ASR_boot <-}\StringTok{ }
+\StringTok{  }\KeywordTok{read.table}\NormalTok{(}\StringTok{"/Users/Luke/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/data/bootstrap_ASR_results.txt"}\NormalTok{, }
+             \DataTypeTok{header =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{colClasses =} \KeywordTok{c}\NormalTok{(}\StringTok{"numeric"}\NormalTok{, }\StringTok{"factor"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi})}
+\setcounter{enumi}{4}
+\tightlist
+\item
+  Extract the sex- and stage-specific survival rates from the output
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{## extract AIC_table_chick}
+\CommentTok{# AIC_table_chick_boot <- }
+\CommentTok{# do.call(rbind, lapply(seq(from = 1, to = niter * 4, by = 4), }
+\CommentTok{#                       function(x) survival_ASR_bootstrap_result[[x]]))}
+\CommentTok{# num_mods <- nrow(AIC_table_chick_boot)/niter}
+\CommentTok{# AIC_table_chick_boot$iter <- rep(1:niter, each = num_mods)}
+
+\NormalTok{## extract AIC_table_fledgling_adult}
+\CommentTok{# AIC_table_fledgling_adult_boot <- }
+\CommentTok{# do.call(rbind, lapply(seq(from = 2, to = niter * 4, by = 4), }
+\CommentTok{#                       function(x) survival_ASR_bootstrap_result[[x]]))}
+\CommentTok{# num_mods <- nrow(AIC_table_fledgling_adult_boot)/niter}
+\CommentTok{# AIC_table_fledgling_adult_boot$iter <- rep(1:niter, each = num_mods)}
+
+\NormalTok{## extract Survival_rates}
+\CommentTok{# survival_rates_boot <- }
+\CommentTok{# do.call(rbind, lapply(seq(from = 3, to = niter * 4, by = 4), }
+\CommentTok{#                       function(x) survival_ASR_bootstrap_result[[x]]))}
+\CommentTok{# survival_rates_boot$iter <- rep(1:niter, each = 6)}
+
+\NormalTok{## extract ASR}
+\CommentTok{# ASR_boot <- }
+\CommentTok{# sapply(seq(from = 4, to = niter * 4, by = 4), }
+\CommentTok{#        function(x) survival_ASR_bootstrap_result[[x]])}
+\CommentTok{# ASR_boot <- data.frame(ASR_boot = unname(ASR_boot), iter = 1:niter)}
+\end{Highlighting}
+\end{Shaded}
+
+\section{Visualizations of bootstrap
+results}\label{visualizations-of-bootstrap-results}
+
+\textbf{\emph{Sex-biases in survial across chicks, fledglings, and
+adults}} We visualized sex-bias in stage-specific survival rates with
+violin plots. These plots are useful for illustrating the spread of the
+bootstrap distribution. We have also added the inter-quartile ranges as
+horizontal bars within the violins. Before plotting, the sex-bias at
+each stage for each bootstrap iteration needs to be calculated. This is
+done with the \textbf{sex\_diff\_surv()} function and specifying the
+output list from the bootstrap above.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sex_diff_survival <-}\StringTok{ }\NormalTok{function(survival_rates_boot) \{}
+  \CommentTok{# make an empty datarame to store the results}
+  \NormalTok{sex_diff_surv_output <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{Adult =} \KeywordTok{numeric}\NormalTok{(niter),}
+                                     \DataTypeTok{Fledgling =} \KeywordTok{numeric}\NormalTok{(niter),}
+                                     \DataTypeTok{Chick =} \KeywordTok{numeric}\NormalTok{(niter))}
+  \CommentTok{# for loop to go through each iteration and calculate the differece between }
+  \CommentTok{# female and male survival rates for each stage.}
+  \NormalTok{for(i in }\DecValTok{1}\NormalTok{:niter)\{}
+    \NormalTok{Adult <-}\StringTok{ }
+\StringTok{      }\NormalTok{survival_rates_boot[}\KeywordTok{which}\NormalTok{(survival_rates_boot$iter ==}\StringTok{ }\NormalTok{i), }\DecValTok{2}\NormalTok{][}\DecValTok{2}\NormalTok{] -}
+\StringTok{      }\NormalTok{survival_rates_boot[}\KeywordTok{which}\NormalTok{(survival_rates_boot$iter ==}\StringTok{ }\NormalTok{i), }\DecValTok{2}\NormalTok{][}\DecValTok{1}\NormalTok{]}
+    \NormalTok{Fledgling <-}\StringTok{ }
+\StringTok{      }\NormalTok{survival_rates_boot[}\KeywordTok{which}\NormalTok{(survival_rates_boot$iter ==}\StringTok{ }\NormalTok{i), }\DecValTok{2}\NormalTok{][}\DecValTok{4}\NormalTok{] -}
+\StringTok{      }\NormalTok{survival_rates_boot[}\KeywordTok{which}\NormalTok{(survival_rates_boot$iter ==}\StringTok{ }\NormalTok{i), }\DecValTok{2}\NormalTok{][}\DecValTok{3}\NormalTok{]}
+    \NormalTok{Chick <-}\StringTok{ }
+\StringTok{      }\NormalTok{survival_rates_boot[}\KeywordTok{which}\NormalTok{(survival_rates_boot$iter ==}\StringTok{ }\NormalTok{i), }\DecValTok{2}\NormalTok{][}\DecValTok{6}\NormalTok{] -}
+\StringTok{      }\NormalTok{survival_rates_boot[}\KeywordTok{which}\NormalTok{(survival_rates_boot$iter ==}\StringTok{ }\NormalTok{i), }\DecValTok{2}\NormalTok{][}\DecValTok{5}\NormalTok{]}
+    
+    \NormalTok{sex_diff_surv_output[i, }\DecValTok{1}\NormalTok{] <-}\StringTok{ }\NormalTok{Adult}
+    \NormalTok{sex_diff_surv_output[i, }\DecValTok{2}\NormalTok{] <-}\StringTok{ }\NormalTok{Fledgling}
+    \NormalTok{sex_diff_surv_output[i, }\DecValTok{3}\NormalTok{] <-}\StringTok{ }\NormalTok{Chick}
+  \NormalTok{\}}
+  \CommentTok{# restructure the output and lable columns}
+  \NormalTok{sex_diff_surv_output <-}\StringTok{ }\NormalTok{reshape2::}\KeywordTok{melt}\NormalTok{(}\DataTypeTok{data =} \NormalTok{sex_diff_surv_output)}
+  \KeywordTok{colnames}\NormalTok{(sex_diff_surv_output) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"stage"}\NormalTok{, }\StringTok{"difference"}\NormalTok{)}
+  \CommentTok{# return the output}
+  \NormalTok{sex_diff_surv_output}
+\NormalTok{\}}
+
+\CommentTok{# run the function on the bootstrap list from above}
+\NormalTok{sex_diff_survival_output <-}\StringTok{ }\KeywordTok{sex_diff_survival}\NormalTok{(survival_rates_boot)}
+\CommentTok{#> No id variables; using all as measure variables}
+
+\CommentTok{# Calculate some summary statistics}
+\NormalTok{sex_diff_survival_summary <-}\StringTok{ }
+\StringTok{    }\NormalTok{sex_diff_survival_output %>%}
+\StringTok{    }\NormalTok{dplyr::}\KeywordTok{group_by}\NormalTok{(stage) %>%}
+\StringTok{    }\NormalTok{dplyr::}\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{avg =} \KeywordTok{mean}\NormalTok{(difference),}
+                     \DataTypeTok{median =} \KeywordTok{median}\NormalTok{(difference),}
+                     \DataTypeTok{var =} \KeywordTok{var}\NormalTok{(difference))}
+
+\CommentTok{# specify custom color palette to distingush first-year stages (i.e. chicks and}
+\CommentTok{# fledglings) from adults}
+\NormalTok{cbPalette <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"#A6A6A6"}\NormalTok{, }\StringTok{"#D9D9D9"}\NormalTok{, }\StringTok{"#D9D9D9"}\NormalTok{)}
+
+\CommentTok{# reorder the levels of the stage factors}
+\NormalTok{sex_diff_survival_output$stage <-}\StringTok{ }
+\StringTok{  }\KeywordTok{factor}\NormalTok{(sex_diff_survival_output$stage, }\DataTypeTok{levels =} \KeywordTok{c}\NormalTok{(}\StringTok{"Adult"}\NormalTok{, }\StringTok{"Fledgling"}\NormalTok{, }\StringTok{"Chick"}\NormalTok{))}
+
+\CommentTok{# plot the sex-biases in survival across the three stages}
+\NormalTok{ggplot2::}\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =} \NormalTok{difference, }\DataTypeTok{x =} \NormalTok{stage, }\DataTypeTok{fill =} \NormalTok{stage), }
+                \DataTypeTok{data =} \NormalTok{sex_diff_survival_output) +}\StringTok{ }
+\StringTok{                }\KeywordTok{coord_flip}\NormalTok{() +}
+\StringTok{                }\KeywordTok{theme_bw}\NormalTok{() +}
+\StringTok{                }\KeywordTok{geom_violin}\NormalTok{(}\DataTypeTok{draw_quantiles =} \KeywordTok{c}\NormalTok{(}\FloatTok{0.25}\NormalTok{, }\FloatTok{0.5}\NormalTok{, }\FloatTok{0.75}\NormalTok{)) +}
+\StringTok{                }\KeywordTok{annotate}\NormalTok{(}\StringTok{"text"}\NormalTok{, }\DataTypeTok{x =} \DecValTok{2}\NormalTok{, }\DataTypeTok{y =} \NormalTok{-}\FloatTok{0.25}\NormalTok{,}
+                         \DataTypeTok{label =} \KeywordTok{c}\NormalTok{(}\StringTok{"female"}\NormalTok{), }\DataTypeTok{size =} \DecValTok{5}\NormalTok{,}
+                         \DataTypeTok{vjust =} \KeywordTok{c}\NormalTok{(}\FloatTok{0.5}\NormalTok{), }\DataTypeTok{hjust =} \KeywordTok{c}\NormalTok{(}\FloatTok{0.5}\NormalTok{), }\DataTypeTok{angle =} \DecValTok{90}\NormalTok{) +}
+\StringTok{                }\KeywordTok{annotate}\NormalTok{(}\StringTok{"text"}\NormalTok{, }\DataTypeTok{x =} \DecValTok{2}\NormalTok{, }\DataTypeTok{y =} \FloatTok{0.25}\NormalTok{,}
+                         \DataTypeTok{label =} \KeywordTok{c}\NormalTok{(}\StringTok{"male"}\NormalTok{), }\DataTypeTok{size =} \DecValTok{5}\NormalTok{,}
+                         \DataTypeTok{vjust =} \KeywordTok{c}\NormalTok{(}\FloatTok{0.5}\NormalTok{), }\DataTypeTok{hjust =} \KeywordTok{c}\NormalTok{(}\FloatTok{0.5}\NormalTok{), }\DataTypeTok{angle =} \DecValTok{270}\NormalTok{) +}
+\StringTok{                }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position =} \StringTok{"none"}\NormalTok{,}
+                      \DataTypeTok{panel.background =} \KeywordTok{element_rect}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"transparent"}\NormalTok{,}\DataTypeTok{colour =} \OtherTok{NA}\NormalTok{),}
+                      \DataTypeTok{plot.background =} \KeywordTok{element_rect}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"transparent"}\NormalTok{,}\DataTypeTok{colour =} \OtherTok{NA}\NormalTok{),}
+                      \DataTypeTok{axis.title.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size=}\DecValTok{12}\NormalTok{, }\DataTypeTok{margin =} \KeywordTok{margin}\NormalTok{(}\DecValTok{10}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{)),}
+                      \DataTypeTok{axis.text.x  =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size=}\DecValTok{10}\NormalTok{, }\DataTypeTok{margin =} \KeywordTok{margin}\NormalTok{(}\DecValTok{5}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{)), }
+                      \DataTypeTok{axis.title.y =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size=}\DecValTok{12}\NormalTok{, }\DataTypeTok{margin =} \KeywordTok{margin}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{)),}
+                      \DataTypeTok{axis.text.y  =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size=}\DecValTok{10}\NormalTok{, }\DataTypeTok{angle =} \DecValTok{90}\NormalTok{, }\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{, }
+                                                  \DataTypeTok{margin =} \KeywordTok{margin}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{)),}
+                      \DataTypeTok{panel.grid.major =} \KeywordTok{element_blank}\NormalTok{(),}
+                      \DataTypeTok{panel.grid.minor =} \KeywordTok{element_blank}\NormalTok{(),}
+                      \DataTypeTok{axis.ticks.y =} \KeywordTok{element_line}\NormalTok{(}\DataTypeTok{size =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{colour =} \StringTok{"grey40"}\NormalTok{),}
+                      \DataTypeTok{axis.ticks.length =} \KeywordTok{unit}\NormalTok{(}\FloatTok{0.2}\NormalTok{, }\StringTok{"cm"}\NormalTok{),}
+                      \DataTypeTok{axis.ticks.x =} \KeywordTok{element_line}\NormalTok{(}\DataTypeTok{size =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{colour =} \StringTok{"grey40"}\NormalTok{),}
+                      \DataTypeTok{panel.border =} \KeywordTok{element_rect}\NormalTok{(}\DataTypeTok{linetype =} \StringTok{"solid"}\NormalTok{, }\DataTypeTok{colour =} \StringTok{"grey"}\NormalTok{),}
+                      \DataTypeTok{plot.margin =} \KeywordTok{unit}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\FloatTok{0.5}\NormalTok{,}\FloatTok{0.5}\NormalTok{,}\FloatTok{0.5}\NormalTok{), }\StringTok{"cm"}\NormalTok{),}
+                      \DataTypeTok{panel.margin =} \KeywordTok{unit}\NormalTok{(}\FloatTok{0.75}\NormalTok{, }\StringTok{"lines"}\NormalTok{),}
+                      \DataTypeTok{strip.background =} \KeywordTok{element_blank}\NormalTok{(), }
+                      \DataTypeTok{strip.text =} \KeywordTok{element_blank}\NormalTok{()) +}
+\StringTok{                }\KeywordTok{scale_fill_manual}\NormalTok{(}\DataTypeTok{values =} \NormalTok{cbPalette) +}
+\StringTok{                }\KeywordTok{scale_y_continuous}\NormalTok{(}\DataTypeTok{limits=}\KeywordTok{c}\NormalTok{(-}\FloatTok{0.25}\NormalTok{, }\FloatTok{0.25}\NormalTok{)) +}
+\StringTok{                }\KeywordTok{xlab}\NormalTok{(}\StringTok{"Life-stage"}\NormalTok{) +}\StringTok{ }
+\StringTok{                }\KeywordTok{ylab}\NormalTok{(}\StringTok{"Sex-bias in apparent survival"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Ceuta_ASR_Matrix_Modeling_files/figure-latex/unnamed-chunk-29-1} \end{center}
+
+\textbf{\emph{Adult sex ratio distribution}}
+
+We visualized the bootstrapped results of adult sex ratio with a
+histogram. The horizontal black bar above the distribution illustrates
+the 95\% confidence interval of the 1000 iterations.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# specify the confidence interval bounds}
+\NormalTok{CI <-}\StringTok{ }\FloatTok{0.95}
+
+\CommentTok{# Calculate the confidence interval, mean, and median of the ASR bootstraps}
+\NormalTok{ASR_boot_95CI <-}\StringTok{ }\NormalTok{stats::}\KeywordTok{quantile}\NormalTok{(ASR_boot$ASR, }\KeywordTok{c}\NormalTok{((}\DecValTok{1} \NormalTok{-}\StringTok{ }\NormalTok{CI)/}\DecValTok{2}\NormalTok{, }\DecValTok{1} \NormalTok{-}\StringTok{ }\NormalTok{(}\DecValTok{1} \NormalTok{-}\StringTok{ }\NormalTok{CI)/}\DecValTok{2}\NormalTok{), }\DataTypeTok{na.rm =} \OtherTok{TRUE}\NormalTok{)}
+\NormalTok{ASR_boot_mean <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(ASR_boot$ASR)}
+\NormalTok{ASR_boot_median <-}\StringTok{ }\KeywordTok{median}\NormalTok{(ASR_boot$ASR)}
+
+\CommentTok{# consolidate the results}
+\NormalTok{ASR_boot_summary <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(}\KeywordTok{cbind}\NormalTok{(ASR_boot_95CI[}\DecValTok{1}\NormalTok{], ASR_boot_95CI[}\DecValTok{2}\NormalTok{], }
+                                        \NormalTok{ASR_boot_mean, ASR_boot_median))}
+\KeywordTok{rownames}\NormalTok{(ASR_boot_summary) <-}\StringTok{ }\OtherTok{NULL}
+\KeywordTok{colnames}\NormalTok{(ASR_boot_summary) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"lcl"}\NormalTok{, }\StringTok{"ucl"}\NormalTok{, }\StringTok{"mean"}\NormalTok{, }\StringTok{"median"}\NormalTok{)}
+
+\CommentTok{# plot the ASR histogram}
+\KeywordTok{ggplot}\NormalTok{() +}
+\StringTok{  }\KeywordTok{annotate}\NormalTok{(}\StringTok{"rect"}\NormalTok{, }\DataTypeTok{xmin=}\NormalTok{-}\OtherTok{Inf}\NormalTok{, }\DataTypeTok{xmax=}\FloatTok{0.5}\NormalTok{, }\DataTypeTok{ymin=}\NormalTok{-}\OtherTok{Inf}\NormalTok{, }\DataTypeTok{ymax=}\OtherTok{Inf}\NormalTok{, }\DataTypeTok{alpha=}\FloatTok{0.6}\NormalTok{,}
+           \DataTypeTok{fill=}\KeywordTok{brewer.pal}\NormalTok{(}\DecValTok{8}\NormalTok{, }\StringTok{"Dark2"}\NormalTok{)[}\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{)]) +}
+\StringTok{  }\KeywordTok{annotate}\NormalTok{(}\StringTok{"rect"}\NormalTok{, }\DataTypeTok{xmin=}\FloatTok{0.5}\NormalTok{, }\DataTypeTok{xmax=}\OtherTok{Inf}\NormalTok{, }\DataTypeTok{ymin=}\NormalTok{-}\OtherTok{Inf}\NormalTok{, }\DataTypeTok{ymax=}\OtherTok{Inf}\NormalTok{, }\DataTypeTok{alpha=}\FloatTok{0.6}\NormalTok{,}
+           \DataTypeTok{fill=}\KeywordTok{brewer.pal}\NormalTok{(}\DecValTok{8}\NormalTok{, }\StringTok{"Dark2"}\NormalTok{)[}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{)]) +}
+\StringTok{  }\KeywordTok{annotate}\NormalTok{(}\StringTok{"text"}\NormalTok{, }\DataTypeTok{x =} \KeywordTok{c}\NormalTok{(-}\OtherTok{Inf}\NormalTok{,}\OtherTok{Inf}\NormalTok{), }\DataTypeTok{y =} \KeywordTok{c}\NormalTok{(}\DecValTok{95}\NormalTok{, }\DecValTok{95}\NormalTok{),}
+           \DataTypeTok{label =} \KeywordTok{c}\NormalTok{(}\StringTok{"female"}\NormalTok{, }\StringTok{"male"}\NormalTok{), }\DataTypeTok{size =} \DecValTok{5}\NormalTok{,}
+           \DataTypeTok{vjust =} \KeywordTok{c}\NormalTok{(}\FloatTok{1.5}\NormalTok{,}\FloatTok{1.5}\NormalTok{), }\DataTypeTok{hjust =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{), }\DataTypeTok{angle =} \KeywordTok{c}\NormalTok{(}\DecValTok{90}\NormalTok{, }\DecValTok{270}\NormalTok{)) +}
+\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{binwidth =} \FloatTok{0.02}\NormalTok{, }\DataTypeTok{data =} \NormalTok{ASR_boot, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =} \NormalTok{ASR)) +}
+\StringTok{  }\KeywordTok{geom_errorbarh}\NormalTok{(}\DataTypeTok{data =} \NormalTok{ASR_boot_summary, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =} \DecValTok{155}\NormalTok{, }\DataTypeTok{x =} \NormalTok{lcl, }\DataTypeTok{xmin =} \NormalTok{lcl, }\DataTypeTok{xmax =} \NormalTok{ucl), }
+                 \DataTypeTok{color =} \StringTok{"black"}\NormalTok{, }\DataTypeTok{size =} \FloatTok{0.8}\NormalTok{, }\DataTypeTok{linetype =} \StringTok{"solid"}\NormalTok{) +}
+\StringTok{  }\KeywordTok{theme_bw}\NormalTok{() +}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position=}\StringTok{"none"}\NormalTok{,}
+        \DataTypeTok{legend.position =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{), }
+        \DataTypeTok{legend.justification =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{),}
+        \DataTypeTok{legend.text=}\KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size=}\DecValTok{11}\NormalTok{),}
+        \DataTypeTok{legend.title=}\KeywordTok{element_blank}\NormalTok{(),}
+        \DataTypeTok{legend.key.height=}\KeywordTok{unit}\NormalTok{(}\FloatTok{0.8}\NormalTok{,}\StringTok{"line"}\NormalTok{),}
+        \DataTypeTok{legend.key.width=}\KeywordTok{unit}\NormalTok{(}\FloatTok{0.8}\NormalTok{,}\StringTok{"line"}\NormalTok{),}
+        \DataTypeTok{legend.background =} \KeywordTok{element_rect}\NormalTok{(}\DataTypeTok{fill=}\OtherTok{NA}\NormalTok{),}
+        \DataTypeTok{axis.title.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size=}\DecValTok{12}\NormalTok{, }\DataTypeTok{margin =} \KeywordTok{margin}\NormalTok{(}\DecValTok{10}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{)),}
+        \DataTypeTok{axis.text.x  =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size=}\DecValTok{10}\NormalTok{, }\DataTypeTok{margin =} \KeywordTok{margin}\NormalTok{(}\DecValTok{5}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{)), }
+        \DataTypeTok{axis.title.y =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size=}\DecValTok{12}\NormalTok{, }\DataTypeTok{margin =} \KeywordTok{margin}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{)),}
+        \DataTypeTok{axis.text.y  =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size=}\DecValTok{10}\NormalTok{, }\DataTypeTok{angle =} \DecValTok{90}\NormalTok{, }\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{, }
+                                    \DataTypeTok{margin =} \KeywordTok{margin}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{), }\DataTypeTok{color =} \StringTok{"white"}\NormalTok{),}
+        \DataTypeTok{axis.ticks.y =} \KeywordTok{element_line}\NormalTok{(}\DataTypeTok{size =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{colour =} \StringTok{"white"}\NormalTok{),}
+        \DataTypeTok{axis.ticks.x =} \KeywordTok{element_line}\NormalTok{(}\DataTypeTok{size =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{colour =} \StringTok{"grey40"}\NormalTok{),}
+        \DataTypeTok{axis.ticks.length =} \KeywordTok{unit}\NormalTok{(}\FloatTok{0.2}\NormalTok{, }\StringTok{"cm"}\NormalTok{),}
+        \DataTypeTok{panel.grid.major =} \KeywordTok{element_blank}\NormalTok{(),}
+        \DataTypeTok{panel.grid.minor =} \KeywordTok{element_blank}\NormalTok{(),}
+        \DataTypeTok{panel.border =} \KeywordTok{element_rect}\NormalTok{(}\DataTypeTok{linetype =} \StringTok{"solid"}\NormalTok{, }\DataTypeTok{colour =} \StringTok{"grey"}\NormalTok{),}
+        \DataTypeTok{plot.margin =} \KeywordTok{unit}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\FloatTok{0.5}\NormalTok{,}\FloatTok{0.5}\NormalTok{,}\FloatTok{0.5}\NormalTok{), }\StringTok{"cm"}\NormalTok{),}
+        \DataTypeTok{strip.background =} \KeywordTok{element_blank}\NormalTok{(), }
+        \DataTypeTok{strip.text =} \KeywordTok{element_blank}\NormalTok{(),}
+        \DataTypeTok{panel.margin =} \KeywordTok{unit}\NormalTok{(}\FloatTok{0.75}\NormalTok{, }\StringTok{"lines"}\NormalTok{)) +}
+\StringTok{  }\KeywordTok{ylab}\NormalTok{(}\StringTok{"Frequency"}\NormalTok{) +}
+\StringTok{  }\KeywordTok{xlab}\NormalTok{(}\StringTok{"Adult sex ratio (proportion male)"}\NormalTok{) +}
+\StringTok{  }\KeywordTok{scale_x_continuous}\NormalTok{(}\DataTypeTok{limits =} \KeywordTok{c}\NormalTok{(}\FloatTok{0.0}\NormalTok{, }\DecValTok{1}\NormalTok{)) +}
+\StringTok{  }\KeywordTok{scale_y_continuous}\NormalTok{(}\DataTypeTok{limits =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{160}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Ceuta_ASR_Matrix_Modeling_files/figure-latex/unnamed-chunk-30-1} \end{center}
+
+\subsection{Life table response
+experiment}\label{life-table-response-experiment}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ASR_analysis <-}\StringTok{ }
+\StringTok{  }\NormalTok{function (A, }\DataTypeTok{zero =} \OtherTok{TRUE}\NormalTok{) }
+    \NormalTok{\{}
+  \NormalTok{ev <-}\StringTok{ }\KeywordTok{eigen}\NormalTok{(A) }\CommentTok{# makes list of the eigen values and eigen vectors of A}
+  \NormalTok{lmax <-}\StringTok{ }\KeywordTok{which.max}\NormalTok{(}\KeywordTok{Re}\NormalTok{(ev$values)) }\CommentTok{# index of dominant eigen value}
+  \NormalTok{W <-}\StringTok{ }\NormalTok{ev$vectors }\CommentTok{# Eigen vectors}
+  \NormalTok{w <-}\StringTok{ }\KeywordTok{abs}\NormalTok{(}\KeywordTok{Re}\NormalTok{(W[, lmax])) }\CommentTok{# dominant eigen vector}
+  \NormalTok{stable.stage =}\StringTok{ }\NormalTok{w /}\StringTok{ }\KeywordTok{sum}\NormalTok{(w) }\CommentTok{# stable stage distribution}
+  \NormalTok{ASR <-}\StringTok{ }\NormalTok{stable.stage[}\DecValTok{4}\NormalTok{] /}\StringTok{ }\NormalTok{(stable.stage[}\DecValTok{2}\NormalTok{] +}\StringTok{ }\NormalTok{stable.stage[}\DecValTok{4}\NormalTok{]) }\CommentTok{# SSD ASR}
+  \NormalTok{V <-}\StringTok{ }\KeywordTok{try}\NormalTok{(}\KeywordTok{Conj}\NormalTok{(}\KeywordTok{solve}\NormalTok{(W)), }\DataTypeTok{silent =} \OtherTok{TRUE}\NormalTok{) }\CommentTok{# check if possible to proceed}
+  \NormalTok{if (}\KeywordTok{class}\NormalTok{(V) ==}\StringTok{ "try-error"}\NormalTok{) \{}
+    \NormalTok{ASR.analysis <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{ASR =} \NormalTok{ASR, }\DataTypeTok{stable.stage =} \NormalTok{stable.stage, }
+                         \DataTypeTok{sensitivities =} \NormalTok{A *}\StringTok{ }\OtherTok{NA}\NormalTok{, }\DataTypeTok{elasticities =} \NormalTok{A *}\StringTok{ }\OtherTok{NA}\NormalTok{)}
+  \NormalTok{\}}
+  \NormalTok{else \{}
+    \NormalTok{v <-}\StringTok{ }\KeywordTok{abs}\NormalTok{(}\KeywordTok{Re}\NormalTok{(V[lmax, ])) }\CommentTok{# solve matrix}
+    \NormalTok{s <-}\StringTok{ }\NormalTok{v %o%}\StringTok{ }\NormalTok{w }\CommentTok{# outer product of v and w}
+    \NormalTok{if (zero) \{}
+      \NormalTok{s[A ==}\StringTok{ }\DecValTok{0}\NormalTok{] <-}\StringTok{ }\DecValTok{0}
+    \NormalTok{\}}
+    \NormalTok{e <-}\StringTok{ }\NormalTok{s *}\StringTok{ }\NormalTok{A/ASR }\CommentTok{# calculate elasticities}
+    \NormalTok{x <-}\StringTok{ }\KeywordTok{dimnames}\NormalTok{(A) }\CommentTok{# get vital rate names}
+    \KeywordTok{dimnames}\NormalTok{(s) <-}\StringTok{ }\NormalTok{x }\CommentTok{# assign vital rate names to s}
+    \KeywordTok{names}\NormalTok{(w) <-}\StringTok{ }\NormalTok{x[[}\DecValTok{1}\NormalTok{]]}
+    \KeywordTok{names}\NormalTok{(v) <-}\StringTok{ }\NormalTok{x[[}\DecValTok{1}\NormalTok{]]}
+    \NormalTok{ASR.analysis <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{ASR =} \NormalTok{ASR, }\DataTypeTok{stable.stage =} \NormalTok{stable.stage, }
+                         \DataTypeTok{sensitivities =} \NormalTok{s, }\DataTypeTok{elasticities =} \NormalTok{e)}
+  \NormalTok{\}}
+  \NormalTok{ASR.analysis}
+\NormalTok{\}}
+
+\NormalTok{lower_level_sens_analysis <-}\StringTok{ }
+\StringTok{  }\NormalTok{function(freq_dep_ASR, VR_list, }\DataTypeTok{mating_function =} \OtherTok{TRUE}\NormalTok{)}
+  \NormalTok{\{}
+    \NormalTok{if(mating_function)}
+    \NormalTok{\{}
+      \CommentTok{# make a list of all parameters}
+      \NormalTok{vr <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}
+        \DataTypeTok{F_Chk_survl =} \NormalTok{VR_list$F_Chk_survl,}
+        \DataTypeTok{F_Fdg_survl =} \NormalTok{VR_list$F_Fdg_survl,}
+        \DataTypeTok{F_Adt_survl =} \NormalTok{VR_list$F_Adt_survl,}
+        \DataTypeTok{M_Chk_survl =} \NormalTok{VR_list$M_Chk_survl,}
+        \DataTypeTok{M_Fdg_survl =} \NormalTok{VR_list$M_Fdg_survl,}
+        \DataTypeTok{M_Adt_survl =} \NormalTok{VR_list$M_Adt_survl,}
+        \DataTypeTok{h =} \NormalTok{VR_list$h,}
+        \DataTypeTok{k =} \NormalTok{VR_list$k,}
+        \DataTypeTok{HSR =} \NormalTok{VR_list$HSR,}
+        \DataTypeTok{M2 =} \KeywordTok{unname}\NormalTok{(freq_dep_ASR$SSD_M2),}
+        \DataTypeTok{F2 =} \KeywordTok{unname}\NormalTok{(freq_dep_ASR$SSD_F2))}
+      \CommentTok{# make a matrix of the elements}
+      \NormalTok{el <-}\StringTok{ }\KeywordTok{expression}\NormalTok{(}\DecValTok{0}\NormalTok{, ((k *}\StringTok{ }\NormalTok{M2) /}\StringTok{ }\NormalTok{(M2 +}\StringTok{ }\NormalTok{(F2 /}\StringTok{ }\NormalTok{h))) *}\StringTok{ }\NormalTok{(}\DecValTok{1} \NormalTok{-}\StringTok{ }\NormalTok{HSR), }
+                       \DecValTok{0}\NormalTok{, ((k *}\StringTok{ }\NormalTok{F2) /}\StringTok{ }\NormalTok{(M2 +}\StringTok{ }\NormalTok{(F2 /}\StringTok{ }\NormalTok{h))) *}\StringTok{ }\NormalTok{(}\DecValTok{1} \NormalTok{-}\StringTok{ }\NormalTok{HSR),}
+                       \NormalTok{(F_Chk_survl *}\StringTok{ }\NormalTok{F_Fdg_survl), F_Adt_survl, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{,}
+                       \DecValTok{0}\NormalTok{, ((k *}\StringTok{ }\NormalTok{M2) /}\StringTok{ }\NormalTok{(M2 +}\StringTok{ }\NormalTok{(F2 /}\StringTok{ }\NormalTok{h))) *}\StringTok{ }\NormalTok{HSR, }\DecValTok{0}\NormalTok{, }
+                       \NormalTok{((k *}\StringTok{ }\NormalTok{F2) /}\StringTok{ }\NormalTok{(M2 +}\StringTok{ }\NormalTok{(F2 /}\StringTok{ }\NormalTok{h))) *}\StringTok{ }\NormalTok{HSR,}
+                       \DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, (M_Chk_survl *}\StringTok{ }\NormalTok{M_Fdg_survl), M_Adt_survl)}
+      \CommentTok{# calculate the effect of proportional changes in vital rates}
+      \NormalTok{n <-}\StringTok{ }\KeywordTok{length}\NormalTok{(vr)}
+      \NormalTok{vr_nums <-}\StringTok{ }\KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{2}\NormalTok{, }\FloatTok{0.01}\NormalTok{) }\CommentTok{# proportional changes in increments of 0.01 between 0 and 2}
+      \CommentTok{# First calculate sensitivites}
+      \NormalTok{vrsen <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\KeywordTok{numeric}\NormalTok{(n *}\StringTok{ }\KeywordTok{length}\NormalTok{(vr_nums)), }
+                      \DataTypeTok{ncol =} \NormalTok{n, }\DataTypeTok{dimnames =} \KeywordTok{list}\NormalTok{(vr_nums, }\KeywordTok{names}\NormalTok{(vr)))}
+      \NormalTok{for (h in }\DecValTok{1}\NormalTok{:n)}
+      \NormalTok{\{}
+        \NormalTok{vr2 <-}\StringTok{ }\NormalTok{vr}
+        \NormalTok{for (i in }\DecValTok{1}\NormalTok{:}\KeywordTok{length}\NormalTok{(vr_nums))}
+        \NormalTok{\{}
+          \NormalTok{vr2[[h]] <-}\StringTok{ }\NormalTok{vr_nums[i]}
+          \NormalTok{A <-}\StringTok{ }
+\StringTok{            }\KeywordTok{matrix}\NormalTok{(}\KeywordTok{sapply}\NormalTok{(el, eval, vr2, }\OtherTok{NULL}\NormalTok{), }\DataTypeTok{nrow =} \KeywordTok{sqrt}\NormalTok{(}\KeywordTok{length}\NormalTok{(el)), }\DataTypeTok{byrow=}\OtherTok{TRUE}\NormalTok{)}
+          \NormalTok{vrsen[i, h] <-}\StringTok{ }
+\StringTok{            }\KeywordTok{eigen}\NormalTok{(A)$vectors[}\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{] /}\StringTok{ }\NormalTok{(}\KeywordTok{eigen}\NormalTok{(A)$vectors[}\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{] +}\StringTok{ }\KeywordTok{eigen}\NormalTok{(A)$vectors[}\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{])}
+        \NormalTok{\}}
+      \NormalTok{\}}
+      \CommentTok{# Next calculate rescaled elasticities}
+      \NormalTok{vrelas <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\KeywordTok{numeric}\NormalTok{(n *}\StringTok{ }\KeywordTok{length}\NormalTok{(vr_nums)), }
+                       \DataTypeTok{ncol =} \NormalTok{n, }\DataTypeTok{dimnames =} \KeywordTok{list}\NormalTok{(vr_nums, }\KeywordTok{names}\NormalTok{(vr)))}
+      \NormalTok{for (h in }\DecValTok{1}\NormalTok{:n)}
+      \NormalTok{\{}
+        \NormalTok{for (i in }\DecValTok{1}\NormalTok{:}\KeywordTok{length}\NormalTok{(vr_nums))}
+        \NormalTok{\{}
+          \NormalTok{vr2 <-}\StringTok{ }\NormalTok{vr}
+          \NormalTok{vr2[[h]] <-}\StringTok{ }\NormalTok{vr_nums[i] *}\StringTok{ }\NormalTok{vr2[[h]]}
+          \NormalTok{A <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\KeywordTok{sapply}\NormalTok{(el, eval, vr2 , }\OtherTok{NULL}\NormalTok{), }\DataTypeTok{nrow =} \KeywordTok{sqrt}\NormalTok{(}\KeywordTok{length}\NormalTok{(el)), }\DataTypeTok{byrow =} \OtherTok{TRUE}\NormalTok{)}
+          \NormalTok{vrelas[i, h] <-}\StringTok{ }
+\StringTok{            }\NormalTok{(}\KeywordTok{eigen}\NormalTok{(A)$vectors[}\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{] /}\StringTok{ }
+\StringTok{               }\NormalTok{(}\KeywordTok{eigen}\NormalTok{(A)$vectors[}\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{] +}\StringTok{ }\KeywordTok{eigen}\NormalTok{(A)$vectors[}\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{])) /}\StringTok{ }
+\StringTok{            }\KeywordTok{unname}\NormalTok{(freq_dep_ASR$ASR)}
+        \NormalTok{\}}
+      \NormalTok{\}}
+      \CommentTok{# tidy up and label results}
+      \KeywordTok{colnames}\NormalTok{(vrsen) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Female chick survival"}\NormalTok{, }
+                           \StringTok{"Female fledgling survival"}\NormalTok{, }
+                           \StringTok{"Female adult survival"}\NormalTok{, }
+                           \StringTok{"Male chick survival"}\NormalTok{, }
+                           \StringTok{"Male fledgling survival"}\NormalTok{, }
+                           \StringTok{"Male adult survival"}\NormalTok{,}
+                           \StringTok{"Mating system index (h)"}\NormalTok{, }
+                           \StringTok{"Clutch size"}\NormalTok{,}
+                           \StringTok{"Hatching sex ratio"}\NormalTok{,}
+                           \StringTok{"Breeding males"}\NormalTok{,}
+                           \StringTok{"Breeding females"}\NormalTok{)}
+      \KeywordTok{colnames}\NormalTok{(vrelas) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Female chick survival"}\NormalTok{, }
+                            \StringTok{"Female fledgling survival"}\NormalTok{, }
+                            \StringTok{"Female adult survival"}\NormalTok{, }
+                            \StringTok{"Male chick survival"}\NormalTok{, }
+                            \StringTok{"Male fledgling survival"}\NormalTok{, }
+                            \StringTok{"Male adult survival"}\NormalTok{,}
+                            \StringTok{"Mating system (h)"}\NormalTok{, }
+                            \StringTok{"Clutch size"}\NormalTok{,}
+                            \StringTok{"Hatching sex ratio"}\NormalTok{,}
+                            \StringTok{"Breeding males"}\NormalTok{,}
+                            \StringTok{"Breeding females"}\NormalTok{)}
+    \NormalTok{\}}
+    \NormalTok{else}
+    \NormalTok{\{}
+      \CommentTok{# make a list of all parameters}
+      \NormalTok{vr <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}
+        \DataTypeTok{F_Chk_survl =} \NormalTok{VR_list$F_Chk_survl,}
+        \DataTypeTok{F_Fdg_survl =} \NormalTok{VR_list$F_Fdg_survl,}
+        \DataTypeTok{F_Adt_survl =} \NormalTok{VR_list$F_Adt_survl,}
+        \DataTypeTok{M_Chk_survl =} \NormalTok{VR_list$M_Chk_survl,}
+        \DataTypeTok{M_Fdg_survl =} \NormalTok{VR_list$M_Fdg_survl,}
+        \DataTypeTok{M_Adt_survl =} \NormalTok{VR_list$M_Adt_survl,}
+        \DataTypeTok{RF =} \NormalTok{VR_list$RF,}
+        \DataTypeTok{RM =} \NormalTok{VR_list$RM,}
+        \DataTypeTok{HSR =} \NormalTok{VR_list$HSR)}
+      \CommentTok{# make a matrix of the elements}
+      \NormalTok{el <-}\StringTok{ }\KeywordTok{expression}\NormalTok{(}\DecValTok{0}\NormalTok{, RF *}\StringTok{ }\NormalTok{(}\DecValTok{1} \NormalTok{-}\StringTok{ }\NormalTok{HSR), }
+                       \DecValTok{0}\NormalTok{, RM *}\StringTok{ }\NormalTok{(}\DecValTok{1} \NormalTok{-}\StringTok{ }\NormalTok{HSR),}
+                       \NormalTok{(F_Chk_survl *}\StringTok{ }\NormalTok{F_Fdg_survl), F_Adt_survl, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{,}
+                       \DecValTok{0}\NormalTok{, RF *}\StringTok{ }\NormalTok{HSR,}
+                       \DecValTok{0}\NormalTok{, RM *}\StringTok{ }\NormalTok{HSR,}
+                       \DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, (M_Chk_survl *}\StringTok{ }\NormalTok{M_Fdg_survl), M_Adt_survl)}
+      \CommentTok{# calculate the effect of proportional changes in vital rates}
+      \NormalTok{n <-}\StringTok{ }\KeywordTok{length}\NormalTok{(vr)}
+      \NormalTok{vr_nums <-}\StringTok{ }\KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{2}\NormalTok{, }\FloatTok{0.01}\NormalTok{) }\CommentTok{# proportional changes in increments of 0.01 between 0 and 2}
+      \CommentTok{# First calculate sensitivites}
+      \NormalTok{vrsen <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\KeywordTok{numeric}\NormalTok{(n *}\StringTok{ }\KeywordTok{length}\NormalTok{(vr_nums)), }
+                      \DataTypeTok{ncol =} \NormalTok{n, }\DataTypeTok{dimnames =} \KeywordTok{list}\NormalTok{(vr_nums, }\KeywordTok{names}\NormalTok{(vr)))}
+      \NormalTok{for (h in }\DecValTok{1}\NormalTok{:n)}
+      \NormalTok{\{}
+        \NormalTok{vr2 <-}\StringTok{ }\NormalTok{vr}
+        \NormalTok{for (i in }\DecValTok{1}\NormalTok{:}\KeywordTok{length}\NormalTok{(vr_nums))}
+        \NormalTok{\{}
+          \NormalTok{vr2[[h]] <-}\StringTok{ }\NormalTok{vr_nums[i]}
+          \NormalTok{A <-}\StringTok{ }
+\StringTok{            }\KeywordTok{matrix}\NormalTok{(}\KeywordTok{sapply}\NormalTok{(el, eval, vr2, }\OtherTok{NULL}\NormalTok{), }\DataTypeTok{nrow =} \KeywordTok{sqrt}\NormalTok{(}\KeywordTok{length}\NormalTok{(el)), }\DataTypeTok{byrow=}\OtherTok{TRUE}\NormalTok{)}
+          \NormalTok{vrsen[i, h] <-}\StringTok{ }
+\StringTok{            }\KeywordTok{eigen}\NormalTok{(A)$vectors[}\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{] /}\StringTok{ }\NormalTok{(}\KeywordTok{eigen}\NormalTok{(A)$vectors[}\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{] +}\StringTok{ }\KeywordTok{eigen}\NormalTok{(A)$vectors[}\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{])}
+        \NormalTok{\}}
+      \NormalTok{\}}
+      \CommentTok{# Next calculate rescaled elasticities}
+      \NormalTok{vrelas <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\KeywordTok{numeric}\NormalTok{(n *}\StringTok{ }\KeywordTok{length}\NormalTok{(vr_nums)), }
+                       \DataTypeTok{ncol =} \NormalTok{n, }\DataTypeTok{dimnames =} \KeywordTok{list}\NormalTok{(vr_nums, }\KeywordTok{names}\NormalTok{(vr)))}
+      \NormalTok{for (h in }\DecValTok{1}\NormalTok{:n)}
+      \NormalTok{\{}
+        \NormalTok{for (i in }\DecValTok{1}\NormalTok{:}\KeywordTok{length}\NormalTok{(vr_nums))}
+        \NormalTok{\{}
+          \NormalTok{vr2 <-}\StringTok{ }\NormalTok{vr}
+          \NormalTok{vr2[[h]] <-}\StringTok{ }\NormalTok{vr_nums[i] *}\StringTok{ }\NormalTok{vr2[[h]]}
+          \NormalTok{A <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\KeywordTok{sapply}\NormalTok{(el, eval, vr2 , }\OtherTok{NULL}\NormalTok{), }\DataTypeTok{nrow =} \KeywordTok{sqrt}\NormalTok{(}\KeywordTok{length}\NormalTok{(el)), }\DataTypeTok{byrow =} \OtherTok{TRUE}\NormalTok{)}
+          \NormalTok{vrelas[i, h] <-}\StringTok{ }
+\StringTok{            }\NormalTok{(}\KeywordTok{eigen}\NormalTok{(A)$vectors[}\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{] /}\StringTok{ }
+\StringTok{               }\NormalTok{(}\KeywordTok{eigen}\NormalTok{(A)$vectors[}\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{] +}\StringTok{ }\KeywordTok{eigen}\NormalTok{(A)$vectors[}\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{])) /}\StringTok{ }
+\StringTok{            }\KeywordTok{unname}\NormalTok{(freq_dep_ASR$ASR)}
+        \NormalTok{\}}
+      \NormalTok{\}}
+      \CommentTok{# tidy up and label results}
+      \KeywordTok{colnames}\NormalTok{(vrsen) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Female chick survival"}\NormalTok{, }
+                           \StringTok{"Female fledgling survival"}\NormalTok{, }
+                           \StringTok{"Female adult survival"}\NormalTok{, }
+                           \StringTok{"Male chick survival"}\NormalTok{, }
+                           \StringTok{"Male fledgling survival"}\NormalTok{, }
+                           \StringTok{"Male adult survival"}\NormalTok{,}
+                           \StringTok{"Female Fecundity"}\NormalTok{,}
+                           \StringTok{"Male Fecundity"}\NormalTok{,}
+                           \StringTok{"Hatching sex ratio"}\NormalTok{)}
+      \KeywordTok{colnames}\NormalTok{(vrelas) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Female chick survival"}\NormalTok{, }
+                            \StringTok{"Female fledgling survival"}\NormalTok{, }
+                            \StringTok{"Female adult survival"}\NormalTok{, }
+                            \StringTok{"Male chick survival"}\NormalTok{, }
+                            \StringTok{"Male fledgling survival"}\NormalTok{, }
+                            \StringTok{"Male adult survival"}\NormalTok{,}
+                            \StringTok{"Female Fecundity"}\NormalTok{,}
+                            \StringTok{"Male Fecundity"}\NormalTok{,}
+                            \StringTok{"Hatching sex ratio"}\NormalTok{)}
+    \NormalTok{\}}
+    \NormalTok{Sensitivities <-}\StringTok{ }\KeywordTok{melt}\NormalTok{(vrsen)}
+    \KeywordTok{colnames}\NormalTok{(Sensitivities) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Perturbation"}\NormalTok{, }\StringTok{"Vitalrate"}\NormalTok{, }\StringTok{"Sensitivity"}\NormalTok{)}
+    \NormalTok{Elasticities <-}\StringTok{ }\KeywordTok{melt}\NormalTok{(vrelas)}
+    \KeywordTok{colnames}\NormalTok{(Elasticities) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Perturbation"}\NormalTok{, }\StringTok{"Vitalrate"}\NormalTok{, }\StringTok{"Elasticity"}\NormalTok{)}
+    \NormalTok{results <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{Sensitivities =} \NormalTok{Sensitivities,}
+                    \DataTypeTok{Elasticities =} \NormalTok{Elasticities,}
+                    \DataTypeTok{Element_expression =} \NormalTok{el)}
+    \NormalTok{results}
+  \NormalTok{\}}
+
+\CommentTok{# LTRE analysis of ASR}
+\NormalTok{vitalsens_ASR <-}\StringTok{ }
+\StringTok{  }\NormalTok{function (elements, VR_list, freq_dep_ASR, }\DataTypeTok{mating_function =} \OtherTok{TRUE}\NormalTok{) }
+  \NormalTok{\{}
+    \NormalTok{if(mating_function)}
+    \NormalTok{\{}
+      \CommentTok{# list of parameters in the treatment matrix}
+      \CommentTok{# this contains the observed paramters based on previous analyses}
+      \NormalTok{treatment_matrix <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}
+        \DataTypeTok{F_Chk_survl =} \NormalTok{VR_list$F_Chk_survl,}
+        \DataTypeTok{F_Fdg_survl =} \NormalTok{VR_list$F_Fdg_survl,}
+        \DataTypeTok{F_Adt_survl =} \NormalTok{VR_list$F_Adt_survl,}
+        \DataTypeTok{M_Chk_survl =} \NormalTok{VR_list$M_Chk_survl,}
+        \DataTypeTok{M_Fdg_survl =} \NormalTok{VR_list$M_Fdg_survl,}
+        \DataTypeTok{M_Adt_survl =} \NormalTok{VR_list$M_Adt_survl,}
+        \DataTypeTok{h =} \NormalTok{VR_list$h,}
+        \DataTypeTok{k =} \NormalTok{VR_list$k,}
+        \DataTypeTok{HSR =} \NormalTok{VR_list$HSR,}
+        \DataTypeTok{M2 =} \KeywordTok{unname}\NormalTok{(freq_dep_ASR$SSD_M2),}
+        \DataTypeTok{F2 =} \KeywordTok{unname}\NormalTok{(freq_dep_ASR$SSD_F2))}
+      \CommentTok{# list of parameters in the control matrix}
+      \CommentTok{# this contains parameters with no sex-differences}
+      \NormalTok{control_matrix <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}
+        \DataTypeTok{F_Chk_survl =} \NormalTok{VR_list$M_Chk_survl,}
+        \DataTypeTok{F_Fdg_survl =} \NormalTok{VR_list$M_Fdg_survl,}
+        \DataTypeTok{F_Adt_survl =} \NormalTok{VR_list$M_Adt_survl,}
+        \DataTypeTok{M_Chk_survl =} \NormalTok{VR_list$M_Chk_survl,}
+        \DataTypeTok{M_Fdg_survl =} \NormalTok{VR_list$M_Fdg_survl,}
+        \DataTypeTok{M_Adt_survl =} \NormalTok{VR_list$M_Adt_survl,}
+        \DataTypeTok{h =} \NormalTok{VR_list$h,}
+        \DataTypeTok{k =} \NormalTok{VR_list$k,}
+        \DataTypeTok{HSR =} \FloatTok{0.5}\NormalTok{,}
+        \DataTypeTok{M2 =} \KeywordTok{unname}\NormalTok{(freq_dep_ASR$SSD_M2),}
+        \DataTypeTok{F2 =} \KeywordTok{unname}\NormalTok{(freq_dep_ASR$SSD_F2))}
+      \CommentTok{# check if everything is correctly structured before proceeding}
+      \NormalTok{if (}\KeywordTok{is.vector}\NormalTok{(treatment_matrix)) \{}
+        \NormalTok{treatment_matrix <-}\StringTok{ }\KeywordTok{as.list}\NormalTok{(treatment_matrix)}
+      \NormalTok{\}}
+      \NormalTok{if (!}\KeywordTok{is.list}\NormalTok{(treatment_matrix)) \{}
+        \KeywordTok{stop}\NormalTok{(}\StringTok{"Vital rates should be a vector or list"}\NormalTok{)}
+      \NormalTok{\}}
+      \NormalTok{if (}\KeywordTok{class}\NormalTok{(elements) !=}\StringTok{ "expression"}\NormalTok{) \{}
+        \KeywordTok{stop}\NormalTok{(}\StringTok{"Matrix elements should be an expression"}\NormalTok{)}
+      \NormalTok{\}}
+      \NormalTok{if (}\KeywordTok{is.vector}\NormalTok{(control_matrix)) \{}
+        \NormalTok{control_matrix <-}\StringTok{ }\KeywordTok{as.list}\NormalTok{(control_matrix)}
+      \NormalTok{\}}
+      \NormalTok{if (!}\KeywordTok{is.list}\NormalTok{(control_matrix)) \{}
+        \KeywordTok{stop}\NormalTok{(}\StringTok{"Vital rates should be a vector or list"}\NormalTok{)}
+      \NormalTok{\}}
+      \CommentTok{# find the number of stage and sex specific parameters}
+      \NormalTok{n <-}\StringTok{ }\KeywordTok{sqrt}\NormalTok{(}\KeywordTok{length}\NormalTok{(elements))}
+      \NormalTok{if (n%%}\DecValTok{1} \NormalTok{!=}\StringTok{ }\DecValTok{0}\NormalTok{) \{}
+        \KeywordTok{stop}\NormalTok{(}\KeywordTok{paste}\NormalTok{(}\StringTok{"Length of element expression is"}\NormalTok{, }\KeywordTok{length}\NormalTok{(elements), }
+                   \StringTok{"- Expecting power of 2 like 4, 9, 16 to form a square matrix"}\NormalTok{))}
+      \NormalTok{\}}
+      \CommentTok{# add the mating function parameters to the matrices}
+      \NormalTok{vrs <-}\StringTok{ }\KeywordTok{try}\NormalTok{(}\KeywordTok{sapply}\NormalTok{(elements, eval, treatment_matrix, }\OtherTok{NULL}\NormalTok{), }\DataTypeTok{silent =} \OtherTok{TRUE}\NormalTok{)}
+      \NormalTok{vrs_LTRE <-}\StringTok{ }\KeywordTok{try}\NormalTok{(}\KeywordTok{sapply}\NormalTok{(elements, eval, control_matrix, }\OtherTok{NULL}\NormalTok{), }\DataTypeTok{silent =} \OtherTok{TRUE}\NormalTok{)}
+      \NormalTok{if (}\KeywordTok{class}\NormalTok{(vrs) ==}\StringTok{ "try-error"}\NormalTok{) \{}
+        \NormalTok{vrs <-}\StringTok{ }\KeywordTok{sub}\NormalTok{(}\StringTok{"Error in eval}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{(expr, envir, enclos}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{) :"}\NormalTok{,}
+                   \StringTok{""}\NormalTok{, vrs[}\DecValTok{1}\NormalTok{])}
+        \KeywordTok{stop}\NormalTok{(}\KeywordTok{paste}\NormalTok{(}\StringTok{"Cannot evaluate element expression using given vital rates:"}\NormalTok{,}
+                   \NormalTok{vrs))}
+      \NormalTok{\}}
+      \NormalTok{if (}\KeywordTok{class}\NormalTok{(vrs_LTRE) ==}\StringTok{ "try-error"}\NormalTok{) \{}
+        \NormalTok{vrs_LTRE <-}\StringTok{ }\KeywordTok{sub}\NormalTok{(}\StringTok{"Error in eval}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{(expr, envir, enclos}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{) :"}\NormalTok{,}
+                        \StringTok{""}\NormalTok{, vrs_LTRE[}\DecValTok{1}\NormalTok{])}
+        \KeywordTok{stop}\NormalTok{(}\KeywordTok{paste}\NormalTok{(}\StringTok{"Cannot evaluate element expression using given vital rates:"}\NormalTok{,}
+                   \NormalTok{vrs_LTRE))}
+      \NormalTok{\}}
+      \CommentTok{# make an empty dataframe where all the perturbation stats will go}
+      \NormalTok{res <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{estimate =} \KeywordTok{unlist}\NormalTok{(treatment_matrix), }\DataTypeTok{sensitivity =} \DecValTok{0}\NormalTok{, }
+                        \DataTypeTok{elasticity =} \DecValTok{0}\NormalTok{, }\DataTypeTok{LTRE =} \DecValTok{0}\NormalTok{)}
+      \CommentTok{# build the treatment matrix}
+      \NormalTok{A <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(vrs, }\DataTypeTok{nrow =} \NormalTok{n, }\DataTypeTok{byrow =} \OtherTok{TRUE}\NormalTok{)}
+      \CommentTok{# build the control matrix}
+      \NormalTok{A_LTRE <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(vrs_LTRE, }\DataTypeTok{nrow =} \NormalTok{n, }\DataTypeTok{byrow =} \OtherTok{TRUE}\NormalTok{)}
+      \CommentTok{# transform the matrix to M-prime (see formula in manuscript)}
+      \NormalTok{Ac <-}\StringTok{ }\NormalTok{(A +}\StringTok{ }\NormalTok{A_LTRE) /}\StringTok{ }\DecValTok{2}
+      \CommentTok{# run sensitivity analyses on both matrices}
+      \NormalTok{SAc <-}\StringTok{ }\KeywordTok{ASR_analysis}\NormalTok{(Ac)}
+      \NormalTok{ASR <-}\StringTok{ }\KeywordTok{ASR_analysis}\NormalTok{(A)}
+      \CommentTok{# calculate derivatives of lower-level matrix elements}
+      \NormalTok{deriv.funcs <-}\StringTok{ }\KeywordTok{sapply}\NormalTok{(elements, deriv, }\DataTypeTok{namevec =} \KeywordTok{names}\NormalTok{(treatment_matrix), }
+                            \DataTypeTok{function.arg =} \OtherTok{TRUE}\NormalTok{)}
+      \NormalTok{devs <-}\StringTok{ }\KeywordTok{lapply}\NormalTok{(deriv.funcs, function(x) }\KeywordTok{do.call}\NormalTok{(x, treatment_matrix))}
+      \CommentTok{# run for loop to go through each parameter and estimate elasticity,}
+      \CommentTok{# sensitivity, and LTRE}
+      \NormalTok{for (i in }\DecValTok{1}\NormalTok{:}\KeywordTok{length}\NormalTok{(treatment_matrix)) \{}
+        \NormalTok{derivs <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\KeywordTok{as.numeric}\NormalTok{(}\KeywordTok{lapply}\NormalTok{(devs, function(x) }\KeywordTok{attr}\NormalTok{(x, }\StringTok{"gradient"}\NormalTok{)[i])), }
+                         \DataTypeTok{nrow =} \NormalTok{n, }\DataTypeTok{byrow =} \OtherTok{TRUE}\NormalTok{)}
+        \NormalTok{res[i, }\DecValTok{2}\NormalTok{] <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(derivs *}\StringTok{ }\NormalTok{ASR$sensitivities)}
+        \NormalTok{res[i, }\DecValTok{3}\NormalTok{] <-}\StringTok{ }\NormalTok{treatment_matrix[[i]] /}\StringTok{ }\NormalTok{ASR$ASR *}\StringTok{ }\KeywordTok{sum}\NormalTok{(derivs *}\StringTok{ }\NormalTok{ASR$sensitivities)}
+        \CommentTok{# only do LTRE calculations on survival parameters RELATIVE to one sex}
+        \CommentTok{# i.e., don't calculate LTRE on mating system components}
+        \NormalTok{res[i, }\DecValTok{4}\NormalTok{] <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(i >}\StringTok{ }\DecValTok{3} \NormalTok{&}\StringTok{ }\NormalTok{i <}\StringTok{ }\DecValTok{6}\NormalTok{, }\OtherTok{NA}\NormalTok{,}
+                            \KeywordTok{ifelse}\NormalTok{(i <}\StringTok{ }\DecValTok{4}\NormalTok{, (treatment_matrix[[i +}\StringTok{ }\DecValTok{3}\NormalTok{]] -}\StringTok{ }\NormalTok{treatment_matrix[[i]]) *}\StringTok{ }
+\StringTok{                                     }\KeywordTok{sum}\NormalTok{(derivs *}\StringTok{ }\NormalTok{SAc$sensitivities),}
+                                   \KeywordTok{ifelse}\NormalTok{(i ==}\StringTok{ }\DecValTok{9}\NormalTok{, (control_matrix[[i]] -}\StringTok{ }\NormalTok{treatment_matrix[[i]]) *}\StringTok{ }
+\StringTok{                                            }\KeywordTok{sum}\NormalTok{(derivs *}\StringTok{ }\NormalTok{SAc$sensitivities),}
+                                          \OtherTok{NA}\NormalTok{)))}
+      \NormalTok{\}}
+      \CommentTok{# consolidate results}
+      \NormalTok{y <-}\StringTok{ }\NormalTok{res}
+      \NormalTok{y$Vital_rate <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(}\KeywordTok{rownames}\NormalTok{(y))}
+      \KeywordTok{colnames}\NormalTok{(y) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Estimate"}\NormalTok{, }\StringTok{"Sensitivity"}\NormalTok{, }\StringTok{"Elasticity"}\NormalTok{, }\StringTok{"LTRE"}\NormalTok{, }\StringTok{"Vital_rate"}\NormalTok{)}
+      \NormalTok{y_melt <-}\StringTok{ }\KeywordTok{suppressMessages}\NormalTok{(}\KeywordTok{melt}\NormalTok{(y[,}\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{:}\DecValTok{5}\NormalTok{)]))}
+      \NormalTok{y_melt$parameter <-}\StringTok{ }
+\StringTok{        }\KeywordTok{as.factor}\NormalTok{(}\KeywordTok{ifelse}\NormalTok{(}\KeywordTok{str_detect}\NormalTok{(y_melt$Vital_rate,}\StringTok{"Chk"}\NormalTok{), }\StringTok{"Chick survival"}\NormalTok{,}
+                    \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{str_detect}\NormalTok{(y_melt$Vital_rate,}\StringTok{"Fdg"}\NormalTok{), }\StringTok{"Fledgling survival"}\NormalTok{,}
+                      \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{str_detect}\NormalTok{(y_melt$Vital_rate,}\StringTok{"Adt"}\NormalTok{), }\StringTok{"Adult survival"}\NormalTok{,}
+                        \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{str_detect}\NormalTok{(y_melt$Vital_rate,}\StringTok{"HSR"}\NormalTok{), }\StringTok{"Hatching sex ratio"}\NormalTok{, }
+                          \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{str_detect}\NormalTok{(y_melt$Vital_rate,}\StringTok{"h"}\NormalTok{), }\StringTok{"Mating System"}\NormalTok{,}
+                            \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{str_detect}\NormalTok{(y_melt$Vital_rate,}\StringTok{"k"}\NormalTok{), }\StringTok{"Clutch size"}\NormalTok{, }
+                                                            \StringTok{"No. breeding adults"}\NormalTok{)))))))}
+      \NormalTok{y_melt$parameter <-}\StringTok{ }\KeywordTok{factor}\NormalTok{(y_melt$parameter, }\DataTypeTok{levels =} \KeywordTok{c}\NormalTok{(}\StringTok{"Adult survival"}\NormalTok{,}
+                                                              \StringTok{"Fledgling survival"}\NormalTok{,}
+                                                              \StringTok{"Chick survival"}\NormalTok{,}
+                                                              \StringTok{" "}\NormalTok{,}
+                                                              \StringTok{"No. breeding adults"}\NormalTok{,}
+                                                              \StringTok{"Mating System"}\NormalTok{,}
+                                                              \StringTok{"Clutch size"}\NormalTok{,}
+                                                              \StringTok{"Hatching sex ratio"}\NormalTok{))}
+    \NormalTok{\}}
+    \NormalTok{else}
+    \NormalTok{\{}
+      \CommentTok{# list of parameters in the treatment matrix}
+      \CommentTok{# this contains the observed paramters based on previous analyses}
+      \NormalTok{treatment_matrix <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}
+        \DataTypeTok{F_Chk_survl =} \NormalTok{VR_list$F_Chk_survl,}
+        \DataTypeTok{F_Fdg_survl =} \NormalTok{VR_list$F_Fdg_survl,}
+        \DataTypeTok{F_Adt_survl =} \NormalTok{VR_list$F_Adt_survl,}
+        \DataTypeTok{M_Chk_survl =} \NormalTok{VR_list$M_Chk_survl,}
+        \DataTypeTok{M_Fdg_survl =} \NormalTok{VR_list$M_Fdg_survl,}
+        \DataTypeTok{M_Adt_survl =} \NormalTok{VR_list$M_Adt_survl,}
+        \DataTypeTok{RF =} \NormalTok{VR_list$RF,}
+        \DataTypeTok{RM =} \NormalTok{VR_list$RM,}
+        \DataTypeTok{HSR =} \NormalTok{VR_list$HSR)}
+      \CommentTok{# list of parameters in the control matrix}
+      \CommentTok{# this contains parameters with no sex-differences}
+      \NormalTok{control_matrix <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}
+        \DataTypeTok{F_Chk_survl =} \NormalTok{VR_list$M_Chk_survl,}
+        \DataTypeTok{F_Fdg_survl =} \NormalTok{VR_list$M_Fdg_survl,}
+        \DataTypeTok{F_Adt_survl =} \NormalTok{VR_list$M_Adt_survl,}
+        \DataTypeTok{M_Chk_survl =} \NormalTok{VR_list$M_Chk_survl,}
+        \DataTypeTok{M_Fdg_survl =} \NormalTok{VR_list$M_Fdg_survl,}
+        \DataTypeTok{M_Adt_survl =} \NormalTok{VR_list$M_Adt_survl,}
+        \DataTypeTok{RF =} \NormalTok{VR_list$RF,}
+        \DataTypeTok{RM =} \NormalTok{VR_list$RM,}
+        \DataTypeTok{HSR =} \NormalTok{VR_list$HSR)}
+      \CommentTok{# check if everything is correctly structured before proceeding}
+      \NormalTok{if (}\KeywordTok{is.vector}\NormalTok{(treatment_matrix)) \{}
+        \NormalTok{treatment_matrix <-}\StringTok{ }\KeywordTok{as.list}\NormalTok{(treatment_matrix)}
+      \NormalTok{\}}
+      \NormalTok{if (!}\KeywordTok{is.list}\NormalTok{(treatment_matrix)) \{}
+        \KeywordTok{stop}\NormalTok{(}\StringTok{"Vital rates should be a vector or list"}\NormalTok{)}
+      \NormalTok{\}}
+      \NormalTok{if (}\KeywordTok{class}\NormalTok{(elements) !=}\StringTok{ "expression"}\NormalTok{) \{}
+        \KeywordTok{stop}\NormalTok{(}\StringTok{"Matrix elements should be an expression"}\NormalTok{)}
+      \NormalTok{\}}
+      \NormalTok{if (}\KeywordTok{is.vector}\NormalTok{(control_matrix)) \{}
+        \NormalTok{control_matrix <-}\StringTok{ }\KeywordTok{as.list}\NormalTok{(control_matrix)}
+      \NormalTok{\}}
+      \NormalTok{if (!}\KeywordTok{is.list}\NormalTok{(control_matrix)) \{}
+        \KeywordTok{stop}\NormalTok{(}\StringTok{"Vital rates should be a vector or list"}\NormalTok{)}
+      \NormalTok{\}}
+      \CommentTok{# find the number of stage and sex specific parameters}
+      \NormalTok{n <-}\StringTok{ }\KeywordTok{sqrt}\NormalTok{(}\KeywordTok{length}\NormalTok{(elements))}
+      \NormalTok{if (n%%}\DecValTok{1} \NormalTok{!=}\StringTok{ }\DecValTok{0}\NormalTok{) \{}
+        \KeywordTok{stop}\NormalTok{(}\KeywordTok{paste}\NormalTok{(}\StringTok{"Length of element expression is"}\NormalTok{, }\KeywordTok{length}\NormalTok{(elements), }
+                   \StringTok{"- Expecting power of 2 like 4, 9, 16 to form a square matrix"}\NormalTok{))}
+      \NormalTok{\}}
+      \CommentTok{# add the mating function parameters to the matrices}
+      \NormalTok{vrs <-}\StringTok{ }\KeywordTok{try}\NormalTok{(}\KeywordTok{sapply}\NormalTok{(elements, eval, treatment_matrix, }\OtherTok{NULL}\NormalTok{), }\DataTypeTok{silent =} \OtherTok{TRUE}\NormalTok{)}
+      \NormalTok{vrs_LTRE <-}\StringTok{ }\KeywordTok{try}\NormalTok{(}\KeywordTok{sapply}\NormalTok{(elements, eval, control_matrix, }\OtherTok{NULL}\NormalTok{), }\DataTypeTok{silent =} \OtherTok{TRUE}\NormalTok{)}
+      \NormalTok{if (}\KeywordTok{class}\NormalTok{(vrs) ==}\StringTok{ "try-error"}\NormalTok{) \{}
+        \NormalTok{vrs <-}\StringTok{ }\KeywordTok{sub}\NormalTok{(}\StringTok{"Error in eval}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{(expr, envir, enclos}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{) :"}\NormalTok{,}
+                   \StringTok{""}\NormalTok{, vrs[}\DecValTok{1}\NormalTok{])}
+        \KeywordTok{stop}\NormalTok{(}\KeywordTok{paste}\NormalTok{(}\StringTok{"Cannot evaluate element expression using given vital rates:"}\NormalTok{,}
+                   \NormalTok{vrs))}
+      \NormalTok{\}}
+      \NormalTok{if (}\KeywordTok{class}\NormalTok{(vrs_LTRE) ==}\StringTok{ "try-error"}\NormalTok{) \{}
+        \NormalTok{vrs_LTRE <-}\StringTok{ }\KeywordTok{sub}\NormalTok{(}\StringTok{"Error in eval}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{(expr, envir, enclos}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{) :"}\NormalTok{,}
+                        \StringTok{""}\NormalTok{, vrs_LTRE[}\DecValTok{1}\NormalTok{])}
+        \KeywordTok{stop}\NormalTok{(}\KeywordTok{paste}\NormalTok{(}\StringTok{"Cannot evaluate element expression using given vital rates:"}\NormalTok{,}
+                   \NormalTok{vrs_LTRE))}
+      \NormalTok{\}}
+      \CommentTok{# make an empty dataframe where all the perturbation stats will go}
+      \NormalTok{res <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{estimate =} \KeywordTok{unlist}\NormalTok{(treatment_matrix), }\DataTypeTok{sensitivity =} \DecValTok{0}\NormalTok{, }
+                        \DataTypeTok{elasticity =} \DecValTok{0}\NormalTok{, }\DataTypeTok{LTRE =} \DecValTok{0}\NormalTok{)}
+      \CommentTok{# build the treatment matrix}
+      \NormalTok{A <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(vrs, }\DataTypeTok{nrow =} \NormalTok{n, }\DataTypeTok{byrow =} \OtherTok{TRUE}\NormalTok{)}
+      \CommentTok{# build the control matrix}
+      \NormalTok{A_LTRE <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(vrs_LTRE, }\DataTypeTok{nrow =} \NormalTok{n, }\DataTypeTok{byrow =} \OtherTok{TRUE}\NormalTok{)}
+      \CommentTok{# transform the matrix to M-prime (see formula in manuscript)}
+      \NormalTok{Ac <-}\StringTok{ }\NormalTok{(A +}\StringTok{ }\NormalTok{A_LTRE) /}\StringTok{ }\DecValTok{2}
+      \CommentTok{# run sensitivity analyses on both matrices}
+      \NormalTok{SAc <-}\StringTok{ }\KeywordTok{ASR_analysis}\NormalTok{(Ac)}
+      \NormalTok{ASR <-}\StringTok{ }\KeywordTok{ASR_analysis}\NormalTok{(A)}
+      \CommentTok{# calculate derivatives of lower-level matrix elements}
+      \NormalTok{deriv.funcs <-}\StringTok{ }\KeywordTok{sapply}\NormalTok{(elements, deriv, }\DataTypeTok{namevec =} \KeywordTok{names}\NormalTok{(treatment_matrix), }
+                            \DataTypeTok{function.arg =} \OtherTok{TRUE}\NormalTok{)}
+      \NormalTok{devs <-}\StringTok{ }\KeywordTok{lapply}\NormalTok{(deriv.funcs, function(x) }\KeywordTok{do.call}\NormalTok{(x, treatment_matrix))}
+      \CommentTok{# run for loop to go through each parameter and estimate elasticity,}
+      \CommentTok{# sensitivity, and LTRE}
+      \NormalTok{for (i in }\DecValTok{1}\NormalTok{:}\KeywordTok{length}\NormalTok{(treatment_matrix)) \{}
+        \NormalTok{derivs <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\KeywordTok{as.numeric}\NormalTok{(}\KeywordTok{lapply}\NormalTok{(devs, function(x) }\KeywordTok{attr}\NormalTok{(x, }\StringTok{"gradient"}\NormalTok{)[i])), }
+                         \DataTypeTok{nrow =} \NormalTok{n, }\DataTypeTok{byrow =} \OtherTok{TRUE}\NormalTok{)}
+        \NormalTok{res[i, }\DecValTok{2}\NormalTok{] <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(derivs *}\StringTok{ }\NormalTok{ASR$sensitivities)}
+        \NormalTok{res[i, }\DecValTok{3}\NormalTok{] <-}\StringTok{ }\NormalTok{treatment_matrix[[i]] /}\StringTok{ }\NormalTok{ASR$ASR *}\StringTok{ }\KeywordTok{sum}\NormalTok{(derivs *}\StringTok{ }\NormalTok{ASR$sensitivities)}
+        \CommentTok{# only do LTRE calculations on survival parameters RELATIVE to one sex}
+        \CommentTok{# i.e., don't calculate LTRE on mating system components}
+        \NormalTok{res[i, }\DecValTok{4}\NormalTok{] <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(i >}\StringTok{ }\DecValTok{3} \NormalTok{&}\StringTok{ }\NormalTok{i <}\StringTok{ }\DecValTok{6}\NormalTok{, }\OtherTok{NA}\NormalTok{,}
+                            \KeywordTok{ifelse}\NormalTok{(i <}\StringTok{ }\DecValTok{4}\NormalTok{, (treatment_matrix[[i +}\StringTok{ }\DecValTok{3}\NormalTok{]] -}\StringTok{ }\NormalTok{treatment_matrix[[i]]) *}\StringTok{ }
+\StringTok{                                     }\KeywordTok{sum}\NormalTok{(derivs *}\StringTok{ }\NormalTok{SAc$sensitivities),}
+                                   \KeywordTok{ifelse}\NormalTok{(i ==}\StringTok{ }\DecValTok{9}\NormalTok{, (control_matrix[[i]] -}\StringTok{ }\NormalTok{treatment_matrix[[i]]) *}\StringTok{ }
+\StringTok{                                            }\KeywordTok{sum}\NormalTok{(derivs *}\StringTok{ }\NormalTok{SAc$sensitivities),}
+                                          \OtherTok{NA}\NormalTok{)))}
+      \NormalTok{\}}
+      \CommentTok{# consolidate results}
+      \NormalTok{y <-}\StringTok{ }\NormalTok{res}
+      \NormalTok{y$Vital_rate <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(}\KeywordTok{rownames}\NormalTok{(y))}
+      \KeywordTok{colnames}\NormalTok{(y) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Estimate"}\NormalTok{, }\StringTok{"Sensitivity"}\NormalTok{, }\StringTok{"Elasticity"}\NormalTok{, }\StringTok{"LTRE"}\NormalTok{, }\StringTok{"Vital_rate"}\NormalTok{)}
+      \NormalTok{y_melt <-}\StringTok{ }\KeywordTok{suppressMessages}\NormalTok{(}\KeywordTok{melt}\NormalTok{(y[,}\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{:}\DecValTok{5}\NormalTok{)]))}
+      \NormalTok{y_melt$parameter <-}\StringTok{ }
+\StringTok{        }\KeywordTok{as.factor}\NormalTok{(}\KeywordTok{ifelse}\NormalTok{(}\KeywordTok{str_detect}\NormalTok{(y_melt$Vital_rate,}\StringTok{"Chk"}\NormalTok{), }\StringTok{"Chick survival"}\NormalTok{,}
+                    \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{str_detect}\NormalTok{(y_melt$Vital_rate,}\StringTok{"Fdg"}\NormalTok{), }\StringTok{"Fledgling survival"}\NormalTok{,}
+                      \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{str_detect}\NormalTok{(y_melt$Vital_rate,}\StringTok{"Adt"}\NormalTok{), }\StringTok{"Adult survival"}\NormalTok{,}
+                        \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{str_detect}\NormalTok{(y_melt$Vital_rate,}\StringTok{"HSR"}\NormalTok{), }\StringTok{"Hatching sex ratio"}\NormalTok{,}
+                          \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{str_detect}\NormalTok{(y_melt$Vital_rate,}\StringTok{"RF"}\NormalTok{), }\StringTok{"Female Fecundity"}\NormalTok{, }
+                                 \StringTok{"Male Fecundity"}\NormalTok{))))))}
+      \NormalTok{y_melt$parameter <-}\StringTok{ }\KeywordTok{factor}\NormalTok{(y_melt$parameter, }\DataTypeTok{levels =} \KeywordTok{c}\NormalTok{(}\StringTok{"Adult survival"}\NormalTok{,}
+                                                              \StringTok{"Fledgling survival"}\NormalTok{,}
+                                                              \StringTok{"Chick survival"}\NormalTok{,}
+                                                              \StringTok{"Female Fecundity"}\NormalTok{,}
+                                                              \StringTok{"Male Fecundity"}\NormalTok{,}
+                                                              \StringTok{"Hatching sex ratio"}\NormalTok{))}
+    \NormalTok{\}}
+    \NormalTok{y_melt$Sex <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(}\KeywordTok{ifelse}\NormalTok{(}\KeywordTok{str_detect}\NormalTok{(y_melt$Vital_rate,}\StringTok{"F_"}\NormalTok{) &}\StringTok{ }
+\StringTok{                                     }\NormalTok{y_melt$variable !=}\StringTok{ "LTRE"}\NormalTok{, }\StringTok{"Female"}\NormalTok{, }
+                                   \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{str_detect}\NormalTok{(y_melt$Vital_rate,}\StringTok{"M_"}\NormalTok{) &}\StringTok{ }
+\StringTok{                                            }\NormalTok{y_melt$variable !=}\StringTok{ "LTRE"}\NormalTok{,}\StringTok{"Male"}\NormalTok{, }\StringTok{"Other"}\NormalTok{)))}
+    \NormalTok{y_melt$Sex <-}\StringTok{ }
+\StringTok{      }\KeywordTok{factor}\NormalTok{(y_melt$Sex,}
+             \DataTypeTok{levels =} \KeywordTok{c}\NormalTok{(}\StringTok{"Female"}\NormalTok{,}\StringTok{"Male"}\NormalTok{, }\StringTok{"Other"}\NormalTok{))}
+    \NormalTok{y_melt$value_trans <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(y_melt$Sex ==}\StringTok{ "Female"}\NormalTok{, }
+                                 \KeywordTok{abs}\NormalTok{(y_melt$value)*-}\DecValTok{1}\NormalTok{, y_melt$value)}
+    \NormalTok{y_melt <-}\StringTok{ }\NormalTok{y_melt[,-}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{)]}
+    \NormalTok{results <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{Sensitivity =} \KeywordTok{subset}\NormalTok{(y_melt, (variable ==}\StringTok{ "Sensitivity"}\NormalTok{)),}
+                    \DataTypeTok{Elasticity =} \KeywordTok{subset}\NormalTok{(y_melt, (variable ==}\StringTok{ "Elasticity"}\NormalTok{)),}
+                    \DataTypeTok{LTRE =} \KeywordTok{subset}\NormalTok{(y_melt, (variable ==}\StringTok{ "LTRE"} \NormalTok{&}\StringTok{ }\NormalTok{!}\KeywordTok{is.na}\NormalTok{(value))))}
+    \NormalTok{results$LTRE$parameter <-}\StringTok{ }
+\StringTok{      }\KeywordTok{factor}\NormalTok{(results$LTRE$parameter,}
+             \DataTypeTok{levels =} \KeywordTok{c}\NormalTok{(}\StringTok{"Adult survival"}\NormalTok{,}
+                        \StringTok{"Fledgling survival"}\NormalTok{,}
+                        \StringTok{"Chick survival"}\NormalTok{,}
+                        \StringTok{"Hatching sex ratio"}\NormalTok{))}
+    \KeywordTok{row.names}\NormalTok{(results$Sensitivity) <-}\StringTok{ }\OtherTok{NULL}
+    \KeywordTok{row.names}\NormalTok{(results$Elasticity) <-}\StringTok{ }\OtherTok{NULL}
+    \KeywordTok{row.names}\NormalTok{(results$LTRE) <-}\StringTok{ }\OtherTok{NULL}
+    \NormalTok{results$Sensitivity$value_trans <-}\StringTok{ }
+\StringTok{      }\KeywordTok{as.numeric}\NormalTok{(results$Sensitivity$value_trans)}
+    \NormalTok{results$Elasticity$value_trans <-}\StringTok{ }
+\StringTok{      }\KeywordTok{as.numeric}\NormalTok{(results$Elasticity$value_trans)}
+    \NormalTok{results$LTRE$value_trans <-}\StringTok{ }
+\StringTok{      }\KeywordTok{as.numeric}\NormalTok{(results$LTRE$value_trans)}
+    \NormalTok{results}
+  \NormalTok{\}}
+
+\CommentTok{# Define the iterations variable as a factor}
+\NormalTok{survival_rates_boot$iter <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(survival_rates_boot$iter)}
+
+\CommentTok{# Summarise the bootstrap stage- and sex-specific survival rates for the}
+\CommentTok{# deterministic matrix}
+\NormalTok{survival_rates_boot_summary <-}\StringTok{ }
+\StringTok{  }\NormalTok{survival_rates_boot %>%}
+\StringTok{  }\NormalTok{dplyr::}\KeywordTok{group_by}\NormalTok{(sex_age) %>%}
+\StringTok{  }\NormalTok{dplyr::}\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{Avg =} \KeywordTok{mean}\NormalTok{(estimate))}
+
+\NormalTok{survival_rates_boot_summary <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(survival_rates_boot_summary)}
+
+\CommentTok{# Define Ceuta vital rates estimated from mark-recapture analysis:}
+\NormalTok{deterministic_list <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{F_Chk_survl =} \NormalTok{survival_rates_boot_summary[}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{],}
+                           \DataTypeTok{F_Fdg_survl =} \NormalTok{survival_rates_boot_summary[}\DecValTok{3}\NormalTok{,}\DecValTok{2}\NormalTok{],}
+                           \DataTypeTok{F_Adt_survl =} \NormalTok{survival_rates_boot_summary[}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{],}
+                           \DataTypeTok{M_Chk_survl =} \NormalTok{survival_rates_boot_summary[}\DecValTok{5}\NormalTok{,}\DecValTok{2}\NormalTok{],}
+                           \DataTypeTok{M_Fdg_survl =} \NormalTok{survival_rates_boot_summary[}\DecValTok{6}\NormalTok{,}\DecValTok{2}\NormalTok{],}
+                           \DataTypeTok{M_Adt_survl =} \NormalTok{survival_rates_boot_summary[}\DecValTok{4}\NormalTok{,}\DecValTok{2}\NormalTok{],}
+\CommentTok{# # Define h (harem size, h = 1 is monogamy) and k (clutch size)}
+\CommentTok{#                            h = 1,}
+\CommentTok{#                            k = 3,}
+\CommentTok{# Define primary sex ratio (assumed to be 0.5)}
+                           \DataTypeTok{HSR =} \NormalTok{HSR,}
+                           \CommentTok{# Define the fecundity of males (RM) and females (RF)}
+                           \DataTypeTok{RF =} \NormalTok{RF,}
+                           \DataTypeTok{RM =} \NormalTok{RM)}
+
+\CommentTok{# Ceuta matrix:}
+\NormalTok{deterministic_matrix <-}\StringTok{ }\KeywordTok{plover_matrix}\NormalTok{(deterministic_list, }\DataTypeTok{mating_function =} \OtherTok{FALSE}\NormalTok{)}
+
+\CommentTok{# Determine the ASR at the stable stage distribution}
+\NormalTok{deterministic_ASR <-}\StringTok{ }
+\StringTok{  }\KeywordTok{freq_dep_SSD_ASR}\NormalTok{(}\DataTypeTok{A =} \NormalTok{deterministic_matrix, }\DataTypeTok{HSR =} \NormalTok{HSR, }\DataTypeTok{mating_function =} \OtherTok{FALSE}\NormalTok{)}
+\NormalTok{deterministic_ASR$ASR}
+\CommentTok{#>     M_Adt }
+\CommentTok{#> 0.6263899}
+
+\CommentTok{# Lower-level vital rate sensitivity analysis}
+\NormalTok{deterministic_LLSA <-}\StringTok{ }
+\StringTok{  }\KeywordTok{lower_level_sens_analysis}\NormalTok{(}\DataTypeTok{freq_dep_ASR =} \NormalTok{deterministic_ASR, }
+                            \DataTypeTok{VR_list =} \NormalTok{deterministic_list,}
+                            \DataTypeTok{mating_function =} \OtherTok{FALSE}\NormalTok{)}
+
+\CommentTok{# Calculate vital rate sensitivities and elasticities}
+\NormalTok{deterministic_LTRE <-}\StringTok{ }
+\StringTok{  }\KeywordTok{vitalsens_ASR}\NormalTok{(}\DataTypeTok{elements =} \NormalTok{deterministic_LLSA$Element_expression,}
+                \DataTypeTok{VR_list =} \NormalTok{deterministic_list, }\DataTypeTok{freq_dep_ASR =} \NormalTok{deterministic_ASR,}
+                \DataTypeTok{mating_function =} \OtherTok{FALSE}\NormalTok{)}
+
+\CommentTok{# Custom color palette for the plotting of Fledgling and Adult stats}
+\NormalTok{cbPalette <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"#737373"}\NormalTok{, }\StringTok{"#BDBDBD"}\NormalTok{, }\StringTok{"#BDBDBD"}\NormalTok{, }\StringTok{"#BDBDBD"}\NormalTok{)}
+
+\CommentTok{# plot the comparative LTRE results}
+\NormalTok{ggplot2::}\KeywordTok{ggplot}\NormalTok{() +}
+\StringTok{  }\KeywordTok{theme_bw}\NormalTok{() +}
+\StringTok{  }\KeywordTok{coord_flip}\NormalTok{() +}
+\StringTok{  }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{data =} \NormalTok{deterministic_LTRE$LTRE,}
+           \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =} \NormalTok{parameter, }\DataTypeTok{y =} \NormalTok{value, }\DataTypeTok{fill =} \NormalTok{parameter), }
+           \DataTypeTok{color =} \StringTok{"black"}\NormalTok{, }\DataTypeTok{stat =} \StringTok{"identity"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.8}\NormalTok{) +}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position =} \StringTok{"none"}\NormalTok{,}
+        \DataTypeTok{panel.background =} \KeywordTok{element_rect}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"transparent"}\NormalTok{,}\DataTypeTok{colour =} \OtherTok{NA}\NormalTok{),}
+        \DataTypeTok{plot.background =} \KeywordTok{element_rect}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"transparent"}\NormalTok{,}\DataTypeTok{colour =} \OtherTok{NA}\NormalTok{),}
+        \DataTypeTok{axis.title.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size=}\DecValTok{12}\NormalTok{, }\DataTypeTok{margin =} \KeywordTok{margin}\NormalTok{(}\DecValTok{10}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{)),}
+        \DataTypeTok{axis.text.x  =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size=}\DecValTok{10}\NormalTok{, }\DataTypeTok{margin =} \KeywordTok{margin}\NormalTok{(}\DecValTok{5}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{)), }
+        \DataTypeTok{axis.title.y =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size=}\DecValTok{12}\NormalTok{, }\DataTypeTok{margin =} \KeywordTok{margin}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{)),}
+        \DataTypeTok{axis.text.y  =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size=}\DecValTok{10}\NormalTok{, }\DataTypeTok{angle =} \DecValTok{90}\NormalTok{, }\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{, }
+                                    \DataTypeTok{margin =} \KeywordTok{margin}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{)),}
+        \DataTypeTok{panel.grid.major =} \KeywordTok{element_blank}\NormalTok{(),}
+        \DataTypeTok{panel.grid.minor =} \KeywordTok{element_blank}\NormalTok{(),}
+        \DataTypeTok{axis.ticks.y =} \KeywordTok{element_line}\NormalTok{(}\DataTypeTok{size =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{colour =} \StringTok{"grey40"}\NormalTok{),}
+        \DataTypeTok{axis.ticks.length =} \KeywordTok{unit}\NormalTok{(}\FloatTok{0.2}\NormalTok{, }\StringTok{"cm"}\NormalTok{),}
+        \DataTypeTok{axis.ticks.x =} \KeywordTok{element_line}\NormalTok{(}\DataTypeTok{size =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{colour =} \StringTok{"grey40"}\NormalTok{),}
+        \DataTypeTok{panel.border =} \KeywordTok{element_rect}\NormalTok{(}\DataTypeTok{linetype =} \StringTok{"solid"}\NormalTok{, }\DataTypeTok{colour =} \StringTok{"grey"}\NormalTok{),}
+        \DataTypeTok{plot.margin =} \KeywordTok{unit}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\FloatTok{0.5}\NormalTok{,}\FloatTok{0.5}\NormalTok{,}\FloatTok{0.5}\NormalTok{), }\StringTok{"cm"}\NormalTok{),}
+        \DataTypeTok{panel.margin =} \KeywordTok{unit}\NormalTok{(}\FloatTok{0.75}\NormalTok{, }\StringTok{"lines"}\NormalTok{),}
+        \DataTypeTok{strip.background =} \KeywordTok{element_blank}\NormalTok{(), }
+        \DataTypeTok{strip.text =} \KeywordTok{element_blank}\NormalTok{()) +}
+\StringTok{  }\KeywordTok{ylab}\NormalTok{(}\StringTok{"Contribution to adult sex ratio"}\NormalTok{) +}
+\StringTok{  }\KeywordTok{xlab}\NormalTok{(}\StringTok{"Sex-bias in parameter"}\NormalTok{) +}
+\StringTok{  }\KeywordTok{scale_fill_manual}\NormalTok{(}\DataTypeTok{values =} \NormalTok{cbPalette) +}
+\StringTok{  }\KeywordTok{scale_y_continuous}\NormalTok{(}\DataTypeTok{limits =} \KeywordTok{c}\NormalTok{(-}\FloatTok{0.04}\NormalTok{, }\FloatTok{0.04}\NormalTok{)) +}
+\StringTok{  }\KeywordTok{scale_x_discrete}\NormalTok{(}\DataTypeTok{labels =} \KeywordTok{c}\NormalTok{(}\StringTok{"Adult survival"} \NormalTok{=}\StringTok{ "Adult surv"}\NormalTok{,}
+                              \StringTok{"Fledgling survival"} \NormalTok{=}\StringTok{ "Fledgling surv"}\NormalTok{,}
+                              \StringTok{"Chick survival"} \NormalTok{=}\StringTok{ "Chick surv"}\NormalTok{,}
+                              \StringTok{"Hatching sex ratio"} \NormalTok{=}\StringTok{ "Hatching SR"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Ceuta_ASR_Matrix_Modeling_files/figure-latex/unnamed-chunk-31-1} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+
+\CommentTok{# Determine how much larger the contribution of each vital rates is compared to}
+\CommentTok{# fledgling survival}
+
+\CommentTok{# fledgling vs chick:}
+\NormalTok{deterministic_LTRE$LTRE[}\DecValTok{2}\NormalTok{,}\DecValTok{5}\NormalTok{]/deterministic_LTRE$LTRE[}\DecValTok{1}\NormalTok{,}\DecValTok{5}\NormalTok{]}
+\CommentTok{#> [1] 3.903691}
+
+\CommentTok{# fledgling vs adult:}
+\NormalTok{deterministic_LTRE$LTRE[}\DecValTok{2}\NormalTok{,}\DecValTok{5}\NormalTok{]/deterministic_LTRE$LTRE[}\DecValTok{3}\NormalTok{,}\DecValTok{5}\NormalTok{]}
+\CommentTok{#> [1] 5.155423}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Quantifying the mating
+system}\label{quantifying-the-mating-system}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# remove any cases in which one mate was not identified (i.e., "NA")}
+\NormalTok{mating_df <-}\StringTok{ }\NormalTok{breeding_data[}\KeywordTok{which}\NormalTok{(!}\KeywordTok{is.na}\NormalTok{(breeding_data$female) &}\StringTok{ }\NormalTok{!}\KeywordTok{is.na}\NormalTok{(breeding_data$male)),]}
+
+\CommentTok{# Bind the two mates together to make a unique pair}
+\NormalTok{mating_df$pair <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(}\KeywordTok{paste}\NormalTok{(mating_df$female, mating_df$male, }\DataTypeTok{sep =} \StringTok{"-"}\NormalTok{))}
+
+\CommentTok{# Determine how many mating attempts each individual had each year}
+\NormalTok{females <-}\StringTok{ }\KeywordTok{dcast}\NormalTok{(mating_df, female  ~}\StringTok{ }\NormalTok{year)}
+\CommentTok{#> Using pair as value column: use value.var to override.}
+\CommentTok{#> Aggregation function missing: defaulting to length}
+\NormalTok{males <-}\StringTok{ }\KeywordTok{dcast}\NormalTok{(mating_df, male  ~}\StringTok{ }\NormalTok{year)}
+\CommentTok{#> Using pair as value column: use value.var to override.}
+\CommentTok{#> Aggregation function missing: defaulting to length}
+
+\CommentTok{# determine how many different mates each individual had over their lifetime in the popualtion}
+\NormalTok{number_males_p_female <-}\StringTok{ }\KeywordTok{aggregate}\NormalTok{(male ~}\StringTok{ }\NormalTok{female, mating_df, function(x) }\KeywordTok{length}\NormalTok{(}\KeywordTok{unique}\NormalTok{(x)))}
+\NormalTok{number_females_p_male <-}\StringTok{ }\KeywordTok{aggregate}\NormalTok{(female ~}\StringTok{ }\NormalTok{male, mating_df, function(x) }\KeywordTok{length}\NormalTok{(}\KeywordTok{unique}\NormalTok{(x)))}
+
+\CommentTok{# Join these two dataframes together and define as numeric}
+\NormalTok{females <-}\StringTok{ }\KeywordTok{inner_join}\NormalTok{(females, number_males_p_female)}
+\CommentTok{#> Joining by: "female"}
+\NormalTok{females[,}\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{:}\DecValTok{8}\NormalTok{)] <-}\StringTok{ }
+\StringTok{  }\KeywordTok{lapply}\NormalTok{(females[,}\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{:}\DecValTok{8}\NormalTok{)], as.numeric)}
+\NormalTok{males <-}\StringTok{ }\KeywordTok{inner_join}\NormalTok{(males, number_females_p_male)}
+\CommentTok{#> Joining by: "male"}
+\NormalTok{males[,}\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{:}\DecValTok{8}\NormalTok{)] <-}\StringTok{ }
+\StringTok{  }\KeywordTok{lapply}\NormalTok{(males[,}\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{:}\DecValTok{8}\NormalTok{)], as.numeric)}
+
+\CommentTok{# Calculate the total number of mating attempts over each individual's lifetime}
+\NormalTok{females$attempts <-}\StringTok{ }\KeywordTok{rowSums}\NormalTok{(females[, }\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{:}\DecValTok{8}\NormalTok{)])}
+\NormalTok{males$attempts <-}\StringTok{ }\KeywordTok{rowSums}\NormalTok{(males[, }\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{:}\DecValTok{8}\NormalTok{)])}
+
+\CommentTok{# Calculate the number of years breeding}
+\NormalTok{females$years <-}\StringTok{ }\KeywordTok{rowSums}\NormalTok{(females[, }\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{:}\DecValTok{8}\NormalTok{)] >}\StringTok{ }\DecValTok{0}\NormalTok{)}
+\NormalTok{males$years <-}\StringTok{ }\KeywordTok{rowSums}\NormalTok{(males[, }\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{:}\DecValTok{8}\NormalTok{)] >}\StringTok{ }\DecValTok{0}\NormalTok{)}
+
+\CommentTok{# Filter out all individuals that only had one mating attempt}
+\NormalTok{females_no_1 <-}\StringTok{ }\KeywordTok{filter}\NormalTok{(females, male  !=}\StringTok{ }\DecValTok{1} \NormalTok{|}\StringTok{ }\NormalTok{years !=}\StringTok{ }\DecValTok{1} \NormalTok{|}\StringTok{ }\NormalTok{attempts !=}\StringTok{ }\DecValTok{1}\NormalTok{)}
+\NormalTok{males_no_1 <-}\StringTok{ }\KeywordTok{filter}\NormalTok{(males, female  !=}\StringTok{ }\DecValTok{1} \NormalTok{|}\StringTok{ }\NormalTok{years !=}\StringTok{ }\DecValTok{1} \NormalTok{|}\StringTok{ }\NormalTok{attempts !=}\StringTok{ }\DecValTok{1}\NormalTok{)}
+
+\CommentTok{# tidy up dataframes then bind them together}
+\NormalTok{females_no_1$sex <-}\StringTok{ "Female"}
+\NormalTok{females_no_1$sex <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(females_no_1$sex)}
+\KeywordTok{colnames}\NormalTok{(females_no_1)[}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{9}\NormalTok{)] <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"focal"}\NormalTok{, }\StringTok{"mate"}\NormalTok{)}
+\NormalTok{males_no_1$sex <-}\StringTok{ "Male"}
+\NormalTok{males_no_1$sex <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(males_no_1$sex)}
+\KeywordTok{colnames}\NormalTok{(males_no_1)[}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{9}\NormalTok{)] <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"focal"}\NormalTok{, }\StringTok{"mate"}\NormalTok{)}
+\NormalTok{mating <-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(females_no_1, males_no_1)}
+
+\CommentTok{# Determine if an individual was either:}
+\CommentTok{# a) monogamous between years (i.e. only 1 mate in lifetime, with the number of attempts}
+\CommentTok{# equaling the number years mating)}
+\CommentTok{# b) monogamous within years (i.e. only 1 mate in lifetime, with the number of attempts }
+\CommentTok{# greater the number years mating)}
+\CommentTok{# c) polygamous between years (i.e. more than one mate in lifetime, with the number of }
+\CommentTok{# attempts equaling the number years mating)}
+\CommentTok{# d) polygamous within years (i.e. more than one mate in lifetime, with the number of }
+\CommentTok{# attempts greater the number years mating)}
+\NormalTok{mating$status <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(mating$mate ==}\StringTok{ }\DecValTok{1} \NormalTok{&}\StringTok{ }\NormalTok{mating$years ==}\StringTok{ }\NormalTok{mating$attempts, }
+                        \StringTok{"Monogamous between years"}\NormalTok{,}
+                    \KeywordTok{ifelse}\NormalTok{(mating$mate ==}\StringTok{ }\DecValTok{1} \NormalTok{&}\StringTok{ }\NormalTok{mating$years <}\StringTok{ }\NormalTok{mating$attempts, }
+                               \StringTok{"Monogamous within years"}\NormalTok{,}
+                            \KeywordTok{ifelse}\NormalTok{(mating$mate >}\StringTok{ }\DecValTok{1} \NormalTok{&}\StringTok{ }\NormalTok{mating$years ==}\StringTok{ }\NormalTok{mating$attempts, }
+                                      \StringTok{"Polygamous between years"}\NormalTok{,}
+                                  \KeywordTok{ifelse}\NormalTok{(mating$mate >}\StringTok{ }\DecValTok{1} \NormalTok{&}\StringTok{ }\NormalTok{mating$years <}\StringTok{ }\NormalTok{mating$attempts, }
+                                             \StringTok{"Polygamous within years"}\NormalTok{, }\StringTok{"XXX"}\NormalTok{))))}
+
+\CommentTok{# Calculate the number of mates per year}
+\NormalTok{mating$no_mates_per_year <-}\StringTok{ }\NormalTok{mating$mate/mating$years}
+
+\CommentTok{# Run chi-squared test of the sex-differences in polygamy rates}
+\KeywordTok{chisq.test}\NormalTok{(}\KeywordTok{table}\NormalTok{(mating$sex, mating$status)[,}\KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{,}\DecValTok{4}\NormalTok{)])}
+\CommentTok{#> }
+\CommentTok{#>  Pearson's Chi-squared test with Yates' continuity correction}
+\CommentTok{#> }
+\CommentTok{#> data:  table(mating$sex, mating$status)[, c(3, 4)]}
+\CommentTok{#> X-squared = 18.235, df = 1, p-value = 1.952e-05}
+
+\CommentTok{# Run chi-squared test of the sex-differences in monogamy rates}
+\KeywordTok{chisq.test}\NormalTok{(}\KeywordTok{table}\NormalTok{(mating$sex, mating$status)[,}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{)])}
+\CommentTok{#> Warning in chisq.test(table(mating$sex, mating$status)[, c(1, 2)]): Chi-}
+\CommentTok{#> squared approximation may be incorrect}
+\CommentTok{#> }
+\CommentTok{#>  Pearson's Chi-squared test with Yates' continuity correction}
+\CommentTok{#> }
+\CommentTok{#> data:  table(mating$sex, mating$status)[, c(1, 2)]}
+\CommentTok{#> X-squared = 1.9908, df = 1, p-value = 0.1583}
+
+\CommentTok{# Run chi-squared test of the sex-differences in mating behaviour rates}
+\KeywordTok{chisq.test}\NormalTok{(}\KeywordTok{table}\NormalTok{(mating$sex, mating$status))}
+\CommentTok{#> Warning in chisq.test(table(mating$sex, mating$status)): Chi-squared}
+\CommentTok{#> approximation may be incorrect}
+\CommentTok{#> }
+\CommentTok{#>  Pearson's Chi-squared test}
+\CommentTok{#> }
+\CommentTok{#> data:  table(mating$sex, mating$status)}
+\CommentTok{#> X-squared = 23.629, df = 3, p-value = 2.986e-05}
+
+\CommentTok{# Set the factor levels for plotting}
+\NormalTok{mating$status <-}\StringTok{ }\KeywordTok{factor}\NormalTok{(mating$status, }
+                        \DataTypeTok{levels =} \KeywordTok{c}\NormalTok{(}\StringTok{"Monogamous within years"}\NormalTok{,}
+                                   \StringTok{"Monogamous between years"}\NormalTok{,}
+                                   \StringTok{"Polygamous between years"}\NormalTok{,}
+                                   \StringTok{"Polygamous within years"}\NormalTok{))}
+
+\CommentTok{# Determine the number of males and females used in the analysis}
+\NormalTok{sample_sizes_sex <-}\StringTok{ }\KeywordTok{aggregate}\NormalTok{(focal ~}\StringTok{ }\NormalTok{sex, }\DataTypeTok{data =} \NormalTok{mating, }\DataTypeTok{FUN =} \NormalTok{function(x)\{}\KeywordTok{NROW}\NormalTok{(x)\})}
+
+\CommentTok{# Define the color palatte to use in the plot}
+\NormalTok{custom_pal <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"#7b3294"}\NormalTok{, }\StringTok{"#9E6BB1"}\NormalTok{, }\StringTok{"#91bfdb"}\NormalTok{, }\StringTok{"#4575b4"}\NormalTok{)}
+
+\CommentTok{# plot the sex-differences in mating behaviour}
+\KeywordTok{ggplot}\NormalTok{() +}
+\StringTok{  }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{position =} \StringTok{"fill"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.75}\NormalTok{, }\DataTypeTok{data =} \NormalTok{mating, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =} \NormalTok{sex, }\DataTypeTok{fill =} \NormalTok{status)) +}
+\StringTok{  }\KeywordTok{geom_text}\NormalTok{(}\DataTypeTok{data =} \NormalTok{sample_sizes_sex, }\DataTypeTok{size =} \DecValTok{3}\NormalTok{, }
+            \KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =} \KeywordTok{c}\NormalTok{(}\FloatTok{1.05}\NormalTok{, }\FloatTok{1.05}\NormalTok{), }\DataTypeTok{x =} \KeywordTok{c}\NormalTok{(}\FloatTok{1.11}\NormalTok{, }\FloatTok{2.11}\NormalTok{), }\DataTypeTok{label =} \NormalTok{focal)) +}
+\StringTok{  }\KeywordTok{annotate}\NormalTok{(}\StringTok{"text"}\NormalTok{, }\DataTypeTok{x =} \KeywordTok{c}\NormalTok{(}\FloatTok{0.92}\NormalTok{, }\FloatTok{1.92}\NormalTok{), }\DataTypeTok{y =} \KeywordTok{c}\NormalTok{(}\FloatTok{1.05}\NormalTok{, }\FloatTok{1.05}\NormalTok{), }\DataTypeTok{label =} \StringTok{"n = "}\NormalTok{, }\DataTypeTok{size =} \DecValTok{3}\NormalTok{) +}
+\StringTok{  }\KeywordTok{theme_bw}\NormalTok{() +}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\CommentTok{#text = element_text(family = "Arial"),}
+        \DataTypeTok{legend.text =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size =} \DecValTok{10}\NormalTok{),}
+        \DataTypeTok{legend.title =} \KeywordTok{element_blank}\NormalTok{(),}
+        \DataTypeTok{legend.position =} \StringTok{"bottom"}\NormalTok{,}
+        \DataTypeTok{legend.key.height=}\KeywordTok{unit}\NormalTok{(}\FloatTok{0.8}\NormalTok{,}\StringTok{"line"}\NormalTok{),}
+        \DataTypeTok{legend.key.width=}\KeywordTok{unit}\NormalTok{(}\FloatTok{0.8}\NormalTok{,}\StringTok{"line"}\NormalTok{),}
+        \DataTypeTok{axis.title.x =} \KeywordTok{element_blank}\NormalTok{(),}
+        \DataTypeTok{axis.text.x  =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size =} \DecValTok{10}\NormalTok{), }
+        \DataTypeTok{axis.title.y =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size =} \DecValTok{12}\NormalTok{, }\DataTypeTok{margin =} \KeywordTok{margin}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{)),}
+        \DataTypeTok{axis.text.y =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size =} \DecValTok{10}\NormalTok{), }
+        \DataTypeTok{panel.grid.major =} \KeywordTok{element_blank}\NormalTok{(),}
+        \DataTypeTok{panel.grid.minor =} \KeywordTok{element_blank}\NormalTok{(),}
+        \DataTypeTok{strip.text.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size=}\DecValTok{12}\NormalTok{),}
+        \DataTypeTok{strip.background =} \KeywordTok{element_blank}\NormalTok{(),}
+        \DataTypeTok{strip.text =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{vjust =} \NormalTok{-}\DecValTok{10}\NormalTok{),}
+        \DataTypeTok{axis.ticks.x =} \KeywordTok{element_blank}\NormalTok{(),}
+        \DataTypeTok{axis.ticks.y =} \KeywordTok{element_line}\NormalTok{(}\DataTypeTok{size =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{colour =} \StringTok{"grey40"}\NormalTok{),}
+        \DataTypeTok{axis.ticks.length =} \KeywordTok{unit}\NormalTok{(}\FloatTok{0.2}\NormalTok{, }\StringTok{"cm"}\NormalTok{),}
+        \DataTypeTok{panel.border =} \KeywordTok{element_rect}\NormalTok{(}\DataTypeTok{linetype =} \StringTok{"solid"}\NormalTok{, }\DataTypeTok{colour =} \StringTok{"grey"}\NormalTok{),}
+        \DataTypeTok{plot.margin =} \KeywordTok{unit}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\FloatTok{0.2}\NormalTok{,}\FloatTok{0.2}\NormalTok{,-}\FloatTok{0.2}\NormalTok{,}\FloatTok{0.2}\NormalTok{), }\StringTok{"cm"}\NormalTok{)) +}
+\StringTok{  }\KeywordTok{ylab}\NormalTok{(}\StringTok{"Proportion of individuals"}\NormalTok{) +}
+\StringTok{  }\KeywordTok{scale_fill_manual}\NormalTok{(}\DataTypeTok{values =} \NormalTok{custom_pal) +}
+\StringTok{  }\CommentTok{#facet_grid(. ~ sex) +}
+\StringTok{  }\KeywordTok{scale_y_continuous}\NormalTok{(}\DataTypeTok{limits =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FloatTok{1.05}\NormalTok{)) +}
+\StringTok{  }\KeywordTok{guides}\NormalTok{(}\DataTypeTok{fill =} \KeywordTok{guide_legend}\NormalTok{(}\DataTypeTok{ncol =} \DecValTok{1}\NormalTok{, }\DataTypeTok{byrow =} \OtherTok{TRUE}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Ceuta_ASR_Matrix_Modeling_files/figure-latex/unnamed-chunk-32-1} \end{center}
+
+\subsection{R session information}\label{r-session-information}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{sessionInfo}\NormalTok{()}
+\CommentTok{#> R version 3.3.0 (2016-05-03)}
+\CommentTok{#> Platform: x86_64-apple-darwin13.4.0 (64-bit)}
+\CommentTok{#> Running under: OS X 10.11.6 (El Capitan)}
+\CommentTok{#> }
+\CommentTok{#> locale:}
+\CommentTok{#> [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8}
+\CommentTok{#> }
+\CommentTok{#> attached base packages:}
+\CommentTok{#> [1] stats     graphics  grDevices utils     datasets  methods   base     }
+\CommentTok{#> }
+\CommentTok{#> other attached packages:}
+\CommentTok{#>  [1] Rmisc_1.5          plyr_1.8.3         lattice_0.20-33   }
+\CommentTok{#>  [4] lme4_1.1-12        Matrix_1.2-6       extrafont_0.17    }
+\CommentTok{#>  [7] RColorBrewer_1.1-2 reshape2_1.4.1     gridExtra_2.2.1   }
+\CommentTok{#> [10] dplyr_0.4.3        ggplot2_2.1.0      stringr_1.0.0     }
+\CommentTok{#> [13] RMark_2.1.14       snowfall_1.84-6.1  snow_0.4-1        }
+\CommentTok{#> }
+\CommentTok{#> loaded via a namespace (and not attached):}
+\CommentTok{#>  [1] Rcpp_0.12.5      nloptr_1.0.4     formatR_1.4      tools_3.3.0     }
+\CommentTok{#>  [5] digest_0.6.9     nlme_3.1-128     evaluate_0.9     gtable_0.2.0    }
+\CommentTok{#>  [9] DBI_0.4-1        yaml_2.1.13      parallel_3.3.0   mvtnorm_1.0-5   }
+\CommentTok{#> [13] expm_0.999-0     coda_0.18-1      Rttf2pt1_1.3.4   knitr_1.13      }
+\CommentTok{#> [17] grid_3.3.0       R6_2.1.2         survival_2.39-4  rmarkdown_0.9.6 }
+\CommentTok{#> [21] minqa_1.2.4      extrafontdb_1.0  magrittr_1.5     codetools_0.2-14}
+\CommentTok{#> [25] MASS_7.3-45      scales_0.4.0     htmltools_0.3.5  matrixcalc_1.0-3}
+\CommentTok{#> [29] splines_3.3.0    assertthat_0.1   colorspace_1.2-6 labeling_0.3    }
+\CommentTok{#> [33] stringi_1.0-1    lazyeval_0.1.10  munsell_0.4.3    msm_1.6.1}
+\end{Highlighting}
+\end{Shaded}
+
+\end{document}
