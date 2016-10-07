@@ -6,10 +6,10 @@ author: Luke J. Eberhart-Phillips, Clemens Küpper, Tom E. X. Miller, Medardo Cr
   Krüger, Tamás Székely
 date: "October 6, 2016"
 output:
-  pdf_document:
-    keep_tex: yes
   html_document:
     highlight: pygments
+  pdf_document:
+    keep_tex: yes
 ---
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", warning = FALSE, message = FALSE)
@@ -1134,8 +1134,8 @@ ASR_perturbation <-
         F_Fdg_survl = (treatment_matrix$F_Fdg_survl + control_matrix$F_Fdg_survl)/2,
         F_Adt_survl = (treatment_matrix$F_Adt_survl + control_matrix$F_Adt_survl)/2,
         M_Chk_survl = (treatment_matrix$M_Chk_survl + control_matrix$M_Chk_survl)/2,
-        M_Fdg_survl = (treatment_matrix$M_Fdg_survl + control_matrix$M_Chk_survl)/2,
-        M_Adt_survl = (treatment_matrix$M_Adt_survl + control_matrix$M_Chk_survl)/2,
+        M_Fdg_survl = (treatment_matrix$M_Fdg_survl + control_matrix$M_Fdg_survl)/2,
+        M_Adt_survl = (treatment_matrix$M_Adt_survl + control_matrix$M_Adt_survl)/2,
         RF = (treatment_matrix$RF + control_matrix$RF)/2,
         HSR = (treatment_matrix$HSR + control_matrix$HSR)/2)
       
