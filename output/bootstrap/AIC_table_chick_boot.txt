@@ -1,3 +1,0 @@
-"Phi" "p" "model" "npar" "AICc" "DeltaAICc" "weight" "Deviance" "iter"
-"1" "~sex * quadratic" "~sex * quadratic" "Phi(~sex * quadratic)p(~sex * quadratic)" 8 10204.2849972502 0 1 9959.7773 1
-"2" "~sex * quadratic" "~sex * quadratic" "Phi(~sex * quadratic)p(~sex * quadratic)" 8 10598.5773564976 0 1 10390.006 2

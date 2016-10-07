@@ -1,3 +1,0 @@
-"Phi" "p" "model" "npar" "AICc" "DeltaAICc" "weight" "Deviance" "iter"
-"1" "~age * sex" "~time + age * sex" "Phi(~age * sex)p(~time + age * sex)" 13 2179.68679957687 0 1 458.23891 1
-"2" "~age * sex" "~time + age * sex" "Phi(~age * sex)p(~time + age * sex)" 13 2248.57001441827 0 1 443.7162 2
