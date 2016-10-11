@@ -531,8 +531,6 @@ LTRE_plover <-
                 vital_rates = VR_treat)
 
 # specify the color palette to use in LTRE
-cbPalette <- c("#737373", "#BDBDBD", "#BDBDBD", "#BDBDBD")
-
 cbPalette <- c("#A6A6A6", "#D9D9D9", "#D9D9D9", "#D9D9D9")
 
 # plot the LTRE results
