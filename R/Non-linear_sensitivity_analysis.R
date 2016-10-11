@@ -8,6 +8,7 @@ survival_rates_boot <-
 niter <- 1000 
 # Hatching sex ratio (proportion of hatchlings that are male)
 HSR <- 0.4856322
+# mating function parameters to specify
 h <- 1
 k <- 3
 
