@@ -388,7 +388,7 @@ ASR_bootstrap_histogram <-
            fill=brewer.pal(8, "Dark2")[c(2)]) +
   annotate("rect", xmin=0.5, xmax=Inf, ymin=-Inf, ymax=Inf, alpha=0.6,
            fill=brewer.pal(8, "Dark2")[c(1)]) +
-  annotate("text", x = c(-Inf,Inf), y = c(70, 70),
+  annotate("text", x = c(-Inf,Inf), y = c(80, 80),
            label = c("\u2640", "\u2642"), size = 7,
            family="Arial", vjust = c(1.5,1.5), hjust = c(-0.5,1.5)) +
   geom_histogram(binwidth = 0.02, data = ASR_boot, aes(x = estimate)) +
@@ -423,13 +423,13 @@ ASR_bootstrap_histogram <-
   scale_y_continuous(limits = c(0, 125))
 ASR_bootstrap_histogram
 
-# ggsave(ASR_bootstrap_histogram,
-#        filename = "ASR_distribution_final.jpg",
-#        path = "figs/final/",
-#        width = 4,
-#        height = 3, units = "in",
-#        dpi = 300,
-#        scale = 1)
+ggsave(ASR_bootstrap_histogram,
+       filename = "ASR_distribution_mating_function.jpg",
+       path = "figs/final/",
+       width = 4,
+       height = 3, units = "in",
+       dpi = 300,
+       scale = 1)
 
 ########### Life Table Response Experiment ####################################
 # Summarise the bootstrap stage- and sex-specific survival rates for the
@@ -532,22 +532,63 @@ LTRE_plover <-
 # specify the color palette to use in LTRE
 cbPalette <- c("#737373", "#BDBDBD", "#BDBDBD", "#BDBDBD")
 
+cbPalette <- c("#A6A6A6", "#D9D9D9", "#D9D9D9", "#D9D9D9")
+
 # plot the LTRE results
-LTRE_plot <- 
-ggplot2::ggplot() +
+# first draw the background (i.e., the colors)
+Background_LTRE <-
+  ggplot2::ggplot(data = LTRE_plover,
+                  aes(x = parameter, y = contribution, fill = parameter)) +
+  coord_flip() +
+  theme_bw() +
+  annotate("rect", xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=0, alpha=0.6,
+           fill=brewer.pal(8, "Dark2")[c(2)]) +
+  annotate("rect", xmin=-Inf, xmax=Inf, ymin=0, ymax=Inf, alpha=0.6,
+           fill=brewer.pal(8, "Dark2")[c(1)]) +
+  annotate("text", x = c(2,2), y = c(-Inf, Inf),
+           label = c("\u2640", "\u2642"), size = 7,
+           family="Arial", vjust = c(0.5,0.5), hjust = c(-0.3,1.3)) +
+  theme(text = element_text(family="Arial", color = "white"), # set the font as Candara
+        legend.position = "none",
+        axis.title.x = element_text(size=12, margin = margin(10, 0, 0, 0)),
+        axis.text.x  = element_text(size=10, margin = margin(5, 0, 0, 0)),
+        axis.title.y = element_text(size=12, margin = margin(0, 15, 0, 0)),
+        axis.text.y  = element_text(size=10, angle = 90, hjust = 0.5, margin = margin(0, 1, 0, 0)),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.ticks.x = element_line(size = 0.5, colour = "white"),
+        axis.ticks.length = unit(0.2, "cm"),
+        panel.border = element_blank(),
+        plot.margin = unit(c(1,0.5,0.5,1.12), "cm"),
+        panel.margin = unit(0.75, "lines"),
+        strip.background = element_blank(),
+        strip.text = element_blank()) +
+  ylab("Contribution to adult sex ratio") +
+  xlab("Sex-bias in parameter") +
+  scale_fill_manual(values = cbPalette) +
+  scale_y_continuous(limits = c(-0.05, 0.05)) +
+  scale_x_discrete(labels = c("Adult survival" = expression(Adult["\u03D5"]),
+                              "Fledgling survival" = expression(Fledgling ["\u03D5"]),
+                              "Chick survival" = expression(Chick ["\u03D5"]),
+                              "Hatching sex ratio" = "Hatching SR"))
+Background_LTRE
+
+# second draw the LTRE output
+LTRE_bar_plot <-
+  ggplot2::ggplot() +
   theme_bw() +
   coord_flip() +
   geom_bar(data = LTRE_plover,
-           aes(x = parameter, y = contribution, fill = parameter), 
-           color = "black", stat = "identity", alpha = 0.8) +
-  theme(legend.position = "none",
+           aes(x = parameter, y = contribution, fill = parameter), color = "black", stat = "identity") +
+  theme(text = element_text(family="Arial"),
+        legend.position = "none",
         panel.background = element_rect(fill = "transparent",colour = NA),
         plot.background = element_rect(fill = "transparent",colour = NA),
         axis.title.x = element_text(size=12, margin = margin(10, 0, 0, 0)),
-        axis.text.x  = element_text(size=10, margin = margin(5, 0, 0, 0)), 
+        axis.text.x  = element_text(size=10, margin = margin(5, 0, 0, 0)),
         axis.title.y = element_text(size=12, margin = margin(0, 15, 0, 0)),
-        axis.text.y  = element_text(size=10, angle = 90, hjust = 0.5, 
-                                    margin = margin(0, 1, 0, 0)),
+        axis.text.y  = element_text(size=10, angle = 90, hjust = 0.5, margin = margin(0, 1, 0, 0)),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         axis.ticks.y = element_line(size = 0.5, colour = "grey40"),
@@ -556,13 +597,32 @@ ggplot2::ggplot() +
         panel.border = element_rect(linetype = "solid", colour = "grey"),
         plot.margin = unit(c(1,0.5,0.5,0.5), "cm"),
         panel.margin = unit(0.75, "lines"),
-        strip.background = element_blank(), 
+        strip.background = element_blank(),
         strip.text = element_blank()) +
   ylab("Contribution to adult sex ratio") +
   xlab("Sex-bias in parameter") +
   scale_fill_manual(values = cbPalette) +
-  scale_y_continuous(limits = c(-0.10, 0.1))
-LTRE_plot
+  scale_y_continuous(limits = c(-0.10, 0.10)) +
+  scale_x_discrete(labels = c("Adult survival" = expression(Adult["\u03D5"]),
+                              "Fledgling survival" = expression(Fledgling ["\u03D5"]),
+                              "Chick survival" = expression(Chick ["\u03D5"]),
+                              "Hatching sex ratio" = "Hatching SR"))
+LTRE_bar_plot
+
+# Save the plot
+# jpeg(filename = "/Users/Luke/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/figs/final/LTRE_mating_function.jpeg",
+#      quality = 100,
+#      width = 4,
+#      height = 5,
+#      units = "in",
+#      res = 300)
+
+# draw the background and the LTRE on top of eachother for the final plot
+grid.newpage()
+pushViewport( viewport( layout = grid.layout( 1 , 1 , widths = unit( 1 , "npc" ) ) ) )
+print( Background_LTRE + theme(legend.position="none") , vp = viewport( layout.pos.row = 1 , layout.pos.col = 1 ) )
+print( LTRE_bar_plot + theme(legend.position="none") , vp = viewport( layout.pos.row = 1 , layout.pos.col = 1 ) )
+#dev.off()
 
 # check to see if the sum of LTRE contributions equals the difference
 # between the ASR of the treatment matrix and the M-prime matrix
