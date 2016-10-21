@@ -1410,6 +1410,10 @@ remove any cases in which one mate was not identified (i.e., "NA")
 mating_df <- 
   breeding_data[which(!is.na(breeding_data$female) & !is.na(breeding_data$male)),]
 ```
+determine the number of families used in the mating system analysis (i.e. the sample size)
+```{r}
+length(unique(mating_df$brood_ID))
+```
 bind the two mates together to make a unique pair
 ```{r}
 mating_df$pair <- as.factor(paste(mating_df$female, mating_df$male, sep = "-"))
@@ -1478,6 +1482,12 @@ mating$status <- ifelse(mating$mate == 1 & mating$years == mating$attempts,
 calculate the number of mates per year
 ```{r}
 mating$no_mates_per_year <- mating$mate/mating$years
+```
+determine "h", the average annual number of mates per female
+```{r}
+mating%>%
+  dplyr::group_by(sex)%>%
+  dplyr::summarise(mean_annual_no_mates = mean(no_mates_per_year))
 ```
 run chi-squared test of the sex-differences in polygamy rates
 ```{r}
