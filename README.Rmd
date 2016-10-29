@@ -15,6 +15,10 @@ In this repository you can find all the necessary files needed to reproduce the 
   - **fledgling_adult_mark-recapture_data.txt** contains the mark-recapture field data of fledglings and adults. Each row is a single uniquely marked individual identified by their *ring*. The annual encounter history of an individual is expressed in their *ch*, where a "1" indicates that an individual was encountered and "0" indicates it was not encountered. *sex* describes the molecular sex-type of an individual with "M" for males and "F" for females. *age* describes the stage at which an individual was initially captured, where "J" indicates it was first captured as a chick, and "A" indicates it was first captured as an adult.
 
   - **breeding_data.txt** contains the individual reproductive histories of all marked breeding adults in the population. Each row is a nesting attempt uniquely identified by the nest *ID*. *no_chicks* expresses the number of chicks that hatched from the nest. *clutch_size* indicates the number of eggs in the nest when it was initially discovered. *year* describes the year in which the nest was active. *male* and *female* indicates the unique identity of the father and mother, respectively, with "male_NA" and "female_NA" describing cases in which the other mate was not identified.
+  
+  - **survival_rates_year_age.txt** contains the stage- and year-specific survival estimates (*estimate*) of each year (*year*) in the study period. Each row represents a given stage (*age*) in a given year.
+
+  - **survival_rates_year_age_sex.txt** contains the sex- stage-, and year-specific survival estimates (*estimate*) of each year (*year*) in the study period. Each row represents a given sex and stage (*sex_age*) in a given year.
 
 **`output/bootstrap/`**
 

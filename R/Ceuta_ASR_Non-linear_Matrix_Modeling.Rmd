@@ -1,10 +1,9 @@
 ---
-title: 'R-code for "Sex-specific early survival drives adult sex ratio bias and hastens
-  population decline" '
+title: 'R-code for "Adult sex ratio bias is driven by sex-specific early survival: implications for population growth and mating system evolution"'
 author: Luke J. Eberhart-Phillips, Clemens Küpper, Tom E. X. Miller, Medardo Cruz-López,
   Kathryn Maher, Natalie dos Remedios, Martin A. Stoffel, Joseph I. Hoffman, Oliver
   Krüger, Tamás Székely
-date: "October 6, 2016"
+date: "October 30, 2016"
 output:
   pdf_document:
     keep_tex: yes
@@ -2453,10 +2452,10 @@ n_one_sex <- c(41 + 48, 97 + 101)
 run the stochastic simulation for the two-sex and one-sex models
 ```{r}
 two_sex_stoch_proj_year <- stoch_projection_plover(matrices = year_mats, n0 = n_two_sex, h = h,
-                                            tmax = 7, nreps = 1000, Quasi_Ex = 2, HSR = HSR)
+                                            tmax = 7, nreps = 10000, Quasi_Ex = 2, HSR = HSR)
 
 one_sex_stoch_proj_year <- stoch_projection_plover(matrices = year_mats, n0 = n_one_sex, 
-                                                   tmax = 7, nreps = 1000, Quasi_Ex = 2, HSR = 0.5, no_stages = 2, two_sex = FALSE)
+                                                   tmax = 7, nreps = 10000, Quasi_Ex = 2, HSR = 0.5, no_stages = 2, two_sex = FALSE)
 ```
 calculate the grand average lambda and 95% confidence intervals of the two-sex and one-sex models (i.e., average lambda of all iterations' average lambdas)
 ```{r}
@@ -2575,10 +2574,10 @@ ggplot() +
                  aes(x = iter_avg, fill = Matrix), alpha = 0.7) +
   geom_vline(xintercept = Actual_lambda, color = brewer.pal(8, "Set1")[c(2)], size=1) +
   geom_errorbarh(data = two_sex_stoch_proj_year_summary,
-                 aes(y = 115, x = lcl, xmin = lcl, xmax = ucl),
+                 aes(y = 975, x = lcl, xmin = lcl, xmax = ucl),
                  color = "black", size = 0.8, linetype = "solid") +
   geom_errorbarh(data = one_sex_stoch_proj_year_summary,
-                 aes(y = 110, x = lcl, xmin = lcl, xmax = ucl), 
+                 aes(y = 950, x = lcl, xmin = lcl, xmax = ucl), 
                  color = brewer.pal(8, "Set1")[c(1)], size = 0.8, linetype = "solid") +
   theme_bw() +
   theme(#text = element_text(family="Arial"),
@@ -2604,8 +2603,8 @@ ggplot() +
         strip.text = element_blank()) +
   ylab("Frequency") +
   xlab("Population growth rate") +
-  # xlab("Population growth rate (\u03BB)") +
-  scale_y_continuous(limits = c(0, 120)) +
+  # xlab(expression('Stochastic population growth (\u03BB'['S']*')')) +
+  scale_y_continuous(limits = c(0, 1000)) +
   scale_fill_manual(values = cbPalette)
 lambda_stoch_histogram
 # ggsave(lambda_stoch_histogram,
