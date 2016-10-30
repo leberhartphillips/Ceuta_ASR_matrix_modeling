@@ -166,6 +166,8 @@ sex_specific_mating_system <-
 
 h <- 
   as.numeric(sex_specific_mating_system[which(sex_specific_mating_system$sex == "Female"), 2])
+# display the h value
+h
 ```
 run chi-squared test of the sex-differences in polygamy rates
 ```{r}
@@ -2066,7 +2068,7 @@ fledgling_adult_reals <-
 # format the output to tidy up the sex-, age-, and year-specific effects
 Groups <- data.frame(str_split_fixed(rownames(fledgling_adult_reals), " ", n = 5))
 fledgling_adult_reals <- cbind(Groups, fledgling_adult_reals)
-fledgling_adult_reals <- 
+fledgling_adult_reals <-
   fledgling_adult_reals[which(fledgling_adult_reals$X1 == "Phi"),]
 fledgling_adult_reals$age <- 
   unlist(str_extract_all(fledgling_adult_reals$X2,"[AJ]"))
@@ -2133,7 +2135,7 @@ chick_survival_year_sex_age_run <- chick_survival_year_sex_age()
 AIC_table_chick <- chick_survival_year_sex_age_run$model.table
 
 # Find the model number for the first ranked model of the AIC table
-model_chick_num <- as.numeric(rownames(chick_survival_year_sex_age_run$model.table[1,]))
+model_chick_num <- as.numeric(rownames(chick_survival_year_sex_age_run$model.table[8,]))
 
 # extract real parameter estimates from top models
 chick_reals <- chick_survival_year_sex_age_run[[model_chick_num]]$results$real
@@ -2164,7 +2166,7 @@ survival_rates_year_age_sex <- rbind(fledgling_adult_survival_real, ungroup(chic
 fledgling_adult_survival_year_age = function() 
 {
   # year- and stage-specific survival:
-  Phi.agexsex_Time = list(formula = ~ age + Time) 
+  Phi.age_Time = list(formula = ~ age + Time) 
   
   # Models exploring variation in encounter probability
   # constant:
@@ -2227,7 +2229,7 @@ row.names(fledgling_adult_survival_real) <- NULL
 chick_survival_year_age = function() 
 {
   # year- and quadratic age-specific survival:
-  Phi.quadratic.x.sex = list(formula = ~ quadratic + year)
+  Phi.quadratic_year = list(formula = ~ quadratic + year)
   
   # Models exploring variation in encounter probability
   # constant:
@@ -2287,6 +2289,8 @@ survival_rates_year <- list(survival_rates_year_age = survival_rates_year_age,
                             survival_rates_year_age_sex = survival_rates_year_age_sex)
 survival_rates_year
 }
+# uncomment this to run the annual survival analysis
+#survival_rates_year <- annual_survival_analysis()
 ```
 To save your time with re-running the survival analysis, here are the two datasets produced by the annual survival analyses:
 
