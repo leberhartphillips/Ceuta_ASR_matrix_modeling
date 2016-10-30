@@ -2299,8 +2299,8 @@ To save your time with re-running the survival analysis, here are the two datase
 - **output/bootstrap/survival_rates_year_age_sex.txt** contains the sex- stage-, and year-specific survival estimates (*estimate*) of each year (*year*) in the study period. Each row represents a given sex and stage (*sex_age*) in a given year.
 
 ```{r}
-survival_rates_year_age <- read.table(file = "~/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/data/survival_rates_year_age.txt", header = TRUE)
-survival_rates_year_age_sex <- read.table(file = "~/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/data/survival_rates_year_age_sex.txt", header = TRUE)
+survival_rates_year_age <- read.table(file = "~/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/output/annual_estimates/survival_rates_year_age.txt", header = TRUE)
+survival_rates_year_age_sex <- read.table(file = "~/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/output/annual_estimates/survival_rates_year_age_sex.txt", header = TRUE)
 ```
 consolidate the year-specific vital rates into a list (note: the annual fecundity estimates were obtained in the sex-sepecific fecundity analysis at the beginning of this document)
 ```{r}
