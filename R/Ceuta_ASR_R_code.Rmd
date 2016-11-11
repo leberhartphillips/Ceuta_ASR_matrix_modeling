@@ -1003,7 +1003,7 @@ setwd("~/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling")
 chick_AIC_tables <- 
   read.table("output/bootstrap/AIC_table_chick_boot_out.txt", header = TRUE)
 
-fldg_ad_AIC_tables <- 
+juv_ad_AIC_tables <- 
   read.table("output/bootstrap/AIC_table_juvenile_adult_boot_out.txt", header = TRUE)
 
 survival_rates_boot <- 
@@ -1249,7 +1249,7 @@ First, wrangle the bootstrap AIC table output
 # define the model number
 chick_AIC_tables$model_number <- as.numeric(chick_AIC_tables$model)
 
-fldg_ad_AIC_tables$model_number <- as.numeric(fldg_ad_AIC_tables$model)
+juv_ad_AIC_tables$model_number <- as.numeric(juv_ad_AIC_tables$model)
 
 # summarize the average AIC stats for each candidate model across all 1000 iterations
 chick_AIC_tables_summary <- 
@@ -1260,8 +1260,8 @@ chick_AIC_tables_summary <-
             avg_Weight = mean(weight),
             IQR_Weight = IQR(weight))
 
-fldg_ad_AIC_tables_summary <- 
-  fldg_ad_AIC_tables %>%
+juv_ad_AIC_tables_summary <- 
+  juv_ad_AIC_tables %>%
   dplyr::group_by(model) %>%
   dplyr::summarise(avg_Delta = mean(DeltaAICc),
             IQR_Delta = IQR(DeltaAICc),
@@ -1272,15 +1272,15 @@ fldg_ad_AIC_tables_summary <-
 chick_AIC_tables_summary <- dplyr::arrange(chick_AIC_tables_summary, avg_Delta)
 chick_AIC_tables_summary$model_number <- as.numeric(chick_AIC_tables_summary$model)
 
-fldg_ad_AIC_tables_summary <- dplyr::arrange(fldg_ad_AIC_tables_summary, avg_Delta)
-fldg_ad_AIC_tables_summary$model_number <- as.numeric(fldg_ad_AIC_tables_summary$model)
+juv_ad_AIC_tables_summary <- dplyr::arrange(juv_ad_AIC_tables_summary, avg_Delta)
+juv_ad_AIC_tables_summary$model_number <- as.numeric(juv_ad_AIC_tables_summary$model)
 
 # merge the two datasets for plotting
 chick_AIC_tables <- 
   dplyr::left_join(chick_AIC_tables_summary, chick_AIC_tables, by = "model_number")
 
-fldg_ad_AIC_tables <- 
-  dplyr::left_join(fldg_ad_AIC_tables_summary, fldg_ad_AIC_tables, by = "model_number")
+juv_ad_AIC_tables <- 
+  dplyr::left_join(juv_ad_AIC_tables_summary, juv_ad_AIC_tables, by = "model_number")
 
 # extract the model structure explaining resighting probability
 chick_AIC_tables$p <- 
@@ -1288,10 +1288,10 @@ chick_AIC_tables$p <-
          levels = str_sub(as.character(chick_AIC_tables_summary$model), 
                           start = 24, end = str_length(chick_AIC_tables_summary$model)-1))
 
-fldg_ad_AIC_tables$p <- 
-  factor(fldg_ad_AIC_tables$p,
-         levels = str_sub(as.character(fldg_ad_AIC_tables_summary$model), 
-                        start = 18, end = str_length(fldg_ad_AIC_tables_summary$model)-1))
+juv_ad_AIC_tables$p <- 
+  factor(juv_ad_AIC_tables$p,
+         levels = str_sub(as.character(juv_ad_AIC_tables_summary$model), 
+                        start = 18, end = str_length(juv_ad_AIC_tables_summary$model)-1))
 
 ```
 plot the overall model ranks of the chick survival anlaysis based on Delta AIC
@@ -1364,7 +1364,7 @@ print(Bootstrap_AIC_weight_plot_C, vp = vplayout(3:5, 1))
 plot the overall model ranks of the juvenile and adult survival anlaysis based on Delta AIC
 ```{r, fig.height=5, fig.width=6, fig.align="center"}
 Bootstrap_Delta_AIC_plot_F_A <- 
-  ggplot(aes(y = DeltaAICc, x = p), data = fldg_ad_AIC_tables) + 
+  ggplot(aes(y = DeltaAICc, x = p), data = juv_ad_AIC_tables) + 
   theme_bw() +
   #geom_violin(fill = "grey40") +
   geom_boxplot(width = 0.3, fill = "grey70", outlier.size = 0.5) +
@@ -1392,7 +1392,7 @@ Bootstrap_Delta_AIC_plot_F_A <-
 plot the overall model ranks of the juvenile and adult survival anlaysis based on AIC weight
 ```{r, fig.height=9, fig.width=6, fig.align="center"}
 Bootstrap_AIC_weight_plot_F_A <- 
-  ggplot(aes(y = weight, x = p), data = fldg_ad_AIC_tables) + 
+  ggplot(aes(y = weight, x = p), data = juv_ad_AIC_tables) + 
   theme_bw() +
   geom_boxplot(width = 0.3, fill = "grey70", outlier.size = 0.5) +
   theme(#text = element_text(family="Arial"),
