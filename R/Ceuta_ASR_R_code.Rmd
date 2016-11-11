@@ -175,7 +175,7 @@ h <-
 h
 ```
 plot the sex-specific distributions of mating system
-```{r}
+```{r, fig.width=3, fig.height=5, fig.align="center"}
 # define sex as a factor
 mating$sex <- factor(mating$sex, levels = c("Male", "Female"))
 
@@ -190,14 +190,16 @@ Sex_specific_mating_plot <-
 ggplot2::ggplot() +
   geom_jitter(aes(y = no_mates_per_year, x = sex, fill = sex, color = sex),
                data = mating, width = 0.5, alpha = 0.4) +
-  geom_errorbar(data = sex_specific_mating_system, aes(x = sex, y = mean_annual_no_mates,
-                                                       ymin=mean_annual_no_mates-sd_annual_no_mates, 
-                                                       ymax=mean_annual_no_mates+sd_annual_no_mates), 
+  geom_errorbar(data = sex_specific_mating_system, 
+                aes(x = sex, y = mean_annual_no_mates,
+                    ymin=mean_annual_no_mates-sd_annual_no_mates, 
+                    ymax=mean_annual_no_mates+sd_annual_no_mates), 
                 width=.1, position=pd, colour = "black") +
   geom_point(data = sex_specific_mating_system, 
-             aes(y = mean_annual_no_mates, x = sex, fill = sex), shape = 21, colour = "black", position = pd, size = 4) +
+             aes(y = mean_annual_no_mates, x = sex, fill = sex), 
+             shape = 21, colour = "black", position = pd, size = 4) +
   theme_bw() +
-  theme(text = element_text(family="Arial", 
+  theme(text = element_text(#family="Arial", 
                             size = 16),
         legend.position = "",
         axis.title.x = element_blank(),
@@ -533,7 +535,8 @@ The following two functions are needed to setup the projection matrix and estima
 **plover_matrix()** builds the two-sex Lefkovitch matrix using the vital rates specified in the *demographic_rates* object.
 ```{r}
 plover_matrix <- 
-  function(demographic_rates){
+  function(demographic_rates, two_sex = TRUE){
+    if(two_sex){
       # Define plover life-stages of the Ceuta snowy plover matrix model
       stages <- c("F_1st_yr",  "F_Adt",  "M_1st_yr",  "M_Adt")
       # Build the 4x4 matrix
@@ -553,6 +556,21 @@ plover_matrix <-
                  demographic_rates$M_Adt_survl),
                nrow = length(stages), byrow = TRUE,
                dimnames = list(stages, stages))
+    }
+    else{
+      # Define plover life-stages of the Ceuta snowy plover matrix model
+      stages <- c("1st_yr",  "Adt")
+      # Build the 4x4 matrix
+      result <- 
+        matrix(c(
+                 # top row of matrix
+                 0, RF,
+                 # second row of matrix
+                 (demographic_rates$Chk_survl*demographic_rates$Fdg_survl),
+                 demographic_rates$Adt_survl),
+               nrow = length(stages), byrow = TRUE,
+               dimnames = list(stages, stages))
+    }
       result
   }
 ```
@@ -1129,7 +1147,7 @@ Bootstrap_sex_diff_VR_plot <-
   # ylab("Sex-bias in apparent survival (\u03D5)")
   ylab("Sex-bias in apparent survival (phi)")
 
-# jpeg(filename = "/Users/Luke/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/figs/final/final_final/Surv_sex_differences_final.jpeg",
+# jpeg(filename = "/Users/Luke/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/figs/final/final_final/Draft_5/Surv_sex_differences_final.jpeg",
 #      quality = 100,
 #      width = 4,
 #      height = 4,
@@ -1892,13 +1910,13 @@ Background_LTRE_ASR <-
            fill=brewer.pal(8, "Dark2")[c(2)]) +
   annotate("rect", xmin=-Inf, xmax=Inf, ymin=0, ymax=Inf, alpha=0.6,
            fill=brewer.pal(8, "Dark2")[c(1)]) +
-  # annotate("text", x = c(2,2), y = c(-Inf, Inf),
-  #          label = c("\u2640", "\u2642"), size = 7,
-  #          family="Arial", vjust = c(0.5,0.5), hjust = c(-0.3,1.3)) +
-  annotate("text", x = c(2,2), y = c(-0.1, 0.1),
-           label = c("female", "male"), size = 7,
-           vjust = c(1,1), hjust = c(0.5,0.5), angle = c(90, 270)) +
-  theme(text = element_text(#family="Arial", 
+  annotate("text", x = c(2,2), y = c(-Inf, Inf),
+           label = c("\u2640", "\u2642"), size = 7,
+           family="Arial", vjust = c(0.5,0.5), hjust = c(-0.3,1.3)) +
+  # annotate("text", x = c(2,2), y = c(-0.1, 0.1),
+  #          label = c("female", "male"), size = 7,
+  #          vjust = c(1,1), hjust = c(0.5,0.5), angle = c(90, 270)) +
+  theme(text = element_text(family="Arial", 
                             color = "white"), # set the font as Candara
         legend.position = "none",
         axis.title.x = element_text(size=12, margin = margin(10, 0, 0, 0)),
@@ -1912,8 +1930,8 @@ Background_LTRE_ASR <-
         axis.ticks.x = element_line(size = 0.5, colour = "white"),
         axis.ticks.length = unit(0.2, "cm"),
         panel.border = element_blank(),
-        plot.margin = unit(c(1,0.5,0.5,2.9), "cm"),
-        # plot.margin = unit(c(1,0.5,0.5,2.45), "cm"),
+        # plot.margin = unit(c(1,0.5,0.5,2.9), "cm"),
+        plot.margin = unit(c(1,0.5,0.5,2.3), "cm"),
         panel.margin = unit(0.75, "lines"),
         strip.background = element_blank(),
         strip.text = element_blank()) +
@@ -1921,16 +1939,16 @@ Background_LTRE_ASR <-
   xlab("Sex-bias in parameter") +
   scale_fill_manual(values = cbPalette) +
   scale_y_continuous(limits = c(-0.1, 0.1)) +
-  # scale_x_discrete(labels = c("Adult survival" = expression(Adult["\u03D5"]),
-  #                             "Juvenile survival" = expression(Juvenile ["\u03D5"]),
-  #                             "Chick survival" = expression(Chick ["\u03D5"]),
-  #                             "Hatching sex ratio" = expression(italic("\u03C1")),
-  #                             "Mating system" = expression(italic("h"))))
-  scale_x_discrete(labels = c("Adult survival" = "Adult surv.",
-                              "Juvenile survival" = "Fledg. surv",
-                              "Chick survival" = "Chick surv.",
-                              "Hatching sex ratio" = "Hatching SR",
-                              "Mating system" = "Mat. sys."))
+  scale_x_discrete(labels = c("Adult survival" = expression(Adult["\u03D5"]),
+                              "Juvenile survival" = expression(Juvenile ["\u03D5"]),
+                              "Chick survival" = expression(Chick ["\u03D5"]),
+                              "Hatching sex ratio" = expression(italic("\u03C1")),
+                              "Mating system" = expression(italic("h"))))
+  # scale_x_discrete(labels = c("Adult survival" = "Adult surv.",
+  #                             "Juvenile survival" = "Fledg. surv",
+  #                             "Chick survival" = "Chick surv.",
+  #                             "Hatching sex ratio" = "Hatching SR",
+  #                             "Mating system" = "Mat. sys."))
 
 LTRE_ASR <-
   ggplot2::ggplot() +
@@ -1938,7 +1956,7 @@ LTRE_ASR <-
   coord_flip() +
   geom_bar(data = LTRE_plover$LTRE_ASR,
            aes(x = parameter, y = contribution, fill = parameter), color = "black", stat = "identity") +
-  theme(#text = element_text(family="Arial"),
+  theme(text = element_text(family="Arial"),
         legend.position = "none",
         panel.background = element_rect(fill = "transparent",colour = NA),
         plot.background = element_rect(fill = "transparent",colour = NA),
@@ -1961,31 +1979,31 @@ LTRE_ASR <-
   xlab("Sex-bias in parameter") +
   scale_fill_manual(values = cbPalette) +
   scale_y_continuous(limits = c(-0.10, 0.10)) +
-  # scale_x_discrete(labels = c("Adult survival" = expression(Adult["\u03D5"]),
-  #                             "Juvenile survival" = expression(Juvenile ["\u03D5"]),
-  #                             "Chick survival" = expression(Chick ["\u03D5"]),
-  #                             "Hatching sex ratio" = expression(italic("\u03C1")),
-  #                             "Mating system" = expression(italic("h"))))
-  scale_x_discrete(labels = c("Adult survival" = "Adult surv.",
-                              "Juvenile survival" = "Fledg. surv",
-                              "Chick survival" = "Chick surv.",
-                              "Hatching sex ratio" = "Hatching SR",
-                              "Mating system" = "Mat. sys."))
+  scale_x_discrete(labels = c("Adult survival" = expression(Adult["\u03D5"]),
+                              "Juvenile survival" = expression(Juvenile ["\u03D5"]),
+                              "Chick survival" = expression(Chick ["\u03D5"]),
+                              "Hatching sex ratio" = expression(italic("\u03C1")),
+                              "Mating system" = expression(italic("h"))))
+  # scale_x_discrete(labels = c("Adult survival" = "Adult surv.",
+  #                             "Juvenile survival" = "Fledg. surv",
+  #                             "Chick survival" = "Chick surv.",
+  #                             "Hatching sex ratio" = "Hatching SR",
+  #                             "Mating system" = "Mat. sys."))
                      
 # Save the plot
-# jpeg(filename = "/Users/Luke/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/figs/final/final_final/LTRE_mating_function_ASR.jpeg",
-#      quality = 100,
-#      width = 4,
-#      height = 4,
-#      units = "in",
-#      res = 300)
+jpeg(filename = "/Users/Luke/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/figs/final/final_final/Draft_5/LTRE_mating_function_ASR.jpeg",
+     quality = 100,
+     width = 4,
+     height = 4,
+     units = "in",
+     res = 300)
 
 # draw the background and the LTRE on top of eachother for the final plot
 grid.newpage()
 pushViewport( viewport( layout = grid.layout( 1 , 1 , widths = unit( 1 , "npc" ) ) ) )
 print( Background_LTRE_ASR + theme(legend.position="none") , vp = viewport( layout.pos.row = 1 , layout.pos.col = 1 ) )
 print( LTRE_ASR + theme(legend.position="none") , vp = viewport( layout.pos.row = 1 , layout.pos.col = 1 ) )
-# dev.off()
+dev.off()
 ```
 Determine how much larger the contribution of each vital rates is compared to juvenile survival
 juvenile vs chick:
@@ -2004,644 +2022,102 @@ LTRE_plover$LTRE_ASR[1,2]/LTRE_plover$LTRE_ASR[3,2]
 ***
 ## Predicitive accuracy of two-sex and one-sex matrix models
 
+this function extracts the ASR and lambda estimates from each bootstrap iteration using a matrix with the two-sex mating function
 ```{r}
-annual_survival_analysis <- function(){
-# remove ring column
-juvenile_adult <- juvenile_adult[,-1]
-chick <- chick[,-1]
+lambda_extract <-
+  function(survival_rates, niter = 1000){
+    # make an empty datarame to store the results
+    output <- data.frame(two_sex_lambda = numeric(niter),
+                         one_sex_lambda = numeric(niter))
+    # for loop to go through each iteration and calculate the differece between female and male
+    # survival rates for each stage.
+    for(i in 1:niter){
+      # Create a list of demographic rates from the survival analyses above
+      VR_two_sex_boot <- list(F_Chk_survl = survival_rates[which(survival_rates$iter == i), 2][5],
+                              F_Fdg_survl = survival_rates[which(survival_rates$iter == i), 2][3],
+                              F_Adt_survl = survival_rates[which(survival_rates$iter == i), 2][1],
+                              M_Chk_survl = survival_rates[which(survival_rates$iter == i), 2][6],
+                              M_Fdg_survl = survival_rates[which(survival_rates$iter == i), 2][4],
+                              M_Adt_survl = survival_rates[which(survival_rates$iter == i), 2][2],
+                              # Define h (harem size, h < 1 is polyandry) and k (clutch size)
+                              h = h,
+                              k = 3,
+                              # Define primary sex ratio (assumed to be 0.5)
+                              HSR = HSR)
 
-# Create processed RMark data formatted as Cormack-Jolly_Seber with 2 groups 
-# (sex and age initally ringed), starting at year 2006, two age groups
-# (first-years and adults) in which the first-year stage only lasts for 
-# one year.
-juvenile_adult.proc <- RMark::process.data(juvenile_adult, model = "CJS",
-                                            groups = c("sex", "age"),
-                                            begin.time = 2006, age.var = 2, 
-                                            initial.age = c(1, 0))
+      VR_one_sex_boot <- list(Chk_survl = mean(survival_rates[which(survival_rates$iter == i), 2][6],
+                                               survival_rates[which(survival_rates$iter == i), 2][5]),
+                              Fdg_survl = mean(survival_rates[which(survival_rates$iter == i), 2][4],
+                                               survival_rates[which(survival_rates$iter == i), 2][3]),
+                              Adt_survl = mean(survival_rates[which(survival_rates$iter == i), 2][2],
+                                               survival_rates[which(survival_rates$iter == i), 2][1]),
+                              # female fecundity
+                              RF = RF)
 
-# Create processed RMARK data format as Cormack-Jolly_Seber with 3 groups 
-# (sex, year, and brood ID).
-chick.proc <-  RMark::process.data(chick, model = "CJS",
-                                   groups = c("sex", "year", 
-                                              "brood_ID"))
+      # Build matrix based on rates specified in the list above
+      two_sex_matrix_boot <- plover_matrix(VR_two_sex_boot, two_sex = TRUE)
+      one_sex_matrix_boot <- plover_matrix(VR_one_sex_boot, two_sex = FALSE)
 
-# Create the design matrix from the processed mark-recapture datasets
-juvenile_adult.ddl <- RMark::make.design.data(juvenile_adult.proc)
-chick.ddl <- RMark::make.design.data(chick.proc)
-
-# adds first-year / adult age field to design data in column "Age"
-juvenile_adult.ddl <- RMark::add.design.data(data = juvenile_adult.proc,
-                                              ddl = juvenile_adult.ddl, 
-                                              parameter = "Phi", 
-                                              type = "age",
-                                              bins = c(0, 1, 7), right = FALSE,
-                                              name = "age", replace = TRUE)
-
-# create a dummy field in the design matrix called marked.as.adult 
-# which is "0" for the group initally ringed as chicks and "1" for the group
-# marked as adults.
-juvenile_adult.ddl$Phi$marked.as.adult = 0
-juvenile_adult.ddl$Phi$marked.as.adult[juvenile_adult.ddl$Phi$initial.age.class=="A"]=1 
-juvenile_adult.ddl$p$marked.as.adult = 0
-juvenile_adult.ddl$p$marked.as.adult[juvenile_adult.ddl$p$initial.age.class=="A"]=1
-
-# check parameter matrices to see if groups were binned correctly 
-# (uncomment the next three lines to assess)
-# PIMS(mark(juvenile_adult.proc, juvenile_adult.ddl,
-#           model.parameters = list(Phi = list(formula = ~ age + sex)), 
-#           output = F), "Phi")
-
-# Create quadratic time variable so that it can be tested for temporal variation 
-# chick survival (i.e. non-linear relationship between daily chick survival and age)
-time <- c(0:(chick.proc$nocc[1] - 1))
-quadratic <- time^2
-quad_time <- data.frame(time, quadratic)
-chick.ddl$p <- 
-  RMark::merge_design.covariates(chick.ddl$Phi,
-                                 quad_time, bygroup = FALSE, bytime = TRUE)
-chick.ddl$Phi <- 
-  RMark::merge_design.covariates(chick.ddl$Phi,
-                                 quad_time, bygroup = FALSE, bytime = TRUE)
-
-# create the function that specifies the candidate models of juvenile and adult 
-# resight probability
-juvenile_adult_survival_year_sex_age = function() 
-{
-  # sex- and stage-specific survival varying across years ("Time"):
-  Phi.agexsex_Time = list(formula = ~ age * sex + Time) 
-  
-  # Models exploring variation in encounter probability
-  # constant:
-  p.dot = list(formula =  ~ 1)
-  # sex-dependent:
-  p.sex = list(formula =  ~ sex)
-  # age-dependent:
-  p.age = list(formula =  ~ age)
-  # factorial variation across year:
-  p.Time = list(formula =  ~ Time)
-  # interaction between sex and factorial year:
-  p.sexxTime = list(formula =  ~ sex * Time)
-  # interaction between age and factorial year:
-  p.agexTime = list(formula =  ~ age * Time)
-  # interaction between age and sex:
-  p.agexsex = list(formula =  ~ age * sex)
-  # additive effects of sex and factorial year:
-  p.sex_Time = list(formula =  ~ sex + Time)
-  # additive effects of age and factorial year:
-  p.age_Time = list(formula =  ~ age + Time)
-  # additive effects of age and sex:
-  p.age_sex = list(formula =  ~ age + sex)
-  # additive effects of sex, age, factorial year:
-  p.Time_age_sex = list(formula =  ~ Time + age + sex)
-  # additive effect of year and interaction between age and sex:
-  p.Time_age_x_sex = list(formula =  ~ Time + age * sex)
-  
-  # create a list of candidate models for all the a models above that begin with 
-  # either "Phi." or "p."
-  cml <-  RMark::create.model.list("CJS")
-  
-  # specify the data, design matrix, delete unneeded output files, and 
-  # run the models in Program MARK
-  model.list <-  RMark::mark.wrapper(cml, data = juvenile_adult.proc, 
-                                     ddl = juvenile_adult.ddl, delete = TRUE)
-  
-  # output the model list and sotre the results
-  return(model.list)
-}
-
-# Run the models on the bootstrapped data
-juvenile_adult_survival_year_sex_age_run <- 
-  juvenile_adult_survival_year_sex_age()
-
-# Extract the AIC model table from the model output
-AIC_table_juvenile_adult <- 
-  juvenile_adult_survival_year_sex_age_run$model.table
-
-# Find the model number for the first ranked model of the AIC table
-model_juvenile_adult_num <- 
-  as.numeric(rownames(juvenile_adult_survival_year_sex_age_run$model.table[1,]))
-
-# extract and format survival rates from juvenile and adult model output
-juvenile_adult_reals <- 
-  juvenile_adult_survival_year_sex_age_run[[model_juvenile_adult_num]]$results$real
-
-# format the output to tidy up the sex-, age-, and year-specific effects
-Groups <- data.frame(str_split_fixed(rownames(juvenile_adult_reals), " ", n = 5))
-juvenile_adult_reals <- cbind(Groups, juvenile_adult_reals)
-juvenile_adult_reals <-
-  juvenile_adult_reals[which(juvenile_adult_reals$X1 == "Phi"),]
-juvenile_adult_reals$age <- 
-  unlist(str_extract_all(juvenile_adult_reals$X2,"[AJ]"))
-juvenile_adult_reals$age <- 
-  as.factor(ifelse(juvenile_adult_reals$age == "A","Adult","Juvenile"))
-juvenile_adult_reals$sex <- 
-  unlist(str_extract_all(juvenile_adult_reals$X2,"[FM]"))
-juvenile_adult_reals$sex <- 
-  as.factor(ifelse(juvenile_adult_reals$sex == "F","Female","Male"))
-juvenile_adult_reals$year <-
-  as.factor(str_sub(juvenile_adult_reals$X5, 2, 5))
-juvenile_adult_reals$sex_age <- 
-  paste(juvenile_adult_reals$sex,juvenile_adult_reals$age,sep = "_")
-juvenile_adult_survival_real <- 
-  juvenile_adult_reals[,c("year", "sex_age", "estimate")]
-row.names(juvenile_adult_survival_real) <- NULL
-
-# Do the same for chicks. create the function that specifies the candidate models 
-# of chick resight probability
-chick_survival_year_sex_age = function() 
-{
-  # sex- and stage-specific survival varying across years ("Time"):
-  Phi.quadratic.x.sex = list(formula = ~ sex * quadratic + year)
-  
-  # Models exploring variation in encounter probability
-  # constant:
-  p.dot = list(formula = ~ 1)
-  # quadratic across age
-  p.quadratic = list(formula = ~ quadratic)
-  # annual variation
-  p.year = list(formula = ~ year)
-  # sex-specific
-  p.sex = list(formula = ~ sex)
-  # interaction between year and quadratic age
-  p.year.x.quadratic = list(formula = ~ year * quadratic)
-  # interaction between year and quadratic age
-  p.sex.x.quadratic = list(formula = ~ sex * quadratic)
-  # additive effects of sex and linear age
-  p.sex.quadratic = list(formula = ~ sex + quadratic)
-  # additive effects of year and quadratic age
-  p.year.quadratic = list(formula = ~ year + quadratic)
-  # additive effects of year, sex, and quadratic age
-  p.year.quadratic.Sex = list(formula = ~ year + quadratic + sex)
-  # additive effect of year and interaction between sex and quadratic age
-  p.year.quadratic.x.Sex = list(formula = ~ year + quadratic * sex)
-  
-  # create a list of candidate models for all the a models above that begin with 
-  # either "Phi." or "p."
-  cml <-  RMark::create.model.list("CJS")
-  
-  # specify the data, design matrix, delete unneeded output files, and 
-  # run the models in Program MARK
-  model.list <-  RMark::mark.wrapper(cml, data = chick.proc, 
-                                     ddl = chick.ddl, delete = TRUE)
-  
-  # output the model list and sotre the results
-  return(model.list)
-}
-
-# Run the models on the bootstrapped data
-chick_survival_year_sex_age_run <- chick_survival_year_sex_age()
-
-# Extract the AIC model table from the model output
-AIC_table_chick <- chick_survival_year_sex_age_run$model.table
-
-# Find the model number for the first ranked model of the AIC table
-model_chick_num <- as.numeric(rownames(chick_survival_year_sex_age_run$model.table[8,]))
-
-# extract real parameter estimates from top models
-chick_reals <- chick_survival_year_sex_age_run[[model_chick_num]]$results$real
-
-# format the output to tidy up the sex-, age-, and year-specific effects
-Groups <- data.frame(str_split_fixed(rownames(chick_reals), " ", n = 5))
-chick_reals <- cbind(Groups, chick_reals)
-chick_reals <- chick_reals[which(chick_reals$X1 == "Phi"),]
-chick_reals$sex <- unlist(str_extract_all(chick_reals$X2,"[FM]"))
-chick_reals$sex <- as.factor(ifelse(chick_reals$sex == "F","Female","Male"))
-chick_reals$year <-
-  as.factor(str_sub(chick_reals$X2, 3, 6))
-
-# transform the daily chick survival (DCS) to apparent hatching success
-# by calculating the product of all DCS estimates:
-chick_survival_real <- 
-  chick_reals%>%
-  dplyr::group_by(year, sex)%>%
-  dplyr::summarise(estimate = prod(estimate))
-chick_survival_real$sex_age <- paste(chick_survival_real$sex, "Chick", sep = "_")
-
-# Bind the juvenile and adult dataframe with the chicks
-survival_rates_year_age_sex <- rbind(juvenile_adult_survival_real, ungroup(chick_survival_real)[,c(1,4,3)])
-
-# Now do the survival analysis without sex (for the one-sex matrix model)
-# create the function that specifies the candidate models of juvenile and adult 
-# resight probability
-juvenile_adult_survival_year_age = function() 
-{
-  # year- and stage-specific survival:
-  Phi.age_Time = list(formula = ~ age + Time) 
-  
-  # Models exploring variation in encounter probability
-  # constant:
-  p.dot = list(formula =  ~ 1)
-  # age-dependent:
-  p.age = list(formula =  ~ age)
-  # factorial variation across year:
-  p.Time = list(formula =  ~ Time)
-  # interaction between age and factorial year:
-  p.agexTime = list(formula =  ~ age * Time)
-  # additive effects of age and factorial year:
-  p.age_Time = list(formula =  ~ age + Time)
-
-  # create a list of candidate models for all the a models above that begin with 
-  # either "Phi." or "p."
-  cml <-  RMark::create.model.list("CJS")
-  
-  # specify the data, design matrix, delete unneeded output files, and 
-  # run the models in Program MARK
-  model.list <-  RMark::mark.wrapper(cml, data = juvenile_adult.proc, 
-                                     ddl = juvenile_adult.ddl, delete = TRUE)
-  
-  # output the model list and sotre the results
-  return(model.list)
-}
-
-# Run the models on the bootstrapped data
-juvenile_adult_survival_year_age_run <- 
-  juvenile_adult_survival_year_age()
-
-# Extract the AIC model table from the model output
-AIC_table_juvenile_adult <- 
-  juvenile_adult_survival_year_age_run$model.table
-
-# Find the model number for the first ranked model of the AIC table
-model_juvenile_adult_num <- 
-  as.numeric(rownames(juvenile_adult_survival_year_age_run$model.table[1,]))
-
-# extract and format survival rates from juvenile and adult model output
-juvenile_adult_reals <- 
-  juvenile_adult_survival_year_age_run[[model_juvenile_adult_num]]$results$real
-
-# format the output to tidy up the sex- and age-specific effects
-Groups <- data.frame(str_split_fixed(rownames(juvenile_adult_reals), " ", n = 5))
-juvenile_adult_reals <- cbind(Groups, juvenile_adult_reals)
-juvenile_adult_reals <- 
-  juvenile_adult_reals[which(juvenile_adult_reals$X1 == "Phi"),]
-juvenile_adult_reals$age <- 
-  unlist(str_extract_all(juvenile_adult_reals$X2,"[AJ]"))
-juvenile_adult_reals$age <- 
-  as.factor(ifelse(juvenile_adult_reals$age == "A","Adult","Juvenile"))
-juvenile_adult_reals$year <-
-  as.factor(str_sub(juvenile_adult_reals$X5, 2, 5))
-juvenile_adult_survival_real <- 
-  juvenile_adult_reals[,c("year", "age", "estimate")]
-row.names(juvenile_adult_survival_real) <- NULL
-
-# Do the same for chicks. create the function that specifies the candidate models 
-# of chick resight probability
-chick_survival_year_age = function() 
-{
-  # year- and quadratic age-specific survival:
-  Phi.quadratic_year = list(formula = ~ quadratic + year)
-  
-  # Models exploring variation in encounter probability
-  # constant:
-  p.dot = list(formula = ~ 1)
-  # quadratic across age
-  p.quadratic = list(formula = ~ quadratic)
-  # annual variation
-  p.year = list(formula = ~ year)
-  # interaction between year and quadratic age
-  p.year.x.quadratic = list(formula = ~ year * quadratic)
-  # additive effects of year and quadratic age
-  p.year.quadratic = list(formula = ~ year + quadratic)
-  
-  # create a list of candidate models for all the a models above that begin with 
-  # either "Phi." or "p."
-  cml <-  RMark::create.model.list("CJS")
-  
-  # specify the data, design matrix, delete unneeded output files, and 
-  # run the models in Program MARK
-  model.list <-  RMark::mark.wrapper(cml, data = chick.proc, 
-                                     ddl = chick.ddl, delete = TRUE)
-  
-  # output the model list and sotre the results
-  return(model.list)
-}
-
-# Run the models on the bootstrapped data
-chick_survival_year_age_run <- chick_survival_year_age()
-
-# Extract the AIC model table from the model output
-AIC_table_chick <- chick_survival_year_age_run$model.table
-
-# Find the model number for the first ranked model of the AIC table
-model_chick_num <- as.numeric(rownames(chick_survival_year_age_run$model.table[1,]))
-
-# extract real parameter estimates from top models
-chick_reals <- chick_survival_year_age_run[[model_chick_num]]$results$real
-
-# format the output to tidy up the sex- and age-specific effects
-Groups <- data.frame(str_split_fixed(rownames(chick_reals), " ", n = 5))
-chick_reals <- cbind(Groups, chick_reals)
-chick_reals <- chick_reals[which(chick_reals$X1 == "Phi"),]
-chick_reals$year <-
-  as.factor(str_sub(chick_reals$X2, 3, 6))
-
-# transform the daily chick survival (DCS) to apparent hatching success
-# by calculating the product of all DCS estimates:
-chick_survival_real <- 
-  chick_reals%>%
-  dplyr::group_by(year)%>%
-  dplyr::summarise(estimate = prod(estimate))
-chick_survival_real$age <- "Chick"
-
-# Bind the juvenile and adult dataframe with the chicks
-survival_rates_year_age <- rbind(juvenile_adult_survival_real, chick_survival_real)
-survival_rates_year <- list(survival_rates_year_age = survival_rates_year_age,
-                            survival_rates_year_age_sex = survival_rates_year_age_sex)
-survival_rates_year
-}
-# uncomment this to run the annual survival analysis
-#survival_rates_year <- annual_survival_analysis()
-```
-To save your time with re-running the survival analysis, here are the two datasets produced by the annual survival analyses:
-
-- **output/bootstrap/survival_rates_year_age.txt** contains the stage- and year-specific survival estimates (*estimate*) of each year (*year*) in the study period. Each row represents a given stage (*age*) in a given year.
-
-- **output/bootstrap/survival_rates_year_age_sex.txt** contains the sex- stage-, and year-specific survival estimates (*estimate*) of each year (*year*) in the study period. Each row represents a given sex and stage (*sex_age*) in a given year.
-
-```{r}
-survival_rates_year_age <- read.table(file = "~/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/output/annual_estimates/survival_rates_year_age.txt", header = TRUE)
-survival_rates_year_age_sex <- read.table(file = "~/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/output/annual_estimates/survival_rates_year_age_sex.txt", header = TRUE)
-```
-consolidate the year-specific vital rates into a list (note: the annual fecundity estimates were obtained in the sex-sepecific fecundity analysis at the beginning of this document)
-```{r}
-vital_rates_year <- list(S_Yr_Ag = survival_rates_year_age,
-                         S_Yr_Ag_Sx = survival_rates_year_age_sex,
-                         R_Yr_Sx = fecundity_annual_summary)
-```
-**year_plover_matrix()** function to build annual population projection matrices. If *two_sex* is set to TRUE, then it will build a two sex matrix for each year between *first_year* and *last_year* from the sex-specific vital rates provided in the *vital_rates_year* list. If FALSE, then it will build one-sex matrices.
-```{r}
-year_plover_matrix <- 
-  function(vital_rates_year, first_year, last_year, two_sex = TRUE){
-    # Build the matrix (note: NAs are assigned to cells where the mating 
-    # function will go later)
-    matrix_list <- vector("list", last_year)
-    if(two_sex){
-      # Define plover life-stages of the 2-sex Ceuta snowy plover matrix model
-      stages <- c("F_1st_yr",  "F_Adt",  "M_1st_yr",  "M_Adt")
-    for(i in first_year:(last_year-1)){
-      result <- 
-        matrix(c(0, NA, 0, NA, 
-                 (vital_rates_year$S_Yr_Ag_Sx[which(vital_rates_year$S_Yr_Ag_Sx$sex_age == "Female_Chick" & vital_rates_year$S_Yr_Ag_Sx$year == i+1), 3] * 
-                    vital_rates_year$S_Yr_Ag_Sx[which(vital_rates_year$S_Yr_Ag_Sx$sex_age == "Female_Juvenile" & vital_rates_year$S_Yr_Ag_Sx$year == i), 3]),
-                 vital_rates_year$S_Yr_Ag_Sx[which(vital_rates_year$S_Yr_Ag_Sx$sex_age == "Female_Adult" & vital_rates_year$S_Yr_Ag_Sx$year == i), 3], 
-                 0, 0,
-                 0, NA, 0, NA,
-                 0, 0, 
-                 (vital_rates_year$S_Yr_Ag_Sx[which(vital_rates_year$S_Yr_Ag_Sx$sex_age == "Male_Chick" & vital_rates_year$S_Yr_Ag_Sx$year == i+1), 3] * 
-                    vital_rates_year$S_Yr_Ag_Sx[which(vital_rates_year$S_Yr_Ag_Sx$sex_age == "Male_Juvenile" & vital_rates_year$S_Yr_Ag_Sx$year == i), 3]),
-                 vital_rates_year$S_Yr_Ag_Sx[which(vital_rates_year$S_Yr_Ag_Sx$sex_age == "Male_Adult" & vital_rates_year$S_Yr_Ag_Sx$year == i), 3]), 
-               nrow = length(stages), byrow = TRUE,
-               dimnames = list(stages, stages))
-      matrix_list[[i]] <- result
-      }
+      # Determine the ASR at the stable stage distribution
+      two_sex_lambda <-
+        matrix_ASR(M = two_sex_matrix_boot, h = VR_two_sex_boot$h, HSR = VR_two_sex_boot$HSR, iterations = 75)
+      one_sex_lambda <-
+        Re(eigen(one_sex_matrix_boot)$values)[1]
+      
+      # Extract ASR
+      output[i, 1] <- two_sex_lambda$lambda
+      output[i, 2] <- one_sex_lambda
     }
-    else{
-      # Define plover life-stages of the 1-sex Ceuta snowy plover matrix model
-      stages <- c("1st_yr",  "Adt")
-      for(i in first_year:(last_year-1)){
-        result <- 
-          matrix(c(0, vital_rates_year$R_Yr_Sx[which(vital_rates_year$R_Yr_Sx$Sex == "Male" & vital_rates_year$R_Yr_Sx$year == i+1), 4],
-                   (vital_rates_year$S_Yr_Ag[which(vital_rates_year$S_Yr_Ag$age == "Chick" & vital_rates_year$S_Yr_Ag$year == i+1), 3] * 
-                      vital_rates_year$S_Yr_Ag[which(vital_rates_year$S_Yr_Ag$age == "Juvenile" & vital_rates_year$S_Yr_Ag$year == i), 3]),
-                   vital_rates_year$S_Yr_Ag[which(vital_rates_year$S_Yr_Ag$age == "Adult" & vital_rates_year$S_Yr_Ag$year == i), 3]), 
-                 nrow = length(stages), byrow = TRUE,
-                 dimnames = list(stages, stages))
-        matrix_list[[i]] <- result
-      }
-    }
-    matrix_list[c(first_year:(last_year-1))]
+    # restructure the output and lable columns
+    output <- suppressMessages(reshape2::melt(data = output))
+    colnames(output) <- c("parameter", "estimate")
+    # return the output
+    output
   }
 ```
-run the function for the two-sex and one-sex models
+
 ```{r}
-year_age_mats <- year_plover_matrix(vital_rates_year = vital_rates_year, first_year = 2006, last_year = 2012, two_sex = FALSE)
-year_age_sex_mats <- year_plover_matrix(vital_rates_year = vital_rates_year, first_year = 2006, last_year = 2012, two_sex = TRUE)
+lambda_boot <- lambda_extract(survival_rates = survival_rates_boot, niter = 1000)
 ```
-store the results into a list
+calculate the 95% confidence interval, mean, and median of the ASR bootstraps
 ```{r}
-year_mats <- list(two_sex_mats = year_age_sex_mats,
-                  one_sex_mats = year_age_mats)
+CI <- 0.95
+lambda_boot_summary <-
+  lambda_boot%>%
+  dplyr::group_by(parameter)%>%
+  dplyr::summarise(mean = mean(estimate),
+                   lcl = quantile(estimate, (1 - CI)/2),
+                   ucl = quantile(estimate, 1 - (1 - CI)/2))
 ```
-**stoch_projection_plover()** stochastically projects the population under the two-sex or one-sex model. In each iteration, the function randomly draws a matrix from the list and projects the population distribution *n0* at time 1 to time 2, then it randomly draws another matrix, and repeated the process until time *tmax*. The simulation is iterated for *nreps*.
-```{r}
-stoch_projection_plover <- 
-  function (matrices, n0, tmax = 50, nreps = 5000, Quasi_Ex = 0, no_stages = 4, two_sex = TRUE, HSR, h = 1, k = 3) 
-  {
-    x <-  no_stages
-    F_Adults <- matrix(numeric(nreps * tmax), nrow = nreps)
-    F_Chicks <- matrix(numeric(nreps * tmax), nrow = nreps)
-    M_Adults <- matrix(numeric(nreps * tmax), nrow = nreps)
-    M_Chicks <- matrix(numeric(nreps * tmax), nrow = nreps)
-    Chicks <- matrix(numeric(nreps * tmax), nrow = nreps)
-    Adults <- matrix(numeric(nreps * tmax), nrow = nreps)
-    lambda <- matrix(numeric(nreps * tmax), nrow = nreps)
-    F_Adults[,1] <- n0[2]
-    F_Chicks[,1] <- n0[1]
-    M_Adults[,1] <- n0[4]
-    M_Chicks[,1] <- n0[3]
-    Chicks[,1] <- n0[1]
-    if(two_sex){
-      Adults[,1] <- n0[2] + n0[4]
-    }
-    else{
-      Adults[,1] <- n0[2]
-    }
-    lambda[,1] <- NA
-    for (i in 1:nreps) {
-      if(two_sex){
-        A <- sample(matrices$two_sex_mats, (tmax-1), replace = TRUE)
-        for (j in 1:(tmax-1)) {
-          n <- c(F_Chicks[i,j], F_Adults[i,j], M_Chicks[i,j], M_Adults[i,j])
-          # number of male adults at time t
-          M2 <- n[4] 
-          # number of female adults at time t
-          F2 <- n[2] 
-          # Female freq-dep fecundity of Female chicks
-          A[[j]][1,x/2]        <- (k*M2)/(M2+(F2/h))*HSR 
-          # Female freq-dep fecundity of Male chicks
-          A[[j]][(x/4)*3,x/2]  <- (k*M2)/(M2+(F2/h))*HSR
-          # Male freq-dep fecundity of Female chicks
-          A[[j]][1,x]          <- (k*F2)/(M2+(F2/h))*HSR 
-          # Male freq-dep fecundity of Male chicks
-          A[[j]][(x/4)*3,x]    <- (k*F2)/(M2+(F2/h))*HSR 
-          # define the new n (i.e., new stage distribution at time t)
-          B <- A[[j]] %*% n
-          F_Chicks[i,(j+1)] <- B[1]
-          F_Adults[i,(j+1)] <- B[2]
-          M_Chicks[i,(j+1)] <- B[3]
-          M_Adults[i,(j+1)] <- B[4]
-          Adults[i,(j+1)] <- B[2] + B[4]
-          lambda[i,(j+1)] <- sum(B[2],B[4])/sum(M2,F2)
-        }
-      }
-      else{
-        A <- sample(matrices$one_sex_mats, (tmax-1), replace = TRUE)
-        for (j in 1:(tmax-1)) {
-          B <- A[[j]] %*% c(Chicks[i,j], Adults[i,j])
-          Chicks[i,(j+1)] <- B[1]
-          Adults[i,(j+1)] <- B[2]
-          lambda[i,(j+1)] <- B[2]/Adults[i,j]
-        }
-      }
-    }  
-    Adults_CV <- apply(Adults, 1, sd)/apply(Adults, 1, mean)
-    Adults_Final <- Adults[,tmax]
-    Adults_melted <- melt(t(Adults))
-    lambda_melted <- melt(t(lambda))
-    Adults_ExProb <- sum(Adults_Final < Quasi_Ex)/nreps
-    colnames(Adults_melted) <- c("Year", "Iteration", "Adults")
-    colnames(lambda_melted) <- c("Year", "Iteration", "lambda")
-    Sim_Avg <- Adults_melted %>%
-      dplyr::group_by(Year) %>%
-      dplyr::summarise(year_avg = mean(Adults))
-    Sim_Avg_lambda <- lambda_melted %>%
-      dplyr::group_by(Iteration) %>%
-      dplyr::summarise(iter_avg = mean(lambda, na.rm = TRUE))
-    Adults <- list(Adults_CV = Adults_CV, Adults_ExProb = Adults_ExProb, 
-                   Adults_Final = Adults_Final, Adults_melted = Adults_melted, 
-                   lambda_melted = lambda_melted,
-                   Sim_Avg = Sim_Avg, Sim_Avg_lambda = Sim_Avg_lambda)
-    Adults
-  }
-```
-Store the actual annual population size estimate from the field
+Store the actual annual population size estimate from the field and calculate the geometric mean of the popualtion growth rate observed over the seven-year period
 ```{r}
 Actual <- c(198, 184, 98, 102, 131, 96, 58)
-```
-define the starting population distribution for the two-sex and one-sex models (format: female chicks,  female adults,  male chicks,  male adults)
-```{r}
-n_two_sex <- c(41, 97, 48, 101)
-n_one_sex <- c(41 + 48, 97 + 101)
-```
-run the stochastic simulation for the two-sex and one-sex models
-```{r}
-two_sex_stoch_proj_year <- stoch_projection_plover(matrices = year_mats, n0 = n_two_sex, h = h,
-                                            tmax = 7, nreps = 10000, Quasi_Ex = 2, HSR = HSR)
-
-one_sex_stoch_proj_year <- stoch_projection_plover(matrices = year_mats, n0 = n_one_sex, 
-                                                   tmax = 7, nreps = 10000, Quasi_Ex = 2, HSR = 0.5, no_stages = 2, two_sex = FALSE)
-```
-calculate the grand average lambda and 95% confidence intervals of the two-sex and one-sex models (i.e., average lambda of all iterations' average lambdas)
-```{r}
-two_sex_stoch_proj_year_summary <- 
-  two_sex_stoch_proj_year$Sim_Avg_lambda%>%
-  dplyr::summarise(grand_avg_lambda = mean(iter_avg),
-                   lcl = quantile(iter_avg, (1 - 0.95)/2),
-                   ucl = quantile(iter_avg, 1 - (1 - 0.95)/2))
-
-
-one_sex_stoch_proj_year_summary <- 
-  one_sex_stoch_proj_year$Sim_Avg_lambda%>%
-  dplyr::summarise(grand_avg_lambda = mean(iter_avg),
-                   lcl = quantile(iter_avg, (1 - 0.95)/2),
-                   ucl = quantile(iter_avg, 1 - (1 - 0.95)/2))
-```
-Specify the years in the melted dataframe
-```{r}
-two_sex_stoch_proj_year$Adults_melted$Year <- 
-  as.factor(c("2006", "2007", "2008", "2009", "2010", "2011", "2012"))
-one_sex_stoch_proj_year$Adults_melted$Year <- 
-  as.factor(c("2006", "2007", "2008", "2009", "2010", "2011", "2012"))
-```
-group the iterations by year and calculate the annual average population size
-```{r}
-two_sex_yearly_averages <- two_sex_stoch_proj_year$Adults_melted %>%
-  dplyr::group_by(Year) %>%
-  dplyr::summarise(two_sex_yr_avg_pop = mean(Adults))
-one_sex_yearly_averages <- one_sex_stoch_proj_year$Adults_melted %>%
-  dplyr::group_by(Year) %>%
-  dplyr::summarise(one_sex_yr_avg_pop = mean(Adults))
-```
-Tidy up summary dataframe
-```{r}
-two_sex_yearly_averages$actual_yr_pop <- Actual
-two_sex_yearly_averages <- melt(two_sex_yearly_averages)
-colnames(two_sex_yearly_averages) <- c("Year", "Model", "Pop_size")
-one_sex_yearly_averages <- melt(one_sex_yearly_averages)
-colnames(one_sex_yearly_averages) <- c("Year", "Model", "Pop_size")
-yearly_averages <- rbind(two_sex_yearly_averages, one_sex_yearly_averages)
-```
-calculate the average of the actual lambda
-```{r}
-Actual_lambda <- sum(Actual[2]/Actual[1], 
+Actual_lambda <- c(Actual[2]/Actual[1], 
                      Actual[3]/Actual[2], 
                      Actual[4]/Actual[3], 
                      Actual[5]/Actual[4], 
                      Actual[6]/Actual[5], 
-                     Actual[7]/Actual[6])/(length(Actual)-1)
-```
-plot the actual vs. the predicted trajectories of the two-sex and one-sex models between 2006 and 2012.
-```{r, fig.width=4, fig.height=4, fig.align="center"}
-# ggplot(NULL) +  
-#   theme_bw() +
-#   geom_line(data = one_sex_stoch_proj_year$Adults_melted, 
-#             aes(x = Year, y = Adults, group = Iteration), 
-#             size = 0.25,  alpha = 0.05, stat = "smooth", 
-#             method = "lm", formula = y ~ poly(x,3),
-#             color = "red") +
-#   geom_line(data = filter(yearly_averages, Model == "one_sex_yr_avg_pop"), 
-#             aes(x = Year, y = Pop_size, group = Model), 
-#             size = 1,  alpha = 1, color = brewer.pal(8, "Set1")[c(1)]) +
-#   geom_line(data = two_sex_stoch_proj_year$Adults_melted, 
-#             aes(x = Year, y = Adults, group = Iteration), 
-#             size = 0.25,  alpha = 0.05, stat = "smooth", 
-#             method = "lm", formula = y ~ poly(x,3)) +
-#   geom_line(data = filter(yearly_averages, Model == "two_sex_yr_avg_pop"), 
-#             aes(x = Year, y = Pop_size, group = Model), #, color = cbPalette), 
-#             size = 1,  alpha = 1, color = "black") +
-#   geom_line(data = filter(yearly_averages, Model == "actual_yr_pop"), 
-#             aes(x = Year, y = Pop_size, group = Model), #, color = cbPalette), 
-#             size = 1,  alpha = 1, color = brewer.pal(8, "Set1")[c(2)]) +
-#   theme(legend.position = c(1, 1), 
-#         legend.justification = c(1, 1),
-#         legend.background = element_rect(fill=NA),
-#         legend.text = element_text(size=7),
-#         legend.title = element_blank(),
-#         legend.key.height = unit(0.8,"line"),
-#         legend.key.width = unit(0.8,"line"),
-#         axis.title.x = element_text(size=12, margin = margin(10, 0, 0, 0)),
-#         axis.text.x  = element_text(size=10, margin = margin(5, 0, 0, 0)), 
-#         axis.title.y = element_text(size=12, margin = margin(0, 15, 0, 0)),
-#         axis.text.y  = element_text(size=10, angle = 0, hjust = 0.5, 
-#                                     margin = margin(0, 1, 0, 0)),
-#         panel.grid.major = element_blank(),
-#         panel.grid.minor = element_blank(),
-#         axis.ticks.y = element_line(size = 0.5, colour = "grey40"),
-#         axis.ticks.length = unit(0.2, "cm"),
-#         axis.ticks.x = element_line(size = 0.5, colour = "grey40"),
-#         panel.border = element_rect(linetype = "solid", colour = "grey"),
-#         plot.margin = unit(c(1,0.5,0.5,0.5), "cm"),
-#         panel.margin = unit(0.75, "lines"),
-#         strip.background = element_blank(), 
-#         strip.text = element_blank()) +
-#   xlab("Year") +
-#   ylab("Breeding population size") +
-#   scale_y_continuous(limits = c(0, 250))
-```
-tidy up the data-frame for the plot legend
-```{r}
-two_sex_stoch_proj_year$Sim_Avg_lambda$Matrix <- "Two-sex model"
-two_sex_stoch_proj_year$Sim_Avg_lambda$Matrix <- as.factor(two_sex_stoch_proj_year$Sim_Avg_lambda$Matrix)
-one_sex_stoch_proj_year$Sim_Avg_lambda$Matrix <- "One-sex model     "
-one_sex_stoch_proj_year$Sim_Avg_lambda$Matrix <- as.factor(one_sex_stoch_proj_year$Sim_Avg_lambda$Matrix)
-test <- rbind(two_sex_stoch_proj_year$Sim_Avg_lambda, one_sex_stoch_proj_year$Sim_Avg_lambda)
-test$Matrix <- factor(test$Matrix, levels = c("One-sex model     ", "Two-sex model"))
+                     Actual[7]/Actual[6])
+
+gm_mean <- function(a){prod(a)^(1/length(a))}
+
+Actual_lambda_geom_mean <- gm_mean(Actual_lambda)
 ```
 Figure 3a: plot the actual vs. the predicted lambda distributions of the two-sex and one-sex model simulations between 2006 and 2012.
 ```{r, fig.width=4, fig.height=3.5, fig.align="center"}
 cbPalette <- c(brewer.pal(8, "Set1")[c(1)], brewer.pal(9, "Greys")[c(9)])
-lambda_stoch_histogram <- 
+lambda_histogram <- 
 ggplot() +
-  geom_histogram(binwidth = 0.003, data = filter(test, Matrix == "Two-sex model"),
-                 aes(x = iter_avg, fill = Matrix), alpha = 0.7) +
-  geom_histogram(binwidth = 0.003, data = filter(test, Matrix == "One-sex model     "),
-                 aes(x = iter_avg, fill = Matrix), alpha = 0.7) +
-  geom_vline(xintercept = Actual_lambda, color = brewer.pal(8, "Set1")[c(2)], size=1) +
-  geom_errorbarh(data = two_sex_stoch_proj_year_summary,
-                 aes(y = 975, x = lcl, xmin = lcl, xmax = ucl),
+  geom_histogram(binwidth = 0.005, data = filter(lambda_boot, parameter == "two_sex_lambda"),
+                 aes(x = estimate, fill = parameter), alpha = 0.7) +
+  geom_histogram(binwidth = 0.005, data = filter(lambda_boot, parameter == "one_sex_lambda"),
+                 aes(x = estimate, fill = parameter), alpha = 0.7) +
+  geom_vline(xintercept = Actual_lambda_geom_mean, color = brewer.pal(8, "Set1")[c(2)], size=1) +
+  geom_errorbarh(data = filter(lambda_boot_summary, parameter == "two_sex_lambda"),
+                 aes(y = 95, x = lcl, xmin = lcl, xmax = ucl),
                  color = "black", size = 0.8, linetype = "solid") +
-  geom_errorbarh(data = one_sex_stoch_proj_year_summary,
-                 aes(y = 950, x = lcl, xmin = lcl, xmax = ucl), 
+  geom_errorbarh(data = filter(lambda_boot_summary, parameter == "one_sex_lambda"),
+                 aes(y = 93, x = lcl, xmin = lcl, xmax = ucl), 
                  color = brewer.pal(8, "Set1")[c(1)], size = 0.8, linetype = "solid") +
   theme_bw() +
   theme(#text = element_text(family="Arial"),
@@ -2667,13 +2143,14 @@ ggplot() +
         strip.text = element_blank()) +
   ylab("Frequency") +
   xlab("Population growth rate") +
-  # xlab(expression('Stochastic population growth (\u03BB'['S']*')')) +
-  scale_y_continuous(limits = c(0, 1000)) +
+  # xlab("Population growth (\u03BB)") +
+  scale_y_continuous(limits = c(0, 100)) +
   scale_fill_manual(values = cbPalette)
-lambda_stoch_histogram
-# ggsave(lambda_stoch_histogram,
-#        filename = "lambda_stoch_histogram_compare_2_v_1.jpg",
-#        path = "figs/final/final_final",
+lambda_histogram
+
+# ggsave(lambda_histogram,
+#        filename = "lambda_histogram_compare_2_v_1.jpg",
+#        path = "figs/final/final_final/Draft_5",
 #        width = 4,
 #        height = 3.5, units = "in",
 #        dpi = 300,
@@ -2844,11 +2321,11 @@ lambda_elasticity <-
                    aes(x = vital_rate, y = elasticities, fill = sex),
                    color = "black", stat = "identity", alpha = 1) +
           # annotate("text", x = c(3), y = c(-0.375),
-          #          label = c("\u2640"), 
+          #          label = c("\u2640"),
           #          size = 7,
           #          family="Arial", vjust = c(0.5)) +
           # annotate("text", x = c(3), y = c(0.375),
-          #          label = c("\u2642"), 
+          #          label = c("\u2642"),
           #          size = 7,
           #          family="Arial", vjust = c(0.5)) +
           annotate("text", x = c(3), y = c(-0.375),
@@ -2898,7 +2375,7 @@ lambda_elasticity <-
 lambda_elasticity
 # ggplot2::ggsave(lambda_elasticity,
 #                 filename = "lambda_elasticity.jpg",
-#                 path = "figs/final/final_final",
+#                 path = "figs/final/final_final/Draft_5",
 #                 width = 4,
 #                 height = 8, units = "in",
 #                 dpi = 300)
