@@ -6,7 +6,7 @@ In this repository you can find all the necessary files needed to reproduce the 
 
 **`R`** *(Appendix A)*
 
-  - **Ceuta_ASR_Matrix_Modeling.pdf** contains the documented code for all analyses, which can be implemented after downloading the datasets provided in the **`data`** and **`output/bootstrap/`** folders.
+  - **Ceuta_ASR_R_code.pdf** and **Ceuta_ASR_R_code.Rmd** contains the documented code for all analyses, which can be implemented after downloading the datasets provided in the **`data`** and **`output/bootstrap/`** folders.
 
 **`data`** *(Appendix B)*
 
@@ -25,9 +25,3 @@ In this repository you can find all the necessary files needed to reproduce the 
   - **ASR_boot_out.txt** contains the adult sex ratio estimates (*ASR_boot*) of each iteration of the bootstrap procedure. Each row represents an iteration (*iter*).
 
   - **survival_rates_boot_out.txt** contains the sex- and stage-specific survival estimates (*estimate*) of each iteration (*iter*) in the bootstrap procedure. Each row represents a given sex and stage (*sex_age*) in a given iteration.
-
-**`output/annual_estimates/`**
-
-  - **survival_rates_year_age.txt** contains the stage- and year-specific survival estimates (*estimate*) of each year (*year*) in the study period. Each row represents a given stage (*age*) in a given year.
-
-  - **survival_rates_year_age_sex.txt** contains the sex- stage-, and year-specific survival estimates (*estimate*) of each year (*year*) in the study period. Each row represents a given sex and stage (*sex_age*) in a given year.
