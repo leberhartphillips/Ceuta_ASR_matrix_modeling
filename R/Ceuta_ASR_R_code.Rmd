@@ -1,7 +1,7 @@
 ---
 title: 'R-code for "Adult sex ratio bias is driven by sex-specific early survival: implications for mating system evolution and population growth"'
 author: Luke J. Eberhart-Phillips, Clemens Küpper, Tom E. X. Miller, Medardo Cruz-López,
-  Kathryn Maher, Natalie dos Remedios, Martin A. Stoffel, Joseph I. Hoffman, Oliver
+  Kathryn H. Maher, Natalie dos Remedios, Martin A. Stoffel, Joseph I. Hoffman, Oliver
   Krüger, Tamás Székely
 date: "November 15, 2016"
 output:
@@ -52,9 +52,9 @@ library(magrittr)
 
 To start, please load the following datasets into your R environment:
 
-- **data/chick_survival_data.txt** contains the mark-recapture field data of chicks. Each row is a single uniquely marked chick identified by their *ring*. The daily encounter history of an individual is expressed in their *ch*, where a "1" indicates that an individual was encountered, "0" indicates it was not encountered, and "." indicates that no survey took place on that day. *year* indicates the year during which an individual was monitored and *day_of_season* indicates the number of days since the start of the breeding season that an individual hatched. *sex* describes the molecular sex-type of an individual with "M" for males and "F" for females. *brood_ID* is a unique brood identifier for the family from which a chick hatched.
+- **data/chick_mark-recapture_data.txt** contains the mark-recapture field data of chicks. Each row is a single uniquely marked chick identified by their *ring*. The daily encounter history of an individual is expressed in their *ch*, where a "1" indicates that an individual was encountered, "0" indicates it was not encountered, and "." indicates that no survey took place on that day. *year* indicates the year during which an individual was monitored and *day_of_season* indicates the number of days since the start of the breeding season that an individual hatched. *sex* describes the molecular sex-type of an individual with "M" for males and "F" for females. *brood_ID* is a unique brood identifier for the family from which a chick hatched.
 
-- **data/juvenile_adult_survival_data.txt** contains the mark-recapture field data of juveniles and adults. Each row is a single uniquely marked individual identified by their *ring*. The annual encounter history of an individual is expressed in their *ch*, where a "1" indicates that an individual was encountered and "0" indicates it was not encountered. *sex* describes the molecular sex-type of an individual with "M" for males and "F" for females. *age* describes the stage at which an individual was initially captured, where "J" indicates it was first captured as a chick, and "A" indicates it was first captured as an adult.
+- **data/juvenile_adult_mark-recapture_data.txt** contains the mark-recapture field data of juveniles and adults. Each row is a single uniquely marked individual identified by their *ring*. The annual encounter history of an individual is expressed in their *ch*, where a "1" indicates that an individual was encountered and "0" indicates it was not encountered. *sex* describes the molecular sex-type of an individual with "M" for males and "F" for females. *age* describes the stage at which an individual was initially captured, where "J" indicates it was first captured as a chick, and "A" indicates it was first captured as an adult.
 
 - **data/breeding_data.txt** contains the individual reproductive histories of all marked breeding adults in the population. Each row is a nesting attempt uniquely identified by the nest *ID*. *no_chicks* expresses the number of chicks that hatched from the nest. *clutch_size* indicates the number of eggs in the nest when it was initially discovered. *year* describes the year in which the nest was active. *male* and *female* indicates the unique identity of the father and mother, respectively, with "male_NA" and "female_NA" describing cases in which the other mate was not identified.
 ```{r, results = "hide", message = FALSE, warning=FALSE, cache = TRUE}
@@ -2002,10 +2002,6 @@ lambda_elasticities$vital_rate <-
   as.factor(c("Chick_survival", "Juvenile_survival", "Adult_survival", "Chick_survival", 
               "Juvenile_survival", "Adult_survival", "Mating_system", "Hatching_sex_ratio"))
 
-# classify the levels of the scenarios
-lambda_elasticities$model <- factor(lambda_elasticities$model, 
-                                    levels = c("equal_mono", "equal_poly", "diff_mono", "diff_poly"))
-
 # classify the levels of the vital rates
 lambda_elasticities$vital_rate <- factor(lambda_elasticities$vital_rate, 
                                     levels = c("Adult_survival", "Juvenile_survival", 
@@ -2021,6 +2017,10 @@ lambda_elasticities$sex <- as.factor(c("Female", "Female",
 # create a unique name for each scenario and vital rate combination
 lambda_elasticities$model_vital_rate <- as.factor(paste(lambda_elasticities$model, 
                                                         lambda_elasticities$vital_rate, sep = "_"))
+
+# classify the levels of the scenarios
+lambda_elasticities$model <- factor(lambda_elasticities$model, 
+                                    levels = c("diff_mono", "diff_poly", "equal_mono", "equal_poly"))
 ```
 Figure 3: plot the elasticities of lambda to perturbations of each parameter under the four scenarios
 ```{r, fig.width=4, fig.height=8, fig.align="center"}
@@ -2060,12 +2060,10 @@ lambda_elasticity <-
           #          family="Arial", vjust = c(0.5)) +
           annotate("text", x = c(3), y = c(-0.375),
                    label = c("female"),
-                   size = 7,
-                   vjust = c(0.5), angle = 90, size = 1) +
+                   vjust = c(0.5), angle = 90, size = 5) +
           annotate("text", x = c(3), y = c(0.375),
                    label = c("male"),
-                   size = 7,
-                   vjust = c(0.5), angle = 270, size = 1) +
+                   vjust = c(0.5), angle = 270, size = 5) +
           facet_grid(model ~ ., labeller = as_labeller(scenario_names)) +
           theme(#text = element_text(family="Arial"),
                 legend.position = "none",
