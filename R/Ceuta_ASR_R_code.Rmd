@@ -1,9 +1,9 @@
 ---
-title: 'R-code for "Adult sex ratio bias is driven by sex-specific early survival: implications for population growth and mating system evolution"'
+title: 'R-code for "Adult sex ratio bias is driven by sex-specific early survival: implications for mating system evolution and population growth"'
 author: Luke J. Eberhart-Phillips, Clemens Küpper, Tom E. X. Miller, Medardo Cruz-López,
   Kathryn Maher, Natalie dos Remedios, Martin A. Stoffel, Joseph I. Hoffman, Oliver
   Krüger, Tamás Székely
-date: "October 30, 2016"
+date: "November 15, 2016"
 output:
   pdf_document:
     keep_tex: yes
@@ -76,7 +76,7 @@ breeding_data <-
 ***
 ## Quantifying mating system
 
-To put our estimate of ASR in the context of breeding behavior, we quantified sex-specific mating strategies and the reproductive success of snowy plovers at our study site. Females of this species desert broods to seek serial mates (Page et al. 2009).  Thus, we expected that a larger number of females would exhibit within-season polygamy than males. 
+To put our estimate of ASR in the context of breeding behavior, we quantified sex bias in mating system based on behavioral obersvations from the field. Females of this species desert broods to seek serial mates (Page et al. 2009).  Thus, we expected that females would have more mates per year than males. 
 
 **Step one: wrangle the data**
 remove any cases in which one mate was not identified (i.e., "NA")
@@ -138,21 +138,6 @@ males_no_1$sex <- as.factor(males_no_1$sex)
 colnames(males_no_1)[c(1,9)] <- c("focal", "mate")
 mating <- rbind(females_no_1, males_no_1)
 ```
-determine if an individual was either:
-a) monogamous between years (i.e. only 1 mate in lifetime, with the number of attempts equaling the number years mating)
-b) monogamous within years (i.e. only 1 mate in lifetime, with the number of attempts greater the number years mating)
-c) polygamous between years (i.e. more than one mate in lifetime, with the number of attempts equaling the number years mating)
-d) polygamous within years (i.e. more than one mate in lifetime, with the number of attempts greater the number years mating)
-```{r}
-mating$status <- ifelse(mating$mate == 1 & mating$years == mating$attempts, 
-                        "Monogamous between years",
-                    ifelse(mating$mate == 1 & mating$years < mating$attempts, 
-                               "Monogamous within years",
-                            ifelse(mating$mate > 1 & mating$years == mating$attempts, 
-                                      "Polygamous between years",
-                                  ifelse(mating$mate > 1 & mating$years < mating$attempts, 
-                                             "Polygamous within years", "XXX"))))
-```
 calculate the number of mates per year
 ```{r}
 mating$no_mates_per_year <- mating$mate/mating$years
@@ -167,20 +152,21 @@ sex_specific_mating_system <-
                      median_annual_no_mates = median(no_mates_per_year),
                      sd_annual_no_mates = sd(no_mates_per_year))
 
-# because the mating system is polyandrous, h must be less than 1, and therefore the inverse is calculated
+# because the mating system is polyandrous, h must be less than 1, 
+# and therefore the inverse is calculated
 h <- 
   1/as.numeric(sex_specific_mating_system[which(sex_specific_mating_system$sex == "Female"), 2])
 
-# display the h value
+# display the h value (used in the mating function of the matrix model)
 h
 ```
-plot the sex-specific distributions of mating system
+Figure 1b: plot the sex-specific distributions of mating system
 ```{r, fig.width=3, fig.height=5, fig.align="center"}
 # define sex as a factor
-mating$sex <- factor(mating$sex, levels = c("Male", "Female"))
+#mating$sex <- factor(mating$sex, levels = c("Male", "Female"))
 
 # specifiy the color palette to use in plotting
-cbPalette <- RColorBrewer::brewer.pal(8, "Dark2")[c(1,2)]
+cbPalette <- RColorBrewer::brewer.pal(8, "Dark2")[c(2,1)]
 
 # define the dodge level
 pd <- position_dodge(0.1)
@@ -230,89 +216,15 @@ statistically test the sex-difference in the per capita annual number of mates b
 ```{r}
 wilcox.test(no_mates_per_year ~ sex, data = mating)
 ```
-run chi-squared test of the sex-differences in polygamy rates
-```{r}
-chisq.test(table(mating$sex, mating$status)[,c(3,4)])
-```
-run chi-squared test of the sex-differences in monogamy rates
-```{r}
-chisq.test(table(mating$sex, mating$status)[,c(1,2)])
-```
-run chi-squared test of the sex-differences in mating behaviour rates
-```{r}
-chisq.test(table(mating$sex, mating$status))
-```
-set the factor levels for plotting
-```{r}
-mating$status <- factor(mating$status, 
-                        levels = c("Monogamous within years",
-                                   "Monogamous between years",
-                                   "Polygamous between years",
-                                   "Polygamous within years"))
-```
-determine the number of males and females used in the analysis
-```{r}
-sample_sizes_sex <- 
-  stats::aggregate(focal ~ sex, data = mating, FUN = function(x){NROW(x)})
-```
-define the color palatte to use in the plot
-```{r}
-custom_pal <- c("#7b3294", "#9E6BB1", "#91bfdb", "#4575b4")
-```
-Figure 1b: plot the sex-differences in mating behaviour
-```{r, fig.width=2.8, fig.height=5, fig.align="center"}
-matefidelity_plot_by_sex <- 
-ggplot2::ggplot() +
-          geom_bar(position = "fill", alpha = 0.75, 
-                   data = mating, aes(x = sex, fill = status)) +
-          geom_text(data = sample_sizes_sex, size = 3, 
-                    aes(y = c(1.05, 1.05), x = c(1.11, 2.11), label = focal)) +
-          annotate("text", x = c(0.92, 1.92), y = c(1.05, 1.05), 
-                   label = "n = ", size = 3) +
-          theme_bw() +
-          theme(#text = element_text(family="Arial"),
-                legend.text = element_text(size = 10),
-                legend.title = element_blank(),
-                legend.position = "bottom",
-                legend.key.height=unit(0.8,"line"),
-                legend.key.width=unit(0.8,"line"),
-                axis.title.x = element_blank(),
-                axis.text.x  = element_text(size = 10), 
-                axis.title.y = element_text(size = 12, margin = margin(0, 15, 0, 0)),
-                axis.text.y = element_text(size = 10), 
-                panel.grid.major = element_blank(),
-                panel.grid.minor = element_blank(),
-                strip.text.x = element_text(size=12),
-                strip.background = element_blank(),
-                strip.text = element_text(vjust = -10),
-                axis.ticks.x = element_blank(),
-                axis.ticks.y = element_line(size = 0.5, colour = "grey40"),
-                axis.ticks.length = unit(0.2, "cm"),
-                panel.border = element_rect(linetype = "solid", colour = "grey"),
-                plot.margin = unit(c(0.2,0.2,-0.2,0.2), "cm")) +
-          ylab("Proportion of individuals") +
-          scale_fill_manual(values = custom_pal) +
-          scale_y_continuous(limits = c(0, 1.05)) +
-          guides(fill = guide_legend(ncol = 1, byrow = TRUE))
-matefidelity_plot_by_sex
-
-# ggplot2::ggsave(matefidelity_plot_by_sex,
-#                 filename = "matefidelity_plot.jpg",
-#                 path = "figs/final/final_final",
-#                 width = 3,
-#                 height = 5, units = "in",
-#                 dpi = 300)
-```
 
 ***
 ## Sex-specific fecundity
 
-The objective here was to determine the average per capita annual fecundity for females. This vital rate was then incorporated into the two-sex matrix model. The second objective was to evalutate if the distributions of male and female fecundity were different, which would provide evidence of the polygamous nature of the snowy plover mating system.
+The objective here was to determine the average per capita annual fecundity for females. This vital rate was then incorporated into the one-sex matrix model (see section on the two-sex vs one-sex model comparison).
 
 **Step one: wrangle the data**
 
-Extract the female column from the breeding data, add a sex column, extract the male colum, add a 
-sex column, then stack these two dataframes.
+Extract the female column from the breeding data, add a sex column, extract the male colum, add a sex column, then stack these two dataframes.
 ```{r, results = "hide", message = FALSE, warning=FALSE}
 Sex <- rep("Female", nrow(breeding_data))
 Ring <- breeding_data$female
@@ -373,67 +285,6 @@ summarize the avg annual no_chicks by sex
 fecundity_sex_summary <- 
   Rmisc::summarySE(fecundity_annual_summary, 
                    measurevar = "total_chicks_p_year", groupvars = c("Sex"))
-```
-Determine how many individuals were included in the analysis
-```{r}
-sample_sizes_sex <- 
-  aggregate(Ring ~ Sex, data = reproduction_df_sum_avg, FUN = function(x){NROW(x)})
-```
-specify the color pallete to use for the plot
-```{r}
-cbPalette <- RColorBrewer::brewer.pal(8, "Dark2")[c(2,1)]
-```
-**Step three: plot the sex-specific distributions**
-
-Figure 1c
-```{r, fig.align="center", fig.width=2.8, fig.height=5}
-Sex_specific_fucund_plot <- 
-ggplot2::ggplot() +
-  geom_boxplot(aes(y = avg_chicks_p_year, x = Sex, fill = Sex), 
-               data = reproduction_df_sum_avg, size = .3, alpha = 0.6) +
-  geom_text(data = sample_sizes_sex, size = 3, 
-            aes(y = c(6.5, 6.5), x = c(1.12, 2.12), label = Ring)) +
-  annotate("text", x = c(0.92, 1.92), y = c(6.5, 6.5), label = "n = ", 
-           size = 3) +
-  theme_bw() +
-  theme(text = element_text(#family="Arial", 
-                            size = 16),
-        legend.position = "none",
-        axis.title.x = element_blank(),
-        axis.text.x  = element_text(size = 10), 
-        axis.title.y = element_text(size = 12, 
-                                    margin = margin(0, 15, 0, 0)),
-        axis.text.y = element_text(size = 10), 
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.ticks.y = element_line(size = 0.5, colour = "grey40"),
-        axis.ticks.length = unit(0.2, "cm"),
-        axis.ticks.x = element_blank(),
-        panel.border = element_rect(linetype = "solid", colour = "grey")) +
-  scale_fill_manual(values = cbPalette) +
-  ylab("Per capita annual hatchlings parented") +
-  scale_y_continuous(limits = c(0, 6.5))
-Sex_specific_fucund_plot
-
-# ggsave(Sex_specific_fucund_plot,
-#        filename = "sex-specific_reproductive_success.jpg",
-#        path = "figs/final/final_final",
-#        width = 2.8,
-#        height = 5, units = "in",
-#        dpi = 300,
-#        scale = 1)
-```
-**Step four: statistical testing of sex-specific variance in fecundity**
-
-Run F-test to assess sex-specific variation in per capita fecundity
-```{r}
-reproduction_df_sum_avg <- as.data.frame(reproduction_df_sum_avg)
-var.test(reproduction_df_sum_avg[which(reproduction_df_sum_avg$Sex == "Female"),
-                                 c("avg_chicks_p_year")],
-         reproduction_df_sum_avg[which(reproduction_df_sum_avg$Sex == "Male"),
-                                 c("avg_chicks_p_year")],
-         alternative = "greater")
-         
 ```
 Assign the value of female per capita annual fecundity to a constant that will be included in the one-sex matrix assessed later
 ```{r}
@@ -545,14 +396,14 @@ plover_matrix <-
                  # top row of matrix
                  0, NA, 0, NA, 
                  # second row of matrix
-                 (demographic_rates$F_Chk_survl*demographic_rates$F_Fdg_survl),
+                 (demographic_rates$F_Chk_survl*demographic_rates$F_Juv_survl),
                  demographic_rates$F_Adt_survl,
                  0, 0,
                  # third row of matrix
                  0, NA, 0, NA,
                  # fourth row of matrix
                  0, 0, 
-                 (demographic_rates$M_Chk_survl*demographic_rates$M_Fdg_survl),
+                 (demographic_rates$M_Chk_survl*demographic_rates$M_Juv_survl),
                  demographic_rates$M_Adt_survl),
                nrow = length(stages), byrow = TRUE,
                dimnames = list(stages, stages))
@@ -566,7 +417,7 @@ plover_matrix <-
                  # top row of matrix
                  0, RF,
                  # second row of matrix
-                 (demographic_rates$Chk_survl*demographic_rates$Fdg_survl),
+                 (demographic_rates$Chk_survl*demographic_rates$Juv_survl),
                  demographic_rates$Adt_survl),
                nrow = length(stages), byrow = TRUE,
                dimnames = list(stages, stages))
@@ -905,10 +756,10 @@ bootstrap_survival_ASR <- function(plover_boot_list, num_boot) {
   
   # Create a list of demographic rates from the survival analyses above
   demographic_rates <- list(F_Chk_survl = survival_rates[5,2],
-                            F_Fdg_survl = survival_rates[3,2],
+                            F_Juv_survl = survival_rates[3,2],
                             F_Adt_survl = survival_rates[1,2],
                             M_Chk_survl = survival_rates[6,2],
-                            M_Fdg_survl = survival_rates[4,2],
+                            M_Juv_survl = survival_rates[4,2],
                             M_Adt_survl = survival_rates[2,2],
                             # Define hatching sex ratio
                             HSR = HSR,
@@ -1113,9 +964,9 @@ Background <-
         strip.text = element_blank()) +
   scale_x_continuous(limits=c(0,4),breaks=c(0,1,2), labels=c("Chick", "Juvenile", "Adult")) +
   scale_y_continuous(limits=c(-0.25,0.25)) +
-  xlab("Life-stage") + 
-  ylab("Sex-bias in apparent survival (phi)")
-  # ylab("Sex-bias in apparent survival (\u03D5)")
+  xlab("Life stage") + 
+  ylab("Sex bias in apparent survival (phi)")
+  # ylab("Sex bias in apparent survival (\u03D5)")
 
 Bootstrap_sex_diff_VR_plot <- 
   ggplot(aes(y = difference, x = stage, fill = stage), data = sex_diff_survival_output) + 
@@ -1143,9 +994,9 @@ Bootstrap_sex_diff_VR_plot <-
         strip.text = element_blank()) +
   scale_fill_manual(values = cbPalette) +
   scale_y_continuous(limits=c(-0.25,0.25)) +
-  xlab("Life-stage") + 
-  # ylab("Sex-bias in apparent survival (\u03D5)")
-  ylab("Sex-bias in apparent survival (phi)")
+  xlab("Life stage") + 
+  # ylab("Sex bias in apparent survival (\u03D5)")
+  ylab("Sex bias in apparent survival (phi)")
 
 # jpeg(filename = "/Users/Luke/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/figs/final/final_final/Draft_5/Surv_sex_differences_final.jpeg",
 #      quality = 100,
@@ -1299,7 +1150,6 @@ plot the overall model ranks of the chick survival anlaysis based on Delta AIC
 Bootstrap_Delta_AIC_plot_C <- 
   ggplot(aes(y = DeltaAICc, x = p), data = chick_AIC_tables) + 
   theme_bw() +
-  #geom_violin(fill = "grey40") +
   geom_boxplot(width = 0.3, fill = "grey70", outlier.size = 0.5) +
   theme(#text = element_text(family="Arial"),
         legend.position = "none",
@@ -1357,7 +1207,7 @@ Bootstrap_AIC_weight_plot_C <-
 grid.newpage()
 pushViewport(viewport(layout = grid.layout(5, 1)))
 vplayout <- function(x, y) viewport(layout.pos.row = x, layout.pos.col = y)
-print(Bootstrap_Delta_AIC_plot_C, vp = vplayout(1:2, 1))  # key is to define vplayout
+print(Bootstrap_Delta_AIC_plot_C, vp = vplayout(1:2, 1))
 print(Bootstrap_AIC_weight_plot_C, vp = vplayout(3:5, 1))
 # dev.off()
 ```
@@ -1366,7 +1216,6 @@ plot the overall model ranks of the juvenile and adult survival anlaysis based o
 Bootstrap_Delta_AIC_plot_F_A <- 
   ggplot(aes(y = DeltaAICc, x = p), data = juv_ad_AIC_tables) + 
   theme_bw() +
-  #geom_violin(fill = "grey40") +
   geom_boxplot(width = 0.3, fill = "grey70", outlier.size = 0.5) +
   theme(#text = element_text(family="Arial"),
         legend.position = "none",
@@ -1385,8 +1234,8 @@ Bootstrap_Delta_AIC_plot_F_A <-
         strip.text = element_blank()) +
   scale_y_continuous(limits=c(0,50)) +
   xlab("Model") + 
-  ylab("Delta AIC") +
-  #ylab("\u0394 AIC") +
+  # ylab("Delta AIC") +
+  ylab("\u0394 AIC") +
   ggtitle("Juvenile and adult resighting model selection")
 ```
 plot the overall model ranks of the juvenile and adult survival anlaysis based on AIC weight
@@ -1425,7 +1274,7 @@ Bootstrap_AIC_weight_plot_F_A <-
 grid.newpage()
 pushViewport(viewport(layout = grid.layout(5, 1)))
 vplayout <- function(x, y) viewport(layout.pos.row = x, layout.pos.col = y)
-print(Bootstrap_Delta_AIC_plot_F_A, vp = vplayout(1:2, 1))  # key is to define vplayout
+print(Bootstrap_Delta_AIC_plot_F_A, vp = vplayout(1:2, 1))
 print(Bootstrap_AIC_weight_plot_F_A, vp = vplayout(3:5, 1))
 # dev.off()
 ```
@@ -1433,7 +1282,7 @@ print(Bootstrap_AIC_weight_plot_F_A, vp = vplayout(3:5, 1))
 ***
 ## Life table response experiment on ASR
 
-Perturbation analyses provide important information about the relative contribution that each component of a matrix model has on the response, in our case ASR. To assess how influential a sex-bias in each of the three life-stages is on ASR dynamics, we employed a life-table response experiment (LTRE). In essence, the LTRE compares the response of a “control” matrix to that of a “treatment” matrix and assesses the relative contribution that model components have on the effect size of the treatment.
+Perturbation analyses provide important information about the relative effect that each component of a matrix model has on the population-level response, in our case ASR. To assess how influential a sex bias in parameters associated with each of the three life stages was on ASR dynamics, we employed a life-table response experiment (LTRE). A LTRE decomposes the difference in response between two or more "treatments" by weighting the difference in parameter values by the parameter's contribution to the response (i.e. its sensitivity), and summing over all parameters (Caswell 2001). Here, we compared the observed scenario, to a hypothetical scenario whereby all female survival rates were set equal to the male rates and the hatching sex ratio was set to 0.5. Thus, our LTRE identifies the drivers of ASR bias by decomposing the difference between the ASR predicted by our model and an unbiased ASR (Veran & Beissinger 2009).
 
 The following two functions need to be specified first:
 
@@ -1445,10 +1294,10 @@ sensitivity_analysis <-
     # make a list of all parameters
     vr <-
       list(F_Chk_survl = vital_rates$F_Chk_survl,
-           F_Fdg_survl = vital_rates$F_Fdg_survl,
+           F_Juv_survl = vital_rates$F_Juv_survl,
            F_Adt_survl = vital_rates$F_Adt_survl,
            M_Chk_survl = vital_rates$M_Chk_survl,
-           M_Fdg_survl = vital_rates$M_Fdg_survl,
+           M_Juv_survl = vital_rates$M_Juv_survl,
            M_Adt_survl = vital_rates$M_Adt_survl)
 
     # number of stages in the matrix
@@ -1465,15 +1314,15 @@ sensitivity_analysis <-
 
     # dataframe to store the perturbation results
     ASR_pert_results <-
-      data.frame(parameter = c("F_Chk_survl", "F_Fdg_survl", "F_Adt_survl",
-                               "M_Chk_survl", "M_Fdg_survl", "M_Adt_survl",
+      data.frame(parameter = c("F_Chk_survl", "F_Juv_survl", "F_Adt_survl",
+                               "M_Chk_survl", "M_Juv_survl", "M_Adt_survl",
                                "h", "k", "HSR"),
                  sensitivities = numeric(9),
                  elasticities = numeric(9))
 
     lambda_pert_results <-
-      data.frame(parameter = c("F_Chk_survl", "F_Fdg_survl", "F_Adt_survl",
-                               "M_Chk_survl", "M_Fdg_survl", "M_Adt_survl",
+      data.frame(parameter = c("F_Chk_survl", "F_Juv_survl", "F_Adt_survl",
+                               "M_Chk_survl", "M_Juv_survl", "M_Adt_survl",
                                "h", "k", "HSR"),
                  sensitivities = numeric(9),
                  elasticities = numeric(9))
@@ -1514,7 +1363,8 @@ sensitivity_analysis <-
         A <- matrix(sapply(matrix_str, eval, vr2, NULL), 
                     nrow = sqrt(length(matrix_str)), byrow=TRUE, 
                     dimnames = list(stages, stages)) # build the matrix with the new value
-        m <- rep(10, no_stages) # reset the starting stage distribution for simulation (all with 10 individuals)
+        # reset the starting stage distribution for simulation (all with 10 individuals)
+        m <- rep(10, no_stages) 
         for (j in 1:niter) { # project the matrix through t iteration
           # stage distribution at time t
           stage[,j] <- m
@@ -1566,7 +1416,8 @@ sensitivity_analysis <-
       A <- matrix(sapply(matrix_str, eval, vr, NULL), 
                   nrow = sqrt(length(matrix_str)), byrow=TRUE, 
                   dimnames = list(stages, stages)) # build the matrix with the new value
-      m <- rep(10, no_stages) # reset the starting stage distribution for simulation (all with 10 individuals)
+      # reset the starting stage distribution for simulation (all with 10 individuals)
+      m <- rep(10, no_stages) 
       for (j in 1:niter) { # project the matrix through t iteration
         # stage distribution at time t
         stage[,j] <- m
@@ -1617,7 +1468,8 @@ sensitivity_analysis <-
       A <- matrix(sapply(matrix_str, eval, vr, NULL), 
                   nrow = sqrt(length(matrix_str)), byrow=TRUE, 
                   dimnames = list(stages, stages)) # build the matrix with the new value
-      m <- rep(10, no_stages) # reset the starting stage distribution for simulation (all with 10 individuals)
+      # reset the starting stage distribution for simulation (all with 10 individuals)
+      m <- rep(10, no_stages) 
       for (j in 1:niter) { # project the matrix through t iteration
         # stage distribution at time t
         stage[,j] <- m
@@ -1668,7 +1520,8 @@ sensitivity_analysis <-
       A <- matrix(sapply(matrix_str, eval, vr, NULL), 
                   nrow = sqrt(length(matrix_str)), byrow=TRUE, 
                   dimnames = list(stages, stages)) # build the matrix with the new value
-      m <- rep(10, no_stages) # reset the starting stage distribution for simulation (all with 10 individuals)
+      # reset the starting stage distribution for simulation (all with 10 individuals)
+      m <- rep(10, no_stages) 
       for (j in 1:niter) { # project the matrix through t iteration
         # stage distribution at time t
         stage[,j] <- m
@@ -1788,10 +1641,10 @@ survival_rates_boot_summary <-
 define deteriministic Ceuta vital rates estimated from mark-recapture analysis. This are the "treatment" rates observed in the field:
 ```{r}
 VR_treat <- list(F_Chk_survl = survival_rates_boot_summary[2,3],
-                 F_Fdg_survl = survival_rates_boot_summary[3,3],
+                 F_Juv_survl = survival_rates_boot_summary[3,3],
                  F_Adt_survl = survival_rates_boot_summary[1,3],
                  M_Chk_survl = survival_rates_boot_summary[5,3],
-                 M_Fdg_survl = survival_rates_boot_summary[6,3],
+                 M_Juv_survl = survival_rates_boot_summary[6,3],
                  M_Adt_survl = survival_rates_boot_summary[4,3],
                  # Define h (harem size, h = 1 is monogamy) and k (clutch size)
                  h = h,
@@ -1803,13 +1656,13 @@ Define vital rates of the M prime matrix (i.e., average between a "control matri
 ```{r}
 VR_mprime <- list(F_Chk_survl = (survival_rates_boot_summary[2,3] +
                                    survival_rates_boot_summary[5,3])/2,
-                  F_Fdg_survl = (survival_rates_boot_summary[3,3] +
+                  F_Juv_survl = (survival_rates_boot_summary[3,3] +
                                    survival_rates_boot_summary[6,3])/2,
                   F_Adt_survl = (survival_rates_boot_summary[1,3] +
                                    survival_rates_boot_summary[4,3])/2,
                   M_Chk_survl = (survival_rates_boot_summary[5,3] +
                                    survival_rates_boot_summary[5,3])/2,
-                  M_Fdg_survl = (survival_rates_boot_summary[6,3] +
+                  M_Juv_survl = (survival_rates_boot_summary[6,3] +
                                    survival_rates_boot_summary[6,3])/2,
                   M_Adt_survl = (survival_rates_boot_summary[4,3] +
                                    survival_rates_boot_summary[4,3])/2,
@@ -1826,13 +1679,13 @@ matrix_structure <- expression(
                                0, NA, 0, NA,
                                
                                # second row of matrix
-                               (F_Chk_survl * F_Fdg_survl), F_Adt_survl, 0, 0,
+                               (F_Chk_survl * F_Juv_survl), F_Adt_survl, 0, 0,
                                
                                # third row of matrix
                                0, NA, 0, NA,
                                
                                # fourth row of matrix
-                               0, 0, (M_Chk_survl * M_Fdg_survl), M_Adt_survl
+                               0, 0, (M_Chk_survl * M_Juv_survl), M_Adt_survl
                                
                                )
 ```
@@ -1910,13 +1763,13 @@ Background_LTRE_ASR <-
            fill=brewer.pal(8, "Dark2")[c(2)]) +
   annotate("rect", xmin=-Inf, xmax=Inf, ymin=0, ymax=Inf, alpha=0.6,
            fill=brewer.pal(8, "Dark2")[c(1)]) +
-  annotate("text", x = c(2,2), y = c(-Inf, Inf),
-           label = c("\u2640", "\u2642"), size = 7,
-           family="Arial", vjust = c(0.5,0.5), hjust = c(-0.3,1.3)) +
-  # annotate("text", x = c(2,2), y = c(-0.1, 0.1),
-  #          label = c("female", "male"), size = 7,
-  #          vjust = c(1,1), hjust = c(0.5,0.5), angle = c(90, 270)) +
-  theme(text = element_text(family="Arial", 
+  # annotate("text", x = c(2,2), y = c(-Inf, Inf),
+  #          label = c("\u2640", "\u2642"), size = 7,
+  #          family="Arial", vjust = c(0.5,0.5), hjust = c(-0.3,1.3)) +
+  annotate("text", x = c(2,2), y = c(-0.1, 0.1),
+           label = c("female", "male"), size = 7,
+           vjust = c(1,1), hjust = c(0.5,0.5), angle = c(90, 270)) +
+  theme(text = element_text(#family="Arial", 
                             color = "white"), # set the font as Candara
         legend.position = "none",
         axis.title.x = element_text(size=12, margin = margin(10, 0, 0, 0)),
@@ -1930,25 +1783,25 @@ Background_LTRE_ASR <-
         axis.ticks.x = element_line(size = 0.5, colour = "white"),
         axis.ticks.length = unit(0.2, "cm"),
         panel.border = element_blank(),
-        # plot.margin = unit(c(1,0.5,0.5,2.9), "cm"),
-        plot.margin = unit(c(1,0.5,0.5,2.3), "cm"),
+        plot.margin = unit(c(1,0.5,0.5,2.9), "cm"),
+        # plot.margin = unit(c(1,0.5,0.5,2.3), "cm"),
         panel.margin = unit(0.75, "lines"),
         strip.background = element_blank(),
         strip.text = element_blank()) +
   ylab("Contribution to adult sex ratio") +
-  xlab("Sex-bias in parameter") +
+  xlab("Sex bias in parameter") +
   scale_fill_manual(values = cbPalette) +
   scale_y_continuous(limits = c(-0.1, 0.1)) +
-  scale_x_discrete(labels = c("Adult survival" = expression(Adult["\u03D5"]),
-                              "Juvenile survival" = expression(Juvenile ["\u03D5"]),
-                              "Chick survival" = expression(Chick ["\u03D5"]),
-                              "Hatching sex ratio" = expression(italic("\u03C1")),
-                              "Mating system" = expression(italic("h"))))
-  # scale_x_discrete(labels = c("Adult survival" = "Adult surv.",
-  #                             "Juvenile survival" = "Fledg. surv",
-  #                             "Chick survival" = "Chick surv.",
-  #                             "Hatching sex ratio" = "Hatching SR",
-  #                             "Mating system" = "Mat. sys."))
+  # scale_x_discrete(labels = c("Adult survival" = expression(Adult["\u03D5"]),
+  #                             "Juvenile survival" = expression(Juvenile ["\u03D5"]),
+  #                             "Chick survival" = expression(Chick ["\u03D5"]),
+  #                             "Hatching sex ratio" = expression(italic("\u03C1")),
+  #                             "Mating system" = expression(italic("h"))))
+  scale_x_discrete(labels = c("Adult survival" = "Adult surv.",
+                              "Juvenile survival" = "Fledg. surv",
+                              "Chick survival" = "Chick surv.",
+                              "Hatching sex ratio" = "Hatching SR",
+                              "Mating system" = "Mat. sys."))
 
 LTRE_ASR <-
   ggplot2::ggplot() +
@@ -1956,7 +1809,7 @@ LTRE_ASR <-
   coord_flip() +
   geom_bar(data = LTRE_plover$LTRE_ASR,
            aes(x = parameter, y = contribution, fill = parameter), color = "black", stat = "identity") +
-  theme(text = element_text(family="Arial"),
+  theme(#text = element_text(family="Arial"),
         legend.position = "none",
         panel.background = element_rect(fill = "transparent",colour = NA),
         plot.background = element_rect(fill = "transparent",colour = NA),
@@ -1976,34 +1829,36 @@ LTRE_ASR <-
         strip.background = element_blank(),
         strip.text = element_blank()) +
   ylab("Contribution to adult sex ratio") +
-  xlab("Sex-bias in parameter") +
+  xlab("Sex bias in parameter") +
   scale_fill_manual(values = cbPalette) +
   scale_y_continuous(limits = c(-0.10, 0.10)) +
-  scale_x_discrete(labels = c("Adult survival" = expression(Adult["\u03D5"]),
-                              "Juvenile survival" = expression(Juvenile ["\u03D5"]),
-                              "Chick survival" = expression(Chick ["\u03D5"]),
-                              "Hatching sex ratio" = expression(italic("\u03C1")),
-                              "Mating system" = expression(italic("h"))))
-  # scale_x_discrete(labels = c("Adult survival" = "Adult surv.",
-  #                             "Juvenile survival" = "Fledg. surv",
-  #                             "Chick survival" = "Chick surv.",
-  #                             "Hatching sex ratio" = "Hatching SR",
-  #                             "Mating system" = "Mat. sys."))
+  # scale_x_discrete(labels = c("Adult survival" = expression(Adult["\u03D5"]),
+  #                             "Juvenile survival" = expression(Juvenile ["\u03D5"]),
+  #                             "Chick survival" = expression(Chick ["\u03D5"]),
+  #                             "Hatching sex ratio" = expression(italic("\u03C1")),
+  #                             "Mating system" = expression(italic("h"))))
+  scale_x_discrete(labels = c("Adult survival" = "Adult surv.",
+                              "Juvenile survival" = "Fledg. surv",
+                              "Chick survival" = "Chick surv.",
+                              "Hatching sex ratio" = "Hatching SR",
+                              "Mating system" = "Mat. sys."))
                      
 # Save the plot
-jpeg(filename = "/Users/Luke/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/figs/final/final_final/Draft_5/LTRE_mating_function_ASR.jpeg",
-     quality = 100,
-     width = 4,
-     height = 4,
-     units = "in",
-     res = 300)
+# jpeg(filename = "/Users/Luke/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/figs/final/final_final/Draft_5/LTRE_mating_function_ASR.jpeg",
+#      quality = 100,
+#      width = 4,
+#      height = 4,
+#      units = "in",
+#      res = 300)
 
 # draw the background and the LTRE on top of eachother for the final plot
 grid.newpage()
-pushViewport( viewport( layout = grid.layout( 1 , 1 , widths = unit( 1 , "npc" ) ) ) )
-print( Background_LTRE_ASR + theme(legend.position="none") , vp = viewport( layout.pos.row = 1 , layout.pos.col = 1 ) )
-print( LTRE_ASR + theme(legend.position="none") , vp = viewport( layout.pos.row = 1 , layout.pos.col = 1 ) )
-dev.off()
+pushViewport(viewport(layout = grid.layout(1, 1, widths = unit(1, "npc"))))
+print(Background_LTRE_ASR + theme(legend.position="none"), 
+      vp = viewport(layout.pos.row = 1 ,layout.pos.col = 1))
+print(LTRE_ASR + theme(legend.position="none"), 
+      vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
+# dev.off()
 ```
 Determine how much larger the contribution of each vital rates is compared to juvenile survival
 juvenile vs chick:
@@ -2020,152 +1875,17 @@ LTRE_plover$LTRE_ASR[1,2]/LTRE_plover$LTRE_ASR[3,2]
 ```
 
 ***
-## Predicitive accuracy of two-sex and one-sex matrix models
-
-this function extracts the ASR and lambda estimates from each bootstrap iteration using a matrix with the two-sex mating function
-```{r}
-lambda_extract <-
-  function(survival_rates, niter = 1000){
-    # make an empty datarame to store the results
-    output <- data.frame(two_sex_lambda = numeric(niter),
-                         one_sex_lambda = numeric(niter))
-    # for loop to go through each iteration and calculate the differece between female and male
-    # survival rates for each stage.
-    for(i in 1:niter){
-      # Create a list of demographic rates from the survival analyses above
-      VR_two_sex_boot <- list(F_Chk_survl = survival_rates[which(survival_rates$iter == i), 2][5],
-                              F_Fdg_survl = survival_rates[which(survival_rates$iter == i), 2][3],
-                              F_Adt_survl = survival_rates[which(survival_rates$iter == i), 2][1],
-                              M_Chk_survl = survival_rates[which(survival_rates$iter == i), 2][6],
-                              M_Fdg_survl = survival_rates[which(survival_rates$iter == i), 2][4],
-                              M_Adt_survl = survival_rates[which(survival_rates$iter == i), 2][2],
-                              # Define h (harem size, h < 1 is polyandry) and k (clutch size)
-                              h = h,
-                              k = 3,
-                              # Define primary sex ratio (assumed to be 0.5)
-                              HSR = HSR)
-
-      VR_one_sex_boot <- list(Chk_survl = mean(survival_rates[which(survival_rates$iter == i), 2][6],
-                                               survival_rates[which(survival_rates$iter == i), 2][5]),
-                              Fdg_survl = mean(survival_rates[which(survival_rates$iter == i), 2][4],
-                                               survival_rates[which(survival_rates$iter == i), 2][3]),
-                              Adt_survl = mean(survival_rates[which(survival_rates$iter == i), 2][2],
-                                               survival_rates[which(survival_rates$iter == i), 2][1]),
-                              # female fecundity
-                              RF = RF)
-
-      # Build matrix based on rates specified in the list above
-      two_sex_matrix_boot <- plover_matrix(VR_two_sex_boot, two_sex = TRUE)
-      one_sex_matrix_boot <- plover_matrix(VR_one_sex_boot, two_sex = FALSE)
-
-      # Determine the ASR at the stable stage distribution
-      two_sex_lambda <-
-        matrix_ASR(M = two_sex_matrix_boot, h = VR_two_sex_boot$h, HSR = VR_two_sex_boot$HSR, iterations = 75)
-      one_sex_lambda <-
-        Re(eigen(one_sex_matrix_boot)$values)[1]
-      
-      # Extract ASR
-      output[i, 1] <- two_sex_lambda$lambda
-      output[i, 2] <- one_sex_lambda
-    }
-    # restructure the output and lable columns
-    output <- suppressMessages(reshape2::melt(data = output))
-    colnames(output) <- c("parameter", "estimate")
-    # return the output
-    output
-  }
-```
-
-```{r}
-lambda_boot <- lambda_extract(survival_rates = survival_rates_boot, niter = 1000)
-```
-calculate the 95% confidence interval, mean, and median of the ASR bootstraps
-```{r}
-CI <- 0.95
-lambda_boot_summary <-
-  lambda_boot%>%
-  dplyr::group_by(parameter)%>%
-  dplyr::summarise(mean = mean(estimate),
-                   lcl = quantile(estimate, (1 - CI)/2),
-                   ucl = quantile(estimate, 1 - (1 - CI)/2))
-```
-Store the actual annual population size estimate from the field and calculate the geometric mean of the popualtion growth rate observed over the seven-year period
-```{r}
-Actual <- c(198, 184, 98, 102, 131, 96, 58)
-Actual_lambda <- c(Actual[2]/Actual[1], 
-                     Actual[3]/Actual[2], 
-                     Actual[4]/Actual[3], 
-                     Actual[5]/Actual[4], 
-                     Actual[6]/Actual[5], 
-                     Actual[7]/Actual[6])
-
-gm_mean <- function(a){prod(a)^(1/length(a))}
-
-Actual_lambda_geom_mean <- gm_mean(Actual_lambda)
-```
-Figure 3a: plot the actual vs. the predicted lambda distributions of the two-sex and one-sex model simulations between 2006 and 2012.
-```{r, fig.width=4, fig.height=3.5, fig.align="center"}
-cbPalette <- c(brewer.pal(8, "Set1")[c(1)], brewer.pal(9, "Greys")[c(9)])
-lambda_histogram <- 
-ggplot() +
-  geom_histogram(binwidth = 0.005, data = filter(lambda_boot, parameter == "two_sex_lambda"),
-                 aes(x = estimate, fill = parameter), alpha = 0.7) +
-  geom_histogram(binwidth = 0.005, data = filter(lambda_boot, parameter == "one_sex_lambda"),
-                 aes(x = estimate, fill = parameter), alpha = 0.7) +
-  geom_vline(xintercept = Actual_lambda_geom_mean, color = brewer.pal(8, "Set1")[c(2)], size=1) +
-  geom_errorbarh(data = filter(lambda_boot_summary, parameter == "two_sex_lambda"),
-                 aes(y = 95, x = lcl, xmin = lcl, xmax = ucl),
-                 color = "black", size = 0.8, linetype = "solid") +
-  geom_errorbarh(data = filter(lambda_boot_summary, parameter == "one_sex_lambda"),
-                 aes(y = 93, x = lcl, xmin = lcl, xmax = ucl), 
-                 color = brewer.pal(8, "Set1")[c(1)], size = 0.8, linetype = "solid") +
-  theme_bw() +
-  theme(#text = element_text(family="Arial"),
-        legend.text = element_text(size = 8),
-        legend.title = element_blank(),
-        legend.position = "top",
-        legend.key.height=unit(0.6,"line"),
-        legend.key.width=unit(0.6,"line"),
-        axis.title.x = element_text(size=12, margin = margin(10, 0, 0, 0)),
-        axis.text.x  = element_text(size=10, margin = margin(5, 0, 0, 0)), 
-        axis.title.y = element_text(size=12, margin = margin(0, 39, 0, 0)),
-        axis.text.y  = element_text(size=10, angle = 0, hjust = 1, 
-                                    margin = margin(0, 5, 0, 0)),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.ticks.y = element_line(size = 0.5, colour = "grey40"),
-        axis.ticks.length = unit(0.2, "cm"),
-        axis.ticks.x = element_line(size = 0.5, colour = "grey40"),
-        panel.border = element_rect(linetype = "solid", colour = "grey"),
-        plot.margin = unit(c(0.5,0.5,0.5,0.5), "cm"),
-        panel.margin = unit(0.75, "lines"),
-        strip.background = element_blank(), 
-        strip.text = element_blank()) +
-  ylab("Frequency") +
-  xlab("Population growth rate") +
-  # xlab("Population growth (\u03BB)") +
-  scale_y_continuous(limits = c(0, 100)) +
-  scale_fill_manual(values = cbPalette)
-lambda_histogram
-
-# ggsave(lambda_histogram,
-#        filename = "lambda_histogram_compare_2_v_1.jpg",
-#        path = "figs/final/final_final/Draft_5",
-#        width = 4,
-#        height = 3.5, units = "in",
-#        dpi = 300,
-#        scale = 1)
-```
-
-***
 ## Sensitivity analysis of population growth
 
+Biased ASR and polygamous mating systems can restrict the reproductive potential of a population due to a scarcity of the limiting sex (Caswell & Weeks 1986). Thus, population viability can be indirectly affected by ASR and mating system via the sex-specific effects that vital rates have on population growth under a biased ASR or a polygamous mating system, or both (Haridas et al. 2014). To investigate the relative influence that a biased ASR or a polygamous mating system has on population growth, we conducted a sensitivity analysis of all sex-specific parameters using four scenarios of the two-sex model: (i) polyandrous and male-biased ASR (i.e. the observed scenario), (ii) polyandrous and unbiased ASR, (iii) monogamous and male-biased ASR, and (iv) monogamous and unbiased ASR.
+
+Here are the four scenarios and the structure of their vital rates:
 ```{r}
 VR_equal_mono <- list(F_Chk_survl = survival_rates_boot_summary[5,3],
-                      F_Fdg_survl = survival_rates_boot_summary[6,3],
+                      F_Juv_survl = survival_rates_boot_summary[6,3],
                       F_Adt_survl = survival_rates_boot_summary[4,3],
                       M_Chk_survl = survival_rates_boot_summary[5,3],
-                      M_Fdg_survl = survival_rates_boot_summary[6,3],
+                      M_Juv_survl = survival_rates_boot_summary[6,3],
                       M_Adt_survl = survival_rates_boot_summary[4,3],
                       # Define h (harem size, h = 1 is monogamy) and k (clutch size)
                       h = 1,
@@ -2174,10 +1894,10 @@ VR_equal_mono <- list(F_Chk_survl = survival_rates_boot_summary[5,3],
                       HSR = 0.5)
 
 VR_equal_poly <- list(F_Chk_survl = survival_rates_boot_summary[5,3],
-                      F_Fdg_survl = survival_rates_boot_summary[6,3],
+                      F_Juv_survl = survival_rates_boot_summary[6,3],
                       F_Adt_survl = survival_rates_boot_summary[4,3],
                       M_Chk_survl = survival_rates_boot_summary[5,3],
-                      M_Fdg_survl = survival_rates_boot_summary[6,3],
+                      M_Juv_survl = survival_rates_boot_summary[6,3],
                       M_Adt_survl = survival_rates_boot_summary[4,3],
                       # Define h (harem size, h = 1 is monogamy) and k (clutch size)
                       h = h,
@@ -2186,10 +1906,10 @@ VR_equal_poly <- list(F_Chk_survl = survival_rates_boot_summary[5,3],
                       HSR = 0.5)
 
 VR_diff_mono <- list(F_Chk_survl = survival_rates_boot_summary[2,3],
-                     F_Fdg_survl = survival_rates_boot_summary[3,3],
+                     F_Juv_survl = survival_rates_boot_summary[3,3],
                      F_Adt_survl = survival_rates_boot_summary[1,3],
                      M_Chk_survl = survival_rates_boot_summary[5,3],
-                     M_Fdg_survl = survival_rates_boot_summary[6,3],
+                     M_Juv_survl = survival_rates_boot_summary[6,3],
                      M_Adt_survl = survival_rates_boot_summary[4,3],
                      # Define h (harem size, h = 1 is monogamy) and k (clutch size)
                      h = 1,
@@ -2197,13 +1917,13 @@ VR_diff_mono <- list(F_Chk_survl = survival_rates_boot_summary[2,3],
                      # Define primary sex ratio
                      HSR = 0.5)
 ```
-
+Convert the vital rates lists into the two-sex ptrojection matrix using the **plover_matrix()** function
 ```{r}
 equal_mono_mat <- plover_matrix(VR_equal_mono)
 equal_poly_mat <- plover_matrix(VR_equal_poly)
 diff_mono_mat <- plover_matrix(VR_diff_mono)
 ```
-
+Derive equilibrium statistics (i.e., ASR and lambda) of each scenario using the **matrix_ASR()** function
 ```{r}
 equal_mono_ASR_analysis <- 
   matrix_ASR(M = equal_mono_mat, h = 1, HSR = 0.5, iterations = 1000)
@@ -2220,7 +1940,7 @@ diff_mono_ASR_analysis <-
 ASR_diff_mono <- diff_mono_ASR_analysis$ASR
 ASR_diff_mono
 ```
-
+Specify the lambda of each scenario
 ```{r}
 lambda_equal_mono <- equal_mono_ASR_analysis$lambda
 lambda_equal_mono
@@ -2231,7 +1951,7 @@ lambda_equal_poly
 lambda_diff_mono <- diff_mono_ASR_analysis$lambda
 lambda_diff_mono
 ```
-
+Run the sensitivity analysis on each scenario
 ```{r}
 equal_mono_sensitivity_analysis <- 
   sensitivity_analysis(vital_rates = VR_equal_mono, 
@@ -2263,41 +1983,51 @@ diff_mono_sensitivity_analysis <-
                        ASR = ASR_diff_mono,
                        lambda = lambda_diff_mono)
 ```
-prepare the lambda elasticities to plot
+Tidy up the dataframe for plotting
 ```{r}
+# name each scenario
 equal_mono_sensitivity_analysis$lambda_pert_results$model <- "equal_mono"
 equal_poly_sensitivity_analysis$lambda_pert_results$model <- "equal_poly"
 diff_mono_sensitivity_analysis$lambda_pert_results$model <- "diff_mono"
 treat_sensitivity_analysis$lambda_pert_results$model <- "diff_poly"
+
+# bind them together
 lambda_elasticities <- rbind(equal_mono_sensitivity_analysis$lambda_pert_results[-8,-2],
                              equal_poly_sensitivity_analysis$lambda_pert_results[-8,-2],
                              diff_mono_sensitivity_analysis$lambda_pert_results[-8,-2],
                              treat_sensitivity_analysis$lambda_pert_results[-8,-2])
+
+# define the vital rates for males and females
 lambda_elasticities$vital_rate <- 
   as.factor(c("Chick_survival", "Juvenile_survival", "Adult_survival", "Chick_survival", 
               "Juvenile_survival", "Adult_survival", "Mating_system", "Hatching_sex_ratio"))
+
+# classify the levels of the scenarios
 lambda_elasticities$model <- factor(lambda_elasticities$model, 
-                                         levels = c("equal_mono", "equal_poly", "diff_mono", "diff_poly"))
+                                    levels = c("equal_mono", "equal_poly", "diff_mono", "diff_poly"))
+
+# classify the levels of the vital rates
 lambda_elasticities$vital_rate <- factor(lambda_elasticities$vital_rate, 
-                                         levels = c("Adult_survival", "Juvenile_survival", 
-                                                    "Chick_survival", "Hatching_sex_ratio", 
-                                                    "Mating_system"))
+                                    levels = c("Adult_survival", "Juvenile_survival", 
+                                               "Chick_survival", "Hatching_sex_ratio", 
+                                               "Mating_system"))
+
+# define the sex that each vital rate is representing
 lambda_elasticities$sex <- as.factor(c("Female", "Female", 
                                        "Female", "Male", 
                                        "Male", "Male", 
                                        "Female", "Female"))
 
-lambda_elasticities$model_vital_rate <- as.factor(paste(lambda_elasticities$model, lambda_elasticities$vital_rate, sep = "_"))
-lambda_elasticities$model <- factor(lambda_elasticities$model,
-                                               levels = c("diff_mono",
-                                                          "diff_poly",
-                                                          "equal_mono",
-                                                          "equal_poly"))
+# create a unique name for each scenario and vital rate combination
+lambda_elasticities$model_vital_rate <- as.factor(paste(lambda_elasticities$model, 
+                                                        lambda_elasticities$vital_rate, sep = "_"))
 ```
-Figure 3b: plot the elasticities of lambda to perturbations of each parameter
+Figure 3: plot the elasticities of lambda to perturbations of each parameter under the four scenarios
 ```{r, fig.width=4, fig.height=8, fig.align="center"}
+# define the color palette to use in plotting
 cbPalette <- c("#e8a47e", "#88c6b2")
 
+# specify the facet labels
 scenario_names <- c(
                     # `diff_mono` = "\u2642\u2642 ASR\nmonogamy",
                     # `diff_poly` = "\u2642\u2642 ASR\npolyandry",
@@ -2379,6 +2109,144 @@ lambda_elasticity
 #                 width = 4,
 #                 height = 8, units = "in",
 #                 dpi = 300)
+```
+
+***
+## Predicitive accuracy of two-sex and one-sex matrix models
+
+this function extracts the deterministic lambda from each bootstrap iteration using a two-sex matrix and a one-sex matrix that has sex-averaged vital rates and constant fecundity
+```{r}
+lambda_extract <-
+  function(survival_rates, niter = 1000){
+    # make an empty datarame to store the results
+    output <- data.frame(two_sex_lambda = numeric(niter),
+                         one_sex_lambda = numeric(niter))
+    # for loop to go through each iteration and calculate the differece between female and male
+    # survival rates for each stage.
+    for(i in 1:niter){
+      # Create a list of demographic rates from the survival analyses above
+      VR_two_sex_boot <- list(F_Chk_survl = survival_rates[which(survival_rates$iter == i), 2][5],
+                              F_Juv_survl = survival_rates[which(survival_rates$iter == i), 2][3],
+                              F_Adt_survl = survival_rates[which(survival_rates$iter == i), 2][1],
+                              M_Chk_survl = survival_rates[which(survival_rates$iter == i), 2][6],
+                              M_Juv_survl = survival_rates[which(survival_rates$iter == i), 2][4],
+                              M_Adt_survl = survival_rates[which(survival_rates$iter == i), 2][2],
+                              # Define h (harem size, h < 1 is polyandry) and k (clutch size)
+                              h = h,
+                              k = 3,
+                              # Define primary sex ratio (assumed to be 0.5)
+                              HSR = HSR)
+
+      VR_one_sex_boot <- list(Chk_survl = mean(survival_rates[which(survival_rates$iter == i), 2][6],
+                                               survival_rates[which(survival_rates$iter == i), 2][5]),
+                              Juv_survl = mean(survival_rates[which(survival_rates$iter == i), 2][4],
+                                               survival_rates[which(survival_rates$iter == i), 2][3]),
+                              Adt_survl = mean(survival_rates[which(survival_rates$iter == i), 2][2],
+                                               survival_rates[which(survival_rates$iter == i), 2][1]),
+                              # female fecundity
+                              RF = RF)
+
+      # Build matrix based on rates specified in the list above
+      two_sex_matrix_boot <- plover_matrix(VR_two_sex_boot, two_sex = TRUE)
+      one_sex_matrix_boot <- plover_matrix(VR_one_sex_boot, two_sex = FALSE)
+
+      # Determine the ASR at the stable stage distribution
+      two_sex_lambda <-
+        matrix_ASR(M = two_sex_matrix_boot, h = VR_two_sex_boot$h, 
+                   HSR = VR_two_sex_boot$HSR, iterations = 75)
+      one_sex_lambda <-
+        Re(eigen(one_sex_matrix_boot)$values)[1]
+      
+      # Extract ASR
+      output[i, 1] <- two_sex_lambda$lambda
+      output[i, 2] <- one_sex_lambda
+    }
+    # restructure the output and lable columns
+    output <- suppressMessages(reshape2::melt(data = output))
+    colnames(output) <- c("parameter", "estimate")
+    # return the output
+    output
+  }
+```
+Apply the function to the bootstrap output
+```{r}
+lambda_boot <- lambda_extract(survival_rates = survival_rates_boot, niter = 1000)
+```
+calculate the 95% confidence intervals and means of the two-sex and one-sex versions of the matrix model
+```{r}
+CI <- 0.95
+lambda_boot_summary <-
+  lambda_boot%>%
+  dplyr::group_by(parameter)%>%
+  dplyr::summarise(mean = mean(estimate),
+                   lcl = quantile(estimate, (1 - CI)/2),
+                   ucl = quantile(estimate, 1 - (1 - CI)/2))
+```
+Store the actual annual population size estimate from the field and calculate the mean of the popualtion growth rate observed over the seven-year period
+```{r}
+Actual <- c(198, 184, 98, 102, 131, 96, 58)
+
+Actual_lambda <- c(Actual[2]/Actual[1], 
+                     Actual[3]/Actual[2], 
+                     Actual[4]/Actual[3], 
+                     Actual[5]/Actual[4], 
+                     Actual[6]/Actual[5], 
+                     Actual[7]/Actual[6])
+
+Actual_lambda_mean <- mean(Actual_lambda)
+```
+Figure 4: plot the predicted lambda distributions of the two-sex and one-sex model simulations between 2006 and 2012, including 95% CI and the observed average population growth.
+```{r, fig.width=4, fig.height=3.5, fig.align="center"}
+cbPalette <- c(brewer.pal(8, "Set1")[c(1)], brewer.pal(9, "Greys")[c(9)])
+lambda_histogram <- 
+ggplot() +
+  geom_histogram(binwidth = 0.005, data = filter(lambda_boot, parameter == "two_sex_lambda"),
+                 aes(x = estimate, fill = parameter), alpha = 0.7) +
+  geom_histogram(binwidth = 0.005, data = filter(lambda_boot, parameter == "one_sex_lambda"),
+                 aes(x = estimate, fill = parameter), alpha = 0.7) +
+  geom_vline(xintercept = Actual_lambda_mean, color = brewer.pal(8, "Set1")[c(2)], size=1) +
+  geom_errorbarh(data = filter(lambda_boot_summary, parameter == "two_sex_lambda"),
+                 aes(y = 95, x = lcl, xmin = lcl, xmax = ucl),
+                 color = "black", size = 0.8, linetype = "solid") +
+  geom_errorbarh(data = filter(lambda_boot_summary, parameter == "one_sex_lambda"),
+                 aes(y = 93, x = lcl, xmin = lcl, xmax = ucl), 
+                 color = brewer.pal(8, "Set1")[c(1)], size = 0.8, linetype = "solid") +
+  theme_bw() +
+  theme(#text = element_text(family="Arial"),
+        legend.text = element_text(size = 8),
+        legend.title = element_blank(),
+        legend.position = "top",
+        legend.key.height=unit(0.6,"line"),
+        legend.key.width=unit(0.6,"line"),
+        axis.title.x = element_text(size=12, margin = margin(10, 0, 0, 0)),
+        axis.text.x  = element_text(size=10, margin = margin(5, 0, 0, 0)), 
+        axis.title.y = element_text(size=12, margin = margin(0, 39, 0, 0)),
+        axis.text.y  = element_text(size=10, angle = 0, hjust = 1, 
+                                    margin = margin(0, 5, 0, 0)),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.ticks.y = element_line(size = 0.5, colour = "grey40"),
+        axis.ticks.length = unit(0.2, "cm"),
+        axis.ticks.x = element_line(size = 0.5, colour = "grey40"),
+        panel.border = element_rect(linetype = "solid", colour = "grey"),
+        plot.margin = unit(c(0.5,0.5,0.5,0.5), "cm"),
+        panel.margin = unit(0.75, "lines"),
+        strip.background = element_blank(), 
+        strip.text = element_blank()) +
+  ylab("Frequency") +
+  xlab("Population growth rate") +
+  # xlab("Population growth (\u03BB)") +
+  scale_y_continuous(limits = c(0, 100)) +
+  scale_fill_manual(values = cbPalette)
+lambda_histogram
+
+# ggsave(lambda_histogram,
+#        filename = "lambda_histogram_compare_2_v_1.jpg",
+#        path = "figs/final/final_final/Draft_5",
+#        width = 4,
+#        height = 3.5, units = "in",
+#        dpi = 300,
+#        scale = 1)
 ```
 
 ***
