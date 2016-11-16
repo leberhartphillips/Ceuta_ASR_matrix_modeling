@@ -1,5 +1,5 @@
 # Overview
-## Adult sex ratio bias is driven by sex-specific early survival: implications for population growth and mating system evolution
+## Adult sex ratio bias is driven by sex-specific early survival: implications for mating system evolution and population growth 
 #### Luke J. Eberhart-Phillips, Clemens Küpper, Tom E. X. Miller, Medardo Cruz-López, Kathryn Maher, Natalie dos Remedios, Martin A. Stoffel, Joseph I. Hoffman, Oliver Krüger, Tamás Székely
 
 In this repository you can find all the necessary files needed to reproduce the analyses presented in our paper.

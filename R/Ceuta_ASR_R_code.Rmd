@@ -371,7 +371,7 @@ HSR_95CI <- c(mean(HSR_df_summary$prop_male)-
                     sqrt(length(HSR_df_summary$prop_male)))*1.96))
 ```
 ***
-## Bootstrapping proceedure
+## Bootstrapping proceedure of stage- and sex specific survival
 
 Specify where RMark should look on your computer for Program MARK. This may vary based on your operating system (e.g., Windows, Linux, Mac OS X, etc.). This [website](http://www.phidot.org/software/mark/rmark/) provides a nice workflow for installing Program MARK and linking it to your R interface based on which operating system you have.
 ```{r}
@@ -1091,7 +1091,7 @@ ASR_bootstrap_histogram
 #        scale = 1)
 ```
 
-**AIC model selection summary (panels in Supplementary Material Figure 1)**
+**AIC model selection summary (panels in Supplementary Material Figure 2)**
 
 To illustrate the mark-recapture model selection going on during the bootstrap, we summarized AIC statistics for each model included in the survival analysis and visualized with ranked boxplots (Figure S1)
 
