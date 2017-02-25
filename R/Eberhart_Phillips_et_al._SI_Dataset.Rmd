@@ -1,9 +1,9 @@
 ---
-title: 'R-code for "Adult sex ratio bias is driven by sex-specific early survival: implications for mating system evolution and population growth"'
+title: 'R-code for "Adult sex ratio bias in snowy plovers is driven by sex-specific early survival: implications for mating systems and population growth"'
 author: Luke J. Eberhart-Phillips, Clemens Küpper, Tom E. X. Miller, Medardo Cruz-López,
   Kathryn H. Maher, Natalie dos Remedios, Martin A. Stoffel, Joseph I. Hoffman, Oliver
   Krüger, Tamás Székely
-date: "November 15, 2016"
+date: "February 24, 2017"
 output:
   pdf_document:
     keep_tex: yes
@@ -162,9 +162,6 @@ h
 ```
 Figure 1b: plot the sex-specific distributions of mating system
 ```{r, fig.width=3, fig.height=5, fig.align="center"}
-# define sex as a factor
-#mating$sex <- factor(mating$sex, levels = c("Male", "Female"))
-
 # specifiy the color palette to use in plotting
 cbPalette <- RColorBrewer::brewer.pal(8, "Dark2")[c(2,1)]
 
@@ -185,14 +182,13 @@ ggplot2::ggplot() +
              aes(y = mean_annual_no_mates, x = sex, fill = sex), 
              shape = 21, colour = "black", position = pd, size = 4) +
   theme_bw() +
-  theme(text = element_text(family="Franklin Gothic Book", 
-                            size = 16),
+  theme(text = element_text(size = 16),
         legend.position = "",
         axis.title.x = element_blank(),
         axis.text.x  = element_text(size = 10), 
-        axis.title.y = element_text(size = 10, 
+        axis.title.y = element_text(size = 12, 
                                     margin = margin(0, 15, 0, 0)),
-        axis.text.y = element_text(size = 8), 
+        axis.text.y = element_text(size = 10), 
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         axis.ticks = element_line(size = 0.5, colour = "grey40"),
@@ -203,14 +199,6 @@ ggplot2::ggplot() +
   ylab("Per capita annual number of mates (± 1 SD)") +
   scale_y_continuous(limits = c(0, 2.1))
 Sex_specific_mating_plot
-
-ggsave(Sex_specific_mating_plot,
-       filename = "Eberhart-Phillips_et_al._Figure_1.tiff",
-       path = "/Users/Luke/Documents/Academic_Projects/PhD/Ceuta_ASR_Matrix_Modeling/Writing/PNAS/Revision/to_resubmit/final/Figures",
-       width = 3.42,
-       height = 4, units = "in",
-       dpi = 600,
-       scale = 1)
 ```
 statistically test the sex-difference in the per capita annual number of mates by using a non-parametric Mann-Whitney-Wilcoxon Test.
 ```{r}
@@ -935,22 +923,18 @@ Background <-
            fill=brewer.pal(8, "Dark2")[c(2)]) +
   annotate("rect", xmin=-Inf, xmax=Inf, ymin=0, ymax=Inf, alpha=0.6,
            fill=brewer.pal(8, "Dark2")[c(1)]) +
-  annotate("text", x = c(2,2), y = c(-Inf, Inf),
-           label = c("\u2640", "\u2642"), size = 5,
-           family="Franklin Gothic Book", vjust = c(0.5,0.5), hjust = c(-0.3,1.3)) +
-  # annotate("text", x = 2, y = -0.25,
-  #          label = c("female"), size = 5,
-  #          vjust = c(0.5), hjust = c(0.5), angle = 90) +
-  # annotate("text", x = 2, y = 0.25,
-  #          label = c("male"), size = 5,
-  #          vjust = c(0.5), hjust = c(0.5), angle = 270) +
-  theme(text = element_text(family="Franklin Gothic Book", 
-                            color = "white"),
+  annotate("text", x = 2, y = -0.25,
+           label = c("female"), size = 5,
+           vjust = c(0.5), hjust = c(0.5), angle = 90) +
+  annotate("text", x = 2, y = 0.25,
+           label = c("male"), size = 5,
+           vjust = c(0.5), hjust = c(0.5), angle = 270) +
+  theme(text = element_text(color = "white"),
         legend.position = "none",
-        axis.title.x = element_text(size=10, margin = margin(10, 0, 0, 0)),
-        axis.text.x  = element_text(size=8, margin = margin(5, 0, 0, 0)), 
-        axis.title.y = element_text(size=10, margin = margin(0, 15, 0, 0)),
-        axis.text.y  = element_text(size=8, angle = 0, hjust = 1, 
+        axis.title.x = element_text(size=12, margin = margin(10, 0, 0, 0)),
+        axis.text.x  = element_text(size=10, margin = margin(5, 0, 0, 0)), 
+        axis.title.y = element_text(size=12, margin = margin(0, 15, 0, 0)),
+        axis.text.y  = element_text(size=10, angle = 0, hjust = 1, 
                                     margin = margin(0, 5, 0, 0)),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
@@ -965,22 +949,20 @@ Background <-
   scale_x_continuous(limits=c(0,4),breaks=c(0,1,2), labels=c("Chick", "Juvenile", "Adult")) +
   scale_y_continuous(limits=c(-0.25,0.25)) +
   xlab("Life stage") + 
-  # ylab("Sex bias in apparent survival (phi)")
-  ylab("Sex bias in apparent survival (\u03D5)")
+  ylab("Sex bias in apparent survival (phi)")
 
 Bootstrap_sex_diff_VR_plot <- 
   ggplot(aes(y = difference, x = stage, fill = stage), data = sex_diff_survival_output) + 
   coord_flip() +
   theme_bw() +
   geom_violin(draw_quantiles = c(0.25, 0.5, 0.75)) +
-  theme(text = element_text(family="Franklin Gothic Book"),
-        legend.position = "none",
+  theme(legend.position = "none",
         panel.background = element_rect(fill = "transparent",colour = NA),
         plot.background = element_rect(fill = "transparent",colour = NA),
-        axis.title.x = element_text(size=10, margin = margin(10, 0, 0, 0)),
-        axis.text.x  = element_text(size=8, margin = margin(5, 0, 0, 0)), 
-        axis.title.y = element_text(size=10, margin = margin(0, 15, 0, 0)),
-        axis.text.y  = element_text(size=8, angle = 0, hjust = 1, 
+        axis.title.x = element_text(size=12, margin = margin(10, 0, 0, 0)),
+        axis.text.x  = element_text(size=10, margin = margin(5, 0, 0, 0)), 
+        axis.title.y = element_text(size=12, margin = margin(0, 15, 0, 0)),
+        axis.text.y  = element_text(size=10, angle = 0, hjust = 1, 
                                     margin = margin(0, 5, 0, 0)),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
@@ -995,25 +977,7 @@ Bootstrap_sex_diff_VR_plot <-
   scale_fill_manual(values = cbPalette) +
   scale_y_continuous(limits=c(-0.25,0.25)) +
   xlab("Life stage") +   
-  ylab("Sex bias in apparent survival (   )")
-  # ylab("Sex bias in apparent survival (\u03D5)")
-
-  # ylab(paste("Sex bias in apparent survival", expression("\u03D5")))
-  # ylab("Sex bias in apparent survival (phi)")
-Bootstrap_sex_diff_VR_plot
-# jpeg(filename = "/Users/Luke/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/figs/final/final_final/Draft_5/Surv_sex_differences_final.jpeg",
-#      quality = 100,
-#      width = 4,
-#      height = 4,
-#      units = "in",
-#      res = 300)
-
-tiff(filename = "/Users/Luke/Documents/Academic_Projects/PhD/Ceuta_ASR_Matrix_Modeling/Writing/PNAS/Revision/to_resubmit/final/Figures/Eberhart-Phillips_et_al._Figure_2a.tiff",
-     compression = "none",
-     width = 3.42,
-     height = 3.42,
-     units = "in",
-     res = 600)
+  ylab("Sex bias in apparent survival (phi)")
 
 grid.newpage()
 pushViewport( viewport( layout = grid.layout( 1 , 1 , widths = unit( 1 , "npc" ) ) ) )
@@ -1021,7 +985,6 @@ print( Background + theme(legend.position="none") ,
        vp = viewport( layout.pos.row = 1 , layout.pos.col = 1 ) )
 print( Bootstrap_sex_diff_VR_plot + theme(legend.position="none") , 
        vp = viewport( layout.pos.row = 1 , layout.pos.col = 1 ) )
-dev.off()
 ```
 
 **Adult sex ratio distribution**
@@ -1050,19 +1013,15 @@ ggplot2::ggplot() +
                    fill=brewer.pal(8, "Dark2")[c(2)]) +
           annotate("rect", xmin=0.5, xmax=Inf, ymin=-Inf, ymax=Inf, alpha=0.6,
                    fill=brewer.pal(8, "Dark2")[c(1)]) +
-          # annotate("text", x = c(-Inf,Inf), y = c(75, 95),
-          #          label = c("female", "male"), size = 5,
-          #          vjust = c(1.5,1.5), hjust = c(0,0), angle = c(90, 270)) +
-          annotate("text", x = c(-Inf,Inf), y = c(70, 70),
-                   label = c("\u2640", "\u2642"), size = 5,
-                   family="Franklin Gothic Book", vjust = c(1.5,1.5), hjust = c(-0.5,1.5)) +
+          annotate("text", x = c(-Inf,Inf), y = c(75, 95),
+                   label = c("female", "male"), size = 5,
+                   vjust = c(1.5,1.5), hjust = c(0,0), angle = c(90, 270)) +
           geom_histogram(binwidth = 0.02, data = ASR_boot, aes(x = ASR_boot)) +
           geom_errorbarh(data = ASR_boot_summary, 
                          aes(y = 120, x = lcl, xmin = lcl, xmax = ucl), 
                          color = "black", size = 0.8, linetype = "solid") +
           theme_bw() +
-          theme(text = element_text(family="Franklin Gothic Book"),
-                legend.position="none",
+          theme(legend.position="none",
                 legend.position = c(0, 1), 
                 legend.justification = c(0, 1),
                 legend.text=element_text(size=11),
@@ -1070,10 +1029,10 @@ ggplot2::ggplot() +
                 legend.key.height=unit(0.8,"line"),
                 legend.key.width=unit(0.8,"line"),
                 legend.background = element_rect(fill=NA),
-                axis.title.x = element_text(size=10, margin = margin(10, 0, 0, 0)),
-                axis.text.x  = element_text(size=8, margin = margin(5, 0, 0, 0)), 
-                axis.title.y = element_text(size=10, margin = margin(0, 28, 0, 0)),
-                axis.text.y  = element_text(size=8, angle = 0, hjust = 1, 
+                axis.title.x = element_text(size=12, margin = margin(10, 0, 0, 0)),
+                axis.text.x  = element_text(size=10, margin = margin(5, 0, 0, 0)), 
+                axis.title.y = element_text(size=12, margin = margin(0, 30, 0, 0)),
+                axis.text.y  = element_text(size=10, angle = 0, hjust = 1, 
                                             margin = margin(0, 5, 0, 0), color = "black"),
                 axis.ticks.y = element_line(size = 0.5, colour = "grey40"),
                 axis.ticks.x = element_line(size = 0.5, colour = "grey40"),
@@ -1086,24 +1045,13 @@ ggplot2::ggplot() +
                 strip.text = element_blank(),
                 panel.margin = unit(0.75, "lines")) +
           ylab("Frequency") +
-          xlab("Adult sex ratio (proportion \u2642)") +
-
-          # xlab("Adult sex ratio (proportion \u2642)") +
-          # xlab("Adult sex ratio (proportion male)") +
+          xlab("Adult sex ratio (proportion male)") +
           scale_x_continuous(limits = c(0.0, 1)) +
           scale_y_continuous(limits = c(0, 125))
 ASR_bootstrap_histogram
-
-ggsave(ASR_bootstrap_histogram,
-       filename = "Eberhart-Phillips_et_al._Figure_2b.tiff",
-       path = "/Users/Luke/Documents/Academic_Projects/PhD/Ceuta_ASR_Matrix_Modeling/Writing/PNAS/Revision/to_resubmit/final/Figures",
-       width = 3.42,
-       height = 3.42, units = "in",
-       dpi = 600,
-       scale = 1)
 ```
 
-**AIC model selection summary (panels in Supplementary Material Figure 2)**
+**AIC model selection summary (panels in Supporting Information Figure 2)**
 
 To illustrate the mark-recapture model selection going on during the bootstrap, we summarized AIC statistics for each model included in the survival analysis and visualized with ranked boxplots (Figure S1)
 
@@ -1163,8 +1111,7 @@ Bootstrap_Delta_AIC_plot_C <-
   ggplot(aes(y = DeltaAICc, x = p), data = chick_AIC_tables) + 
   theme_bw() +
   geom_boxplot(width = 0.3, fill = "grey70", outlier.size = 0.5) +
-  theme(#text = element_text(family="Franklin Gothic Book"),
-        legend.position = "none",
+  theme(legend.position = "none",
         axis.title.x = element_blank(),
         axis.text.x  = element_blank(), 
         axis.title.y = element_text(size=12, margin = margin(0, 18, 0, 0)),
@@ -1181,7 +1128,6 @@ Bootstrap_Delta_AIC_plot_C <-
   scale_y_continuous(limits=c(0,50)) +
   xlab("Model") + 
   ylab("Delta AIC") +
-  #ylab("\u0394 AIC") +
   ggtitle("Chicks resighting model selection")
 ```
 plot the overall model ranks of the chick survival anlaysis based on AIC weight
@@ -1190,8 +1136,7 @@ Bootstrap_AIC_weight_plot_C <-
   ggplot(aes(y = weight, x = p), data = chick_AIC_tables) + 
   theme_bw() +
   geom_boxplot(width = 0.3, fill = "grey70", outlier.size = 0.5) +
-  theme(#text = element_text(family="Franklin Gothic Book"),
-        legend.position = "none",
+  theme(legend.position = "none",
         axis.title.x = element_blank(),
         axis.text.x  = element_text(size=10, angle = 45, hjust = 1), 
         axis.title.y = element_text(size=12, margin = margin(0, 15, 0, 0)),
@@ -1209,19 +1154,11 @@ Bootstrap_AIC_weight_plot_C <-
   xlab("Model") + 
   ylab("AIC weight")
 
-# jpeg(filename = "/Users/Luke/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/figs/final/final_final/AIC_multi_plot_chicks.jpeg",
-#      quality = 100,
-#      width = 6,
-#      height = 9,
-#      units = "in",
-#      res = 300)
-
 grid.newpage()
 pushViewport(viewport(layout = grid.layout(5, 1)))
 vplayout <- function(x, y) viewport(layout.pos.row = x, layout.pos.col = y)
 print(Bootstrap_Delta_AIC_plot_C, vp = vplayout(1:2, 1))
 print(Bootstrap_AIC_weight_plot_C, vp = vplayout(3:5, 1))
-# dev.off()
 ```
 plot the overall model ranks of the juvenile and adult survival anlaysis based on Delta AIC
 ```{r, fig.height=5, fig.width=6, fig.align="center"}
@@ -1229,8 +1166,7 @@ Bootstrap_Delta_AIC_plot_F_A <-
   ggplot(aes(y = DeltaAICc, x = p), data = juv_ad_AIC_tables) + 
   theme_bw() +
   geom_boxplot(width = 0.3, fill = "grey70", outlier.size = 0.5) +
-  theme(#text = element_text(family="Franklin Gothic Book"),
-        legend.position = "none",
+  theme(legend.position = "none",
         axis.title.x = element_blank(),
         axis.text.x  = element_blank(), 
         axis.title.y = element_text(size=12, margin = margin(0, 18, 0, 0)),
@@ -1246,8 +1182,7 @@ Bootstrap_Delta_AIC_plot_F_A <-
         strip.text = element_blank()) +
   scale_y_continuous(limits=c(0,50)) +
   xlab("Model") + 
-  # ylab("Delta AIC") +
-  ylab("\u0394 AIC") +
+  ylab("Delta AIC") +
   ggtitle("Juvenile and adult resighting model selection")
 ```
 plot the overall model ranks of the juvenile and adult survival anlaysis based on AIC weight
@@ -1256,8 +1191,7 @@ Bootstrap_AIC_weight_plot_F_A <-
   ggplot(aes(y = weight, x = p), data = juv_ad_AIC_tables) + 
   theme_bw() +
   geom_boxplot(width = 0.3, fill = "grey70", outlier.size = 0.5) +
-  theme(#text = element_text(family="Franklin Gothic Book"),
-        legend.position = "none",
+  theme(legend.position = "none",
         axis.title.x = element_blank(),
         axis.text.x  = element_text(size=10, angle = 45, hjust = 1), 
         axis.title.y = element_text(size=12, margin = margin(0, 18, 0, 0)),
@@ -1276,19 +1210,11 @@ Bootstrap_AIC_weight_plot_F_A <-
   xlab("Model") + 
   ylab("AIC weight")
 
-# jpeg(filename = "/Users/Luke/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/figs/final/final_final/AIC_multi_plot_juvenile_adult.jpeg",
-#      quality = 100,
-#      width = 6,
-#      height = 9,
-#      units = "in",
-#      res = 300)
-
 grid.newpage()
 pushViewport(viewport(layout = grid.layout(5, 1)))
 vplayout <- function(x, y) viewport(layout.pos.row = x, layout.pos.col = y)
 print(Bootstrap_Delta_AIC_plot_F_A, vp = vplayout(1:2, 1))
 print(Bootstrap_AIC_weight_plot_F_A, vp = vplayout(3:5, 1))
-# dev.off()
 ```
 
 ***
@@ -1775,19 +1701,15 @@ Background_LTRE_ASR <-
            fill=brewer.pal(8, "Dark2")[c(2)]) +
   annotate("rect", xmin=-Inf, xmax=Inf, ymin=0, ymax=Inf, alpha=0.6,
            fill=brewer.pal(8, "Dark2")[c(1)]) +
-  annotate("text", x = c(2,2), y = c(-Inf, Inf),
-           label = c("\u2640", "\u2642"), size = 5,
-           family="Franklin Gothic Book", vjust = c(0.5,0.5), hjust = c(-0.3,1.3)) +
-  # annotate("text", x = c(2,2), y = c(-0.1, 0.1),
-  #          label = c("female", "male"), size = 7,
-  #          vjust = c(1,1), hjust = c(0.5,0.5), angle = c(90, 270)) +
-  theme(text = element_text(family="Franklin Gothic Book", 
-                            color = "white"), # set the font as Candara
+  annotate("text", x = c(2,2), y = c(-0.1, 0.1),
+           label = c("female", "male"), size = 7,
+           vjust = c(1,1), hjust = c(0.5,0.5), angle = c(90, 270)) +
+  theme(text = element_text(color = "white"),
         legend.position = "none",
-        axis.title.x = element_text(size=10, margin = margin(10, 0, 0, 0)),
-        axis.text.x  = element_text(size=8, margin = margin(5, 0, 0, 0)),
-        axis.title.y = element_text(size=10, margin = margin(0, 12, 0, 0)),
-        axis.text.y  = element_text(size=8, angle = 0, hjust = 1, 
+        axis.title.x = element_text(size=12, margin = margin(10, 0, 0, 0)),
+        axis.text.x  = element_text(size=10, margin = margin(5, 0, 0, 0)),
+        axis.title.y = element_text(size=12, margin = margin(0, 10, 0, 0)),
+        axis.text.y  = element_text(size=10, angle = 0, hjust = 1, 
                                     margin = margin(0, 5, 0, 0)),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
@@ -1795,8 +1717,7 @@ Background_LTRE_ASR <-
         axis.ticks.x = element_line(size = 0.5, colour = "white"),
         axis.ticks.length = unit(0.2, "cm"),
         panel.border = element_blank(),
-        # plot.margin = unit(c(1,0.5,0.5,2.9), "cm"),
-        plot.margin = unit(c(1,0.5,0.5,1.95), "cm"),
+        plot.margin = unit(c(1,0.5,0.5,2.85), "cm"),
         panel.margin = unit(0.75, "lines"),
         strip.background = element_blank(),
         strip.text = element_blank()) +
@@ -1804,16 +1725,11 @@ Background_LTRE_ASR <-
   xlab("Sex bias in parameter") +
   scale_fill_manual(values = cbPalette) +
   scale_y_continuous(limits = c(-0.1, 0.1)) +
-  scale_x_discrete(labels = c("Adult survival" = expression(Adult["\u03D5"]),
-                              "Juvenile survival" = expression(Juvenile ["\u03D5"]),
-                              "Chick survival" = expression(Chick ["\u03D5"]),
-                              "Hatching sex ratio" = expression(italic("\u03C1")),
-                              "Mating system" = expression(italic("h"))))
-  # scale_x_discrete(labels = c("Adult survival" = "Adult surv.",
-  #                             "Juvenile survival" = "Fledg. surv",
-  #                             "Chick survival" = "Chick surv.",
-  #                             "Hatching sex ratio" = "Hatching SR",
-  #                             "Mating system" = "Mat. sys."))
+  scale_x_discrete(labels = c("Adult survival" = "Adult surv.",
+                              "Juvenile survival" = "Fledg. surv",
+                              "Chick survival" = "Chick surv.",
+                              "Hatching sex ratio" = "Hatching SR",
+                              "Mating system" = "Mat. sys."))
 
 LTRE_ASR <-
   ggplot2::ggplot() +
@@ -1821,14 +1737,13 @@ LTRE_ASR <-
   coord_flip() +
   geom_bar(data = LTRE_plover$LTRE_ASR,
            aes(x = parameter, y = contribution, fill = parameter), color = "black", stat = "identity") +
-  theme(text = element_text(family="Franklin Gothic Book"),
-        legend.position = "none",
+  theme(legend.position = "none",
         panel.background = element_rect(fill = "transparent",colour = NA),
         plot.background = element_rect(fill = "transparent",colour = NA),
-        axis.title.x = element_text(size=10, margin = margin(10, 0, 0, 0)),
-        axis.text.x  = element_text(size=8, margin = margin(5, 0, 0, 0)),
-        axis.title.y = element_text(size=10, margin = margin(0, 12, 0, 0)),
-        axis.text.y  = element_text(size=8, angle = 0, hjust = 1, 
+        axis.title.x = element_text(size=12, margin = margin(10, 0, 0, 0)),
+        axis.text.x  = element_text(size=10, margin = margin(5, 0, 0, 0)),
+        axis.title.y = element_text(size=12, margin = margin(0, 10, 0, 0)),
+        axis.text.y  = element_text(size=10, angle = 0, hjust = 1, 
                                     margin = margin(0, 5, 0, 0)),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
@@ -1844,36 +1759,11 @@ LTRE_ASR <-
   xlab("Sex bias in parameter") +
   scale_fill_manual(values = cbPalette) +
   scale_y_continuous(limits = c(-0.10, 0.10)) +
-  scale_x_discrete(labels = c("Adult survival" = expression(Adult["  "]),
-                              "Juvenile survival" = expression(Juvenile["  "]),
-                              "Chick survival" = expression(Chick["  "]),
-                              "Hatching sex ratio" = expression(italic("\u03C1")),
-                              "Mating system" = expression(italic("h"))))
-  # scale_x_discrete(labels = c("Adult survival" = expression(Adult["\u03D5"]),
-  #                             "Juvenile survival" = expression(Juvenile ["\u03D5"]),
-  #                             "Chick survival" = expression(Chick ["\u03D5"]),
-  #                             "Hatching sex ratio" = expression(italic("\u03C1")),
-  #                             "Mating system" = expression(italic("h"))))
-  # scale_x_discrete(labels = c("Adult survival" = "Adult surv.",
-  #                             "Juvenile survival" = "Fledg. surv",
-  #                             "Chick survival" = "Chick surv.",
-  #                             "Hatching sex ratio" = "Hatching SR",
-  #                             "Mating system" = "Mat. sys."))
-                     
-# Save the plot
-# jpeg(filename = "/Users/Luke/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling/figs/final/final_final/Draft_5/LTRE_mating_function_ASR.jpeg",
-#      quality = 100,
-#      width = 4,
-#      height = 4,
-#      units = "in",
-#      res = 300)
-
-tiff(filename = "/Users/Luke/Documents/Academic_Projects/PhD/Ceuta_ASR_Matrix_Modeling/Writing/PNAS/Revision/to_resubmit/final/Figures/Eberhart-Phillips_et_al._Figure_2c.tiff",
-     width = 3.42,
-     height = 3.42,
-     units = "in",
-     res = 600,
-     compression="lzw")
+  scale_x_discrete(labels = c("Adult survival" = "Adult surv.",
+                              "Juvenile survival" = "Fledg. surv",
+                              "Chick survival" = "Chick surv.",
+                              "Hatching sex ratio" = "Hatching SR",
+                              "Mating system" = "Mat. sys."))
 
 # draw the background and the LTRE on top of eachother for the final plot
 grid.newpage()
@@ -1882,7 +1772,6 @@ print(Background_LTRE_ASR + theme(legend.position="none"),
       vp = viewport(layout.pos.row = 1 ,layout.pos.col = 1))
 print(LTRE_ASR + theme(legend.position="none"), 
       vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
-dev.off()
 ```
 Determine how much larger the contribution of each vital rates is compared to juvenile survival
 juvenile vs chick:
@@ -2053,16 +1942,11 @@ cbPalette <- c("#e8a47e", "#88c6b2")
 
 # specify the facet labels
 scenario_names <- c(
-                    `diff_mono` = "\u2642\u2642 ASR\nmonogamy",
-                    `diff_poly` = "\u2642\u2642 ASR\npolyandry",
-                    `equal_mono` = "\u2640\u2642 ASR\nmonogamy",
-                    `equal_poly` = "\u2640\u2642 ASR\npolyandry"
+                    `diff_mono` = "Male-biased ASR\nmonogamy",
+                    `diff_poly` = "Male-biased ASR\npolyandry",
+                    `equal_mono` = "Even ASR\nmonogamy",
+                    `equal_poly` = "Even ASR\npolyandry"
                     )
-                    # `diff_mono` = "Male-biased ASR\nmonogamy",
-                    # `diff_poly` = "Male-biased ASR\npolyandry",
-                    # `equal_mono` = "Even ASR\nmonogamy",
-                    # `equal_poly` = "Even ASR\npolyandry"
-                    # )
 
 lambda_elasticity <- 
   ggplot2::ggplot() +
@@ -2075,28 +1959,19 @@ lambda_elasticity <-
                    aes(x = vital_rate, y = elasticities, fill = sex),
                    color = "black", stat = "identity", alpha = 1) +
           annotate("text", x = c(3), y = c(-0.375),
-                   label = c("\u2640"),
-                   size = 5,
-                   family="Franklin Gothic Book", vjust = c(0.5)) +
+                   label = c("female"),
+                   vjust = c(0.5), angle = 90, size = 5) +
           annotate("text", x = c(3), y = c(0.375),
-                   label = c("\u2642"),
-                   size = 5,
-                   family="Franklin Gothic Book", vjust = c(0.5)) +
-          # annotate("text", x = c(3), y = c(-0.375),
-          #          label = c("female"),
-          #          vjust = c(0.5), angle = 90, size = 5) +
-          # annotate("text", x = c(3), y = c(0.375),
-          #          label = c("male"),
-          #          vjust = c(0.5), angle = 270, size = 5) +
+                   label = c("male"),
+                   vjust = c(0.5), angle = 270, size = 5) +
           facet_grid(model ~ ., labeller = as_labeller(scenario_names)) +
-          theme(text = element_text(family="Franklin Gothic Book"),
-                legend.position = "none",
+          theme(legend.position = "none",
                 panel.background = element_rect(fill = "transparent", colour = NA),
                 plot.background = element_rect(fill = "transparent", colour = NA),
-                axis.title.x = element_text(size=10, margin = margin(10, 0, 0, 0)),
-                axis.text.x  = element_text(size=8, margin = margin(5, 0, 0, 0)), 
-                axis.title.y = element_text(size=10, margin = margin(0, 10, 0, 0)),
-                axis.text.y  = element_text(size=8, angle = 0, hjust = 1, 
+                axis.title.x = element_text(size=12, margin = margin(10, 0, 0, 0)),
+                axis.text.x  = element_text(size=10, margin = margin(5, 0, 0, 0)), 
+                axis.title.y = element_text(size=12, margin = margin(0, 10, 0, 0)),
+                axis.text.y  = element_text(size=10, angle = 0, hjust = 1, 
                                             margin = margin(0, 5, 0, 0)),
                 panel.grid.major.y = element_blank(),
                 panel.grid.minor = element_blank(),
@@ -2106,36 +1981,17 @@ lambda_elasticity <-
                 panel.border = element_rect(linetype = "solid", colour = "grey"),
                 plot.margin = unit(c(1,0.5,0.5,0.5), "cm"),
                 panel.margin = unit(0.75, "lines")) +
-                # strip.background = element_blank(), 
-                # strip.text = element_blank()) +
-          ylab("Elasticity of population growth (\u03BB)") +
-          # ylab("Elasticity of population growth") +
+          ylab("Elasticity of population growth") +
           xlab("Sex-specific parameter") +
           scale_fill_manual(values = cbPalette) +
           scale_y_continuous(limits = c(-0.5, 0.5), breaks = c(-0.5, -0.25, 0, 0.25, 0.5), 
                              labels = c("0.5", "0.25", "0", "0.25", "0.5")) +
-          scale_x_discrete(labels = c("Adult_survival" = "Adult  ",
-                                      "Juvenile_survival" = "Juvenile  ",
-                                      "Chick_survival" = "Chick  ",
-                                      "Hatching_sex_ratio" = expression(italic("\u03C1")),
-                                      "Mating_system" = expression(italic("h"))))
-          # scale_x_discrete(labels = c("Adult_survival" = expression(Adult["\u03D5"]),
-          #                             "Juvenile_survival" = expression(Juvenile["\u03D5"]),
-          #                             "Chick_survival" = expression(Chick["\u03D5"]),
-          #                             "Hatching_sex_ratio" = expression(italic("\u03C1")),
-          #                             "Mating_system" = expression(italic("h"))))
-          # scale_x_discrete(labels = c("Adult_survival" = "Adult surv",
-          #                             "Juvenile_survival" = "Fledg. surv",
-          #                             "Chick_survival" = "Chick surv",
-          #                             "Hatching_sex_ratio" = "Hatching SR",
-          #                             "Mating_system" = "Mating sys."))
+          scale_x_discrete(labels = c("Adult_survival" = "Adult surv",
+                                      "Juvenile_survival" = "Fledg. surv",
+                                      "Chick_survival" = "Chick surv",
+                                      "Hatching_sex_ratio" = "Hatching SR",
+                                      "Mating_system" = "Mating sys."))
 lambda_elasticity
-ggplot2::ggsave(filename = "lambda_elasticity,Eberhart-Phillips_et_al._Figure_3.tiff",
-                path = "/Users/Luke/Documents/Academic_Projects/PhD/Ceuta_ASR_Matrix_Modeling/Writing/PNAS/Revision/to_resubmit/final/Figures/",
-                width = 3.42,
-                height = 6, units = "in",
-                dpi = 600,
-                compression="lzw")
 ```
 
 ***
@@ -2239,16 +2095,15 @@ ggplot() +
                  aes(y = 93, x = lcl, xmin = lcl, xmax = ucl), 
                  color = brewer.pal(8, "Set1")[c(1)], size = 0.8, linetype = "solid") +
   theme_bw() +
-  theme(text = element_text(family="Franklin Gothic Book"),
-        legend.text = element_text(size = 8),
+  theme(legend.text = element_text(size = 8),
         legend.title = element_blank(),
         legend.position = "top",
         legend.key.height=unit(0.6,"line"),
         legend.key.width=unit(0.6,"line"),
-        axis.title.x = element_text(size=10, margin = margin(10, 0, 0, 0)),
-        axis.text.x  = element_text(size=8, margin = margin(5, 0, 0, 0)), 
-        axis.title.y = element_text(size=10, margin = margin(0, 5, 0, 0)),
-        axis.text.y  = element_text(size=8, angle = 0, hjust = 1, 
+        axis.title.x = element_text(size=12, margin = margin(10, 0, 0, 0)),
+        axis.text.x  = element_text(size=10, margin = margin(5, 0, 0, 0)), 
+        axis.title.y = element_text(size=12, margin = margin(0, 5, 0, 0)),
+        axis.text.y  = element_text(size=10, angle = 0, hjust = 1, 
                                     margin = margin(0, 5, 0, 0)),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
@@ -2261,20 +2116,10 @@ ggplot() +
         strip.background = element_blank(), 
         strip.text = element_blank()) +
   ylab("Frequency") +
-  # xlab("Population growth rate") +
-  xlab("Population growth (\u03BB)") +
+  xlab("Population growth rate") +
   scale_y_continuous(limits = c(0, 100)) +
   scale_fill_manual(values = cbPalette, labels = c("One-sex model     ", "Two-sex model"))
 lambda_histogram
-
-ggsave(lambda_histogram,
-       filename = "lambda_elasticity,Eberhart-Phillips_et_al._Figure_4.tiff",
-       path = "/Users/Luke/Documents/Academic_Projects/PhD/Ceuta_ASR_Matrix_Modeling/Writing/PNAS/Revision/to_resubmit/final/Figures/",
-       width = 3.42,
-       height = 3.42, units = "in",
-       dpi = 600,
-       compression="lzw",
-       scale = 1)
 ```
 
 ***

@@ -1,14 +1,14 @@
 # Overview
-## Adult sex ratio bias is driven by sex-specific early survival: implications for mating system evolution and population growth 
+## Adult sex ratio bias in snowy plovers is driven by sex-specific early survival: implications for mating systems and population growth
 #### Luke J. Eberhart-Phillips, Clemens Küpper, Tom E. X. Miller, Medardo Cruz-López, Kathryn Maher, Natalie dos Remedios, Martin A. Stoffel, Joseph I. Hoffman, Oliver Krüger, Tamás Székely
 
 In this repository you can find all the necessary files needed to reproduce the analyses presented in our paper.
 
-**`R`** *(Appendix A)*
+**`R`** *(SI Dataset)*
 
   - **Ceuta_ASR_R_code.pdf** and **Ceuta_ASR_R_code.Rmd** contains the documented code for all analyses, which can be implemented after downloading the datasets provided in the **`data`** and **`output/bootstrap/`** folders.
 
-**`data`** *(Appendix B)*
+**`data`**
 
   - **chick_mark-recapture_data.txt** contains the mark-recapture field data of chicks. Each row is a single uniquely marked chick identified by their *ring*. The daily encounter history of an individual is expressed in their *ch*, where a "1" indicates that an individual was encountered, "0" indicates it was not encountered, and "." indicates that no survey took place on that day. *year* indicates the year during which an individual was monitored and *day_of_season* indicates the number of days since the start of the breeding season that an individual hatched. *sex* describes the molecular sex-type of an individual with "M" for males and "F" for females. *brood_ID* is a unique brood identifier for the family from which a chick hatched.
 

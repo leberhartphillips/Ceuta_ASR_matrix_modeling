@@ -1,0 +1,17 @@
+base
+snow
+snowfall
+RMark
+stringr
+ggplot2
+dplyr
+gridExtra
+reshape2
+RColorBrewer
+extrafont
+Matrix
+lme4
+lattice
+plyr
+Rmisc
+magrittr
