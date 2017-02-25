@@ -6,7 +6,7 @@ In this repository you can find all the necessary files needed to reproduce the 
 
 **`R`** *(SI Dataset)*
 
-  - **Ceuta_ASR_R_code.pdf** and **Ceuta_ASR_R_code.Rmd** contains the documented code for all analyses, which can be implemented after downloading the datasets provided in the **`data`** and **`output/bootstrap/`** folders.
+  - **Eberhart_Phillips_et_al._SI_Dataset.pdf** and **Eberhart_Phillips_et_al._SI_Dataset.Rmd** contains the documented code for all analyses, which can be implemented after downloading the datasets provided in the **`data`** and **`output/bootstrap/`** folders.
 
 **`data`**
 
