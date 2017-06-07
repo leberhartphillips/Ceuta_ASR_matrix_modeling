@@ -1,9 +1,9 @@
 ---
-title: 'R-code for "Adult sex ratio bias in snowy plovers is driven by sex-specific early survival: implications for mating systems and population growth"'
+title: 'R-code for "Sex-specific early survival drives adult sex ratio bias in snowy plovers and impacts mating system and population growth"'
 author: Luke J. Eberhart-Phillips, Clemens Küpper, Tom E. X. Miller, Medardo Cruz-López,
   Kathryn H. Maher, Natalie dos Remedios, Martin A. Stoffel, Joseph I. Hoffman, Oliver
   Krüger, Tamás Székely
-date: "February 24, 2017"
+date: "June 7, 2017"
 output:
   pdf_document:
     keep_tex: yes
@@ -54,7 +54,7 @@ To start, please load the following datasets into your R environment:
 
 - **data/chick_mark-recapture_data.txt** contains the mark-recapture field data of chicks. Each row is a single uniquely marked chick identified by their *ring*. The daily encounter history of an individual is expressed in their *ch*, where a "1" indicates that an individual was encountered, "0" indicates it was not encountered, and "." indicates that no survey took place on that day. *year* indicates the year during which an individual was monitored and *day_of_season* indicates the number of days since the start of the breeding season that an individual hatched. *sex* describes the molecular sex-type of an individual with "M" for males and "F" for females. *brood_ID* is a unique brood identifier for the family from which a chick hatched.
 
-- **data/juvenile_adult_mark-recapture_data.txt** contains the mark-recapture field data of juveniles and adults. Each row is a single uniquely marked individual identified by their *ring*. The annual encounter history of an individual is expressed in their *ch*, where a "1" indicates that an individual was encountered and "0" indicates it was not encountered. *sex* describes the molecular sex-type of an individual with "M" for males and "F" for females. *age* describes the stage at which an individual was initially captured, where "J" indicates it was first captured as a chick, and "A" indicates it was first captured as an adult.
+- **data/juvenile_adult_mark-recapture_data.txt** contains the mark-recapture field data of juveniles and adults. Each row is a single uniquely marked individual identified by their *ring*. The annual encounter history of an individual is expressed in their *ch*, where a "1" indicates that an individual was encountered and "0" indicates it was not encountered. *sex* describes the molecular sex-type of an individual with "M" for males and "F" for females. *stage* describes the stage at which an individual was initially captured, where "J" indicates it was first captured as a chick, and "A" indicates it was first captured as an adult.
 
 - **data/breeding_data.txt** contains the individual reproductive histories of all marked breeding adults in the population. Each row is a nesting attempt uniquely identified by the nest *ID*. *no_chicks* expresses the number of chicks that hatched from the nest. *clutch_size* indicates the number of eggs in the nest when it was initially discovered. *year* describes the year in which the nest was active. *male* and *female* indicates the unique identity of the father and mother, respectively, with "male_NA" and "female_NA" describing cases in which the other mate was not identified.
 ```{r, results = "hide", message = FALSE, warning=FALSE, cache = TRUE}
@@ -530,11 +530,11 @@ bootstrap_survival_ASR <- function(plover_boot_list, num_boot) {
   chick <- chick[,-1]
   
   # Create processed RMark data formatted as Cormack-Jolly_Seber with 2 groups 
-  # (sex and age initally ringed), starting at year 2006, two age groups
+  # (sex and stage initally ringed), starting at year 2006, two stage groups
   # (first-years and adults) in which the first-year stage only lasts for 
   # one year.
   juvenile_adult.proc <- RMark::process.data(juvenile_adult, model = "CJS",
-                                              groups = c("sex", "age"),
+                                              groups = c("sex", "stage"),
                                               begin.time = 2006, age.var = 2, 
                                               initial.age = c(1, 0))
   
@@ -547,7 +547,7 @@ bootstrap_survival_ASR <- function(plover_boot_list, num_boot) {
   juvenile_adult.ddl <- RMark::make.design.data(juvenile_adult.proc)
   chick.ddl <- RMark::make.design.data(chick.proc)
   
-  # adds first-year / adult age field to design data in column "Age"
+  # adds first-year / adult stage field to design data in column "Age"
   juvenile_adult.ddl <- RMark::add.design.data(data = juvenile_adult.proc,
                                                 ddl = juvenile_adult.ddl, 
                                                 parameter = "Phi", 
@@ -566,7 +566,7 @@ bootstrap_survival_ASR <- function(plover_boot_list, num_boot) {
   # check parameter matrices to see if groups were binned correctly 
   # (uncomment the next three lines to assess)
   # PIMS(mark(juvenile_adult.proc, juvenile_adult.ddl,
-  #           model.parameters = list(Phi = list(formula = ~ age + sex)), 
+  #           model.parameters = list(Phi = list(formula = ~ stage + sex)), 
   #           output = F), "Phi")
    
   # Create quadratic time variable so that it can be tested for temporal variation 
@@ -586,33 +586,33 @@ bootstrap_survival_ASR <- function(plover_boot_list, num_boot) {
   juvenile_adult_survival = function() 
   {
     # sex- and stage-specific survival:
-    Phi.agexsex = list(formula = ~ age * sex) 
+    Phi.agexsex = list(formula = ~ stage * sex) 
 
     # Models exploring variation in encounter probability
     # constant:
     p.dot = list(formula =  ~ 1)
     # sex-dependent:
     p.sex = list(formula =  ~ sex)
-    # age-dependent:
-    p.age = list(formula =  ~ age)
+    # stage-dependent:
+    p.stage = list(formula =  ~ stage)
     # factorial variation across year:
     p.Time = list(formula =  ~ Time)
     # interaction between sex and factorial year:
     p.sexxTime = list(formula =  ~ sex * Time)
-    # interaction between age and factorial year:
-    p.agexTime = list(formula =  ~ age * Time)
-    # interaction between age and sex:
-    p.agexsex = list(formula =  ~ age * sex)
+    # interaction between stage and factorial year:
+    p.agexTime = list(formula =  ~ stage * Time)
+    # interaction between stage and sex:
+    p.agexsex = list(formula =  ~ sex * stage)
     # additive effects of sex and factorial year:
     p.sex_Time = list(formula =  ~ sex + Time)
-    # additive effects of age and factorial year:
-    p.age_Time = list(formula =  ~ age + Time)
-    # additive effects of age and sex:
-    p.age_sex = list(formula =  ~ age + sex)
-    # additive effects of sex, age, factorial year:
-    p.Time_age_sex = list(formula =  ~ Time + age + sex)
-    # additive effect of year and interaction between age and sex:
-    p.Time_age_x_sex = list(formula =  ~ Time + age * sex)
+    # additive effects of stage and factorial year:
+    p.age_Time = list(formula =  ~ stage + Time)
+    # additive effects of stage and sex:
+    p.age_sex = list(formula =  ~ sex + stage)
+    # additive effects of sex, stage, factorial year:
+    p.Time_age_sex = list(formula =  ~ sex + stage + Time)
+    # additive effect of year and interaction between stage and sex:
+    p.Time_age_x_sex = list(formula =  ~ sex * stage + Time)
     
     # create a list of candidate models for all the a models above that begin with 
     # either "Phi." or "p."
@@ -643,23 +643,23 @@ bootstrap_survival_ASR <- function(plover_boot_list, num_boot) {
   juvenile_adult_reals <- 
     juvenile_adult_survival_run[[model_juvenile_adult_num]]$results$real
   
-  # format the output to tidy up the sex- and age-specific effects
+  # format the output to tidy up the sex- and stage-specific effects
   Groups <- data.frame(str_split_fixed(rownames(juvenile_adult_reals), " ", n = 5))
   juvenile_adult_reals <- cbind(Groups, juvenile_adult_reals)
   juvenile_adult_reals <- 
     juvenile_adult_reals[which(juvenile_adult_reals$X1 == "Phi"),]
-  juvenile_adult_reals$age <- 
+  juvenile_adult_reals$stage <- 
     unlist(str_extract_all(juvenile_adult_reals$X2,"[AJ]"))
-  juvenile_adult_reals$age <- 
-    as.factor(ifelse(juvenile_adult_reals$age == "A","Adult","juvenile"))
+  juvenile_adult_reals$stage <- 
+    as.factor(ifelse(juvenile_adult_reals$stage == "A","Adult","juvenile"))
   juvenile_adult_reals$sex <- 
     unlist(str_extract_all(juvenile_adult_reals$X2,"[FM]"))
   juvenile_adult_reals$sex <- 
     as.factor(ifelse(juvenile_adult_reals$sex == "F","Female","Male"))
-  juvenile_adult_reals$sex_age <- 
-    paste(juvenile_adult_reals$sex,juvenile_adult_reals$age,sep = "_")
+  juvenile_adult_reals$sex_stage <- 
+    paste(juvenile_adult_reals$sex,juvenile_adult_reals$stage,sep = "_")
   juvenile_adult_survival_real <- 
-    juvenile_adult_reals[,c("sex_age", "estimate")]
+    juvenile_adult_reals[,c("sex_stage", "estimate")]
   row.names(juvenile_adult_survival_real) <- NULL
   
   # Do the same for chicks. create the function that specifies the candidate models 
@@ -679,17 +679,17 @@ bootstrap_survival_ASR <- function(plover_boot_list, num_boot) {
     # sex-specific
     p.sex = list(formula = ~ sex)
     # interaction between year and quadratic age
-    p.year.x.quadratic = list(formula = ~ year * quadratic)
+    p.year.x.quadratic = list(formula = ~ quadratic * year)
     # interaction between year and quadratic age
     p.sex.x.quadratic = list(formula = ~ sex * quadratic)
     # additive effects of sex and linear age
     p.sex.quadratic = list(formula = ~ sex + quadratic)
     # additive effects of year and quadratic age
-    p.year.quadratic = list(formula = ~ year + quadratic)
+    p.year.quadratic = list(formula = ~ quadratic + year)
     # additive effects of year, sex, and quadratic age
-    p.year.quadratic.Sex = list(formula = ~ year + quadratic + sex)
+    p.year.quadratic.Sex = list(formula = ~ sex + quadratic + year)
     # additive effect of year and interaction between sex and quadratic age
-    p.year.quadratic.x.Sex = list(formula = ~ year + quadratic * sex)
+    p.year.quadratic.x.Sex = list(formula = ~ sex * quadratic + year)
 
     # create a list of candidate models for all the a models above that begin with 
     # either "Phi." or "p."
@@ -735,9 +735,9 @@ bootstrap_survival_ASR <- function(plover_boot_list, num_boot) {
   # tidy up the output and put it in a dataframe.
   estimate <- c(plover_Survival_to_Fledge_F, plover_Survival_to_Fledge_M)
   sex <- c("Female", "Male")
-  age <- c("Chick", "Chick")
-  sex_age <- paste(sex, age, sep = "_")
-  chick_survival_real <- data.frame(sex_age, estimate)
+  stage <- c("Chick", "Chick")
+  sex_stage <- paste(sex, stage, sep = "_")
+  chick_survival_real <- data.frame(sex_stage, estimate)
   
   # Bind the juvenile and adult dataframe with the chicks
   survival_rates <- rbind(juvenile_adult_survival_real, chick_survival_real)
@@ -793,23 +793,23 @@ E) start the bootstrap (takes approx. 130 hours on an Intel XEON E5v2 series sev
 # uncomment this to run the bootstrap. To bypass this, load the bootstrap output datasets 
 # below to continue analysis
 
-# survival_ASR_bootstrap_result <- 
+# survival_ASR_bootstrap_result <-
 #   sapply(1:niter, run_bootstrap_survival_ASR, juvenile_adult, chick)
 ```
 F) Extract data from the bootstrap output (uncomment these sections if you ran the bootstrap)
 
 AIC tables of chick survival for each interation
 ```{r}
-# AIC_table_chick_boot <- 
-# do.call(rbind, lapply(seq(from = 1, to = niter * 4, by = 4), 
+# AIC_table_chick_boot <-
+# do.call(rbind, lapply(seq(from = 1, to = niter * 4, by = 4),
 #                       function(x) survival_ASR_bootstrap_result[[x]]))
 # num_mods <- nrow(AIC_table_chick_boot)/niter
 # AIC_table_chick_boot$iter <- rep(1:niter, each = num_mods)
 ```
 AIC tables of juvenile and adult survival for each interation
 ```{r}
-# AIC_table_juvenile_adult_boot <- 
-# do.call(rbind, lapply(seq(from = 2, to = niter * 4, by = 4), 
+# AIC_table_juvenile_adult_boot <-
+# do.call(rbind, lapply(seq(from = 2, to = niter * 4, by = 4),
 #                       function(x) survival_ASR_bootstrap_result[[x]]))
 # num_mods <- nrow(AIC_table_juvenile_adult_boot)/niter
 # AIC_table_juvenile_adult_boot$iter <- rep(1:niter, each = num_mods)
@@ -836,7 +836,7 @@ To save your time with re-running the bootstrap, here are the four datasets prod
 
 - **output/bootstrap/ASR_boot_out.txt** contains the adult sex ratio estimates (*ASR_boot*) of each iteration of the bootstrap procedure. Each row represents an iteration (*iter*).
 
-- **output/bootstrap/survival_rates_boot_out.txt** contains the sex- and stage-specific survival estimates (*estimate*) of each iteration (*iter*) in the bootstrap procedure. Each row represents a given sex and stage (*sex_age*) in a given iteration.
+- **output/bootstrap/survival_rates_boot_out.txt** contains the sex- and stage-specific survival estimates (*estimate*) of each iteration (*iter*) in the bootstrap procedure. Each row represents a given sex and stage (*sex_stage*) in a given iteration.
 ```{r, cache = TRUE}
 setwd("~/Dropbox/Luke/R_projects/Ceuta_ASR_Matrix_Modeling")
 chick_AIC_tables <- 
@@ -943,7 +943,7 @@ Background <-
         axis.ticks.length = unit(0.2, "cm"),
         panel.border = element_blank(),
         plot.margin = unit(c(1,0.5,0.5,0.5), "cm"),
-        panel.margin = unit(0.75, "lines"),
+        panel.spacing = unit(0.75, "lines"),
         strip.background = element_blank(), 
         strip.text = element_blank()) +
   scale_x_continuous(limits=c(0,4),breaks=c(0,1,2), labels=c("Chick", "Juvenile", "Adult")) +
@@ -971,7 +971,7 @@ Bootstrap_sex_diff_VR_plot <-
         axis.ticks.x = element_line(size = 0.5, colour = "grey40"),
         panel.border = element_rect(linetype = "solid", colour = "grey"),
         plot.margin = unit(c(1,0.5,0.5,0.5), "cm"),
-        panel.margin = unit(0.75, "lines"),
+        panel.spacing = unit(0.75, "lines"),
         strip.background = element_blank(), 
         strip.text = element_blank()) +
   scale_fill_manual(values = cbPalette) +
@@ -1021,8 +1021,7 @@ ggplot2::ggplot() +
                          aes(y = 120, x = lcl, xmin = lcl, xmax = ucl), 
                          color = "black", size = 0.8, linetype = "solid") +
           theme_bw() +
-          theme(legend.position="none",
-                legend.position = c(0, 1), 
+          theme(legend.position = c(0, 1), 
                 legend.justification = c(0, 1),
                 legend.text=element_text(size=11),
                 legend.title=element_blank(),
@@ -1043,7 +1042,7 @@ ggplot2::ggplot() +
                 plot.margin = unit(c(0.5,0.5,0.5,0.5), "cm"),
                 strip.background = element_blank(), 
                 strip.text = element_blank(),
-                panel.margin = unit(0.75, "lines")) +
+                panel.spacing = unit(0.75, "lines")) +
           ylab("Frequency") +
           xlab("Adult sex ratio (proportion male)") +
           scale_x_continuous(limits = c(0.0, 1)) +
@@ -1122,13 +1121,14 @@ Bootstrap_Delta_AIC_plot_C <-
         axis.ticks.length = unit(0.2, "cm"),
         axis.ticks.x = element_line(size = 0.5, colour = "grey40"),
         plot.margin = unit(c(0.5,0.5,0,0.5), "cm"),
-        panel.margin = unit(0.75, "lines"),
+        panel.spacing = unit(0.75, "lines"),
         strip.background = element_blank(), 
-        strip.text = element_blank()) +
+        strip.text = element_blank(),
+        plot.title = element_text(hjust = 0.5)) +
   scale_y_continuous(limits=c(0,50)) +
   xlab("Model") + 
   ylab("Delta AIC") +
-  ggtitle("Chicks resighting model selection")
+  ggtitle("Chick resighting model selection")
 ```
 plot the overall model ranks of the chick survival anlaysis based on AIC weight
 ```{r, fig.height=9, fig.width=6, fig.align="center"}
@@ -1147,12 +1147,29 @@ Bootstrap_AIC_weight_plot_C <-
         axis.ticks.length = unit(0.2, "cm"),
         axis.ticks.x = element_line(size = 0.5, colour = "grey40"),
         plot.margin = unit(c(0.5,0.5,0.5,0.3), "cm"),
-        panel.margin = unit(0.75, "lines"),
+        panel.spacing = unit(0.75, "lines"),
         strip.background = element_blank(), 
         strip.text = element_blank()) +
   scale_y_continuous(limits=c(0,1)) +
   xlab("Model") + 
-  ylab("AIC weight")
+  ylab("AIC weight") +
+  scale_x_discrete(labels = c("~year * quadratic" = 
+                                expression(paste("age"^2," * year")),
+                              "~year + quadratic + sex" = 
+                                expression(paste("sex + age"^2," + year")),
+                              "~year + quadratic * sex" = 
+                                expression(paste("sex * age"^2," + year")),
+                              "~year + quadratic" = 
+                                expression(paste("age"^2," + year")),
+                              "~year" = "~year",
+                              "~sex + quadratic" = 
+                                expression("sex + age"^2),
+                              "~sex * quadratic" = 
+                                expression("sex * age"^2),
+                              "~quadratic" = 
+                                expression("age"^2),
+                              "~sex" = "~sex",
+                              "~1" = "~1"))
 
 grid.newpage()
 pushViewport(viewport(layout = grid.layout(5, 1)))
@@ -1177,9 +1194,10 @@ Bootstrap_Delta_AIC_plot_F_A <-
         axis.ticks.length = unit(0.2, "cm"),
         axis.ticks.x = element_line(size = 0.5, colour = "grey40"),
         plot.margin = unit(c(0.5,0.5,0,0.8), "cm"),
-        panel.margin = unit(0.75, "lines"),
+        panel.spacing = unit(0.75, "lines"),
         strip.background = element_blank(), 
-        strip.text = element_blank()) +
+        strip.text = element_blank(),
+        plot.title = element_text(hjust = 0.5)) +
   scale_y_continuous(limits=c(0,50)) +
   xlab("Model") + 
   ylab("Delta AIC") +
@@ -1202,13 +1220,25 @@ Bootstrap_AIC_weight_plot_F_A <-
         axis.ticks.length = unit(0.2, "cm"),
         axis.ticks.x = element_line(size = 0.5, colour = "grey40"),
         plot.margin = unit(c(0.5,0.5,0.5,0.5), "cm"),
-        panel.margin = unit(0.75, "lines"),
+        panel.spacing = unit(0.75, "lines"),
         strip.background = element_blank(), 
         strip.text = element_blank(),
         plot.background = element_rect(fill = "transparent",colour = NA)) +
   scale_y_continuous(limits=c(0,1)) +
   xlab("Model") + 
-  ylab("AIC weight")
+  ylab("AIC weight") +
+  scale_x_discrete(labels = c("~Time + age * sex" = "~sex * stage + year",
+                              "~Time + age + sex" = "~sex + stage + year",
+                              "~sex + Time" = "~sex + year",
+                              "~sex * Time" = "~sex * year",
+                              "~age * Time" = "~stage * year",
+                              "~Time" = "~year",
+                              "~age + Time" = "~stage + year",
+                              "~age * sex" = "~sex * stage",
+                              "~age + sex" = "~sex + stage",
+                              "~sex" = "~sex",
+                              "~age" = "~stage",
+                              "~1" = "~1"))
 
 grid.newpage()
 pushViewport(viewport(layout = grid.layout(5, 1)))
@@ -1573,7 +1603,7 @@ summarise the bootstrap stage- and sex-specific survival rates for the determini
 survival_rates_boot_summary <-
   Rmisc::summarySE(survival_rates_boot,
                    measurevar = "estimate",
-                   groupvars = c("sex_age"),
+                   groupvars = c("sex_stage"),
                    conf.interval = 0.95)
 ```
 define deteriministic Ceuta vital rates estimated from mark-recapture analysis. This are the "treatment" rates observed in the field:
@@ -1718,7 +1748,7 @@ Background_LTRE_ASR <-
         axis.ticks.length = unit(0.2, "cm"),
         panel.border = element_blank(),
         plot.margin = unit(c(1,0.5,0.5,2.85), "cm"),
-        panel.margin = unit(0.75, "lines"),
+        panel.spacing = unit(0.75, "lines"),
         strip.background = element_blank(),
         strip.text = element_blank()) +
   ylab("Contribution to adult sex ratio") +
@@ -1752,7 +1782,7 @@ LTRE_ASR <-
         axis.ticks.x = element_line(size = 0.5, colour = "grey40"),
         panel.border = element_rect(linetype = "solid", colour = "grey"),
         plot.margin = unit(c(1,0.5,0.5,0.5), "cm"),
-        panel.margin = unit(0.75, "lines"),
+        panel.spacing = unit(0.75, "lines"),
         strip.background = element_blank(),
         strip.text = element_blank()) +
   ylab("Contribution to adult sex ratio") +
@@ -1980,7 +2010,7 @@ lambda_elasticity <-
                 axis.ticks.x = element_line(size = 0.5, colour = "grey40"),
                 panel.border = element_rect(linetype = "solid", colour = "grey"),
                 plot.margin = unit(c(1,0.5,0.5,0.5), "cm"),
-                panel.margin = unit(0.75, "lines")) +
+                panel.spacing = unit(0.75, "lines")) +
           ylab("Elasticity of population growth") +
           xlab("Sex-specific parameter") +
           scale_fill_manual(values = cbPalette) +
@@ -2112,7 +2142,7 @@ ggplot() +
         axis.ticks.x = element_line(size = 0.5, colour = "grey40"),
         panel.border = element_rect(linetype = "solid", colour = "grey"),
         plot.margin = unit(c(0.5,0.5,0.5,0.5), "cm"),
-        panel.margin = unit(0.75, "lines"),
+        panel.spacing = unit(0.75, "lines"),
         strip.background = element_blank(), 
         strip.text = element_blank()) +
   ylab("Frequency") +
