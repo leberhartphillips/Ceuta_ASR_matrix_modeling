@@ -160,7 +160,7 @@ h <-
 # display the h value (used in the mating function of the matrix model)
 h
 ```
-Figure 1b: plot the sex-specific distributions of mating system
+Figure 1: plot the sex-specific distributions of mating system
 ```{r, fig.width=3, fig.height=5, fig.align="center"}
 # specifiy the color palette to use in plotting
 cbPalette <- RColorBrewer::brewer.pal(8, "Dark2")[c(2,1)]
@@ -1052,7 +1052,7 @@ ASR_bootstrap_histogram
 
 **AIC model selection summary (panels in Supporting Information Figure 2)**
 
-To illustrate the mark-recapture model selection going on during the bootstrap, we summarized AIC statistics for each model included in the survival analysis and visualized with ranked boxplots (Figure S1)
+To illustrate the mark-recapture model selection going on during the bootstrap, we summarized AIC statistics for each model included in the survival analysis and visualized with ranked boxplots (Figure S2)
 
 First, wrangle the bootstrap AIC table output
 ```{r}
