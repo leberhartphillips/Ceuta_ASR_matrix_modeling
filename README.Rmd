@@ -2,7 +2,8 @@
 ## Sex-specific early survival drives adult sex ratio bias in snowy plovers and impacts mating system and population growth
 #### Luke J. Eberhart-Phillips, Clemens Küpper, Tom E. X. Miller, Medardo Cruz-López, Kathryn Maher, Natalie dos Remedios, Martin A. Stoffel, Joseph I. Hoffman, Oliver Krüger, Tamás Székely
 
-##### *Proceedings of the National Academy of Sciences of the United States of America* (in print)
+##### *Proceedings of the National Academy of Sciences of the United States of America* (2017) [doi: 10.1073/pnas.1620043114](http://doi.org/10.1073/pnas.1620043114)
+
 
 In this repository you can find all the necessary files needed to reproduce the analyses presented in our paper.
 
